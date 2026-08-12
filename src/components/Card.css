@@ -1,0 +1,110 @@
+.playing-card-container {
+  width: 140px;
+  height: 200px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.playing-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+}
+
+.playing-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.playing-card-back, .playing-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.playing-card-back {
+  background-color: var(--surface-color);
+  border: 6px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-pattern {
+  width: 90%;
+  height: 90%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--surface-color-hover) 25%,
+    transparent 25%,
+    transparent 75%,
+    var(--surface-color-hover) 75%,
+    var(--surface-color-hover)
+  ), repeating-linear-gradient(
+    45deg,
+    var(--surface-color-hover) 25%,
+    var(--surface-color) 25%,
+    var(--surface-color) 75%,
+    var(--surface-color-hover) 75%,
+    var(--surface-color-hover)
+  );
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+  border-radius: 6px;
+}
+
+.playing-card-face {
+  background-color: var(--card-bg);
+  transform: rotateY(180deg);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.text-red { color: var(--danger-color); }
+.text-black { color: var(--card-text); }
+
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.card-corner .rank {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.card-corner .suit {
+  font-size: 1.25rem;
+}
+
+.top-left {
+  align-self: flex-start;
+}
+
+.bottom-right {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.card-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.main-suit {
+  font-size: 4.5rem;
+}
