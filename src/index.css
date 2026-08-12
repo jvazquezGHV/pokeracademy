@@ -115,3 +115,144 @@ p {
 .perspective-1000 {
   perspective: 1000px;
 }
+
+/* Multiplayer Responsive Layout */
+.multiplayer-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+}
+
+.multiplayer-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.multiplayer-sidebar {
+  flex: none;
+  min-height: 0;
+  height: 250px;
+  background-color: var(--surface-color);
+  padding: 1rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.multiplayer-chat {
+  flex: none;
+  min-height: 0;
+  height: 350px;
+  background-color: var(--surface-color);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.poker-table-container {
+  flex: none;
+  height: 450px;
+  width: 100%;
+  background: radial-gradient(circle at center, #166534 0%, #064e3b 100%);
+  border-radius: 100px; 
+  border: 8px solid #291a10;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.action-buttons-container {
+  position: absolute;
+  right: -5px;
+  bottom: -30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 120px;
+  z-index: 20;
+}
+
+.board-container {
+  display: flex;
+  gap: 2px;
+  height: 119px;
+  transform: scale(0.65);
+  transform-origin: center center;
+}
+
+/* Seat Positions */
+.seat-pos {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.seat-0 { bottom: -10px; left: 50%; transform: translateX(-50%); }
+.seat-1 { bottom: 20px; left: -10px; }
+.seat-2 { top: 10px; left: -10px; }
+.seat-3 { top: -10px; left: 50%; transform: translateX(-50%); }
+.seat-4 { top: 10px; right: -10px; }
+.seat-5 { bottom: 20px; right: -10px; }
+
+@media (min-width: 1024px) {
+  .multiplayer-container {
+    height: calc(100vh - 80px);
+  }
+  
+  .multiplayer-layout {
+    flex-direction: row;
+  }
+  
+  .multiplayer-sidebar {
+    flex: 0 0 300px;
+    height: auto;
+    padding: 1.5rem;
+  }
+  
+  .multiplayer-chat {
+    flex: 0 0 300px;
+    height: auto;
+  }
+
+  .poker-table-container {
+    flex: 1;
+    min-width: 500px;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    border-radius: 250px;
+    border-width: 15px;
+  }
+
+  .action-buttons-container {
+    right: -20px;
+    bottom: -20px;
+    min-width: 150px;
+  }
+
+  .board-container {
+    gap: 5px;
+    transform: scale(1);
+  }
+
+  .seat-0 { bottom: -40px; }
+  .seat-1 { bottom: 40px; left: -40px; }
+  .seat-2 { top: 20px; left: -40px; }
+  .seat-3 { top: -40px; }
+  .seat-4 { top: 20px; right: -40px; }
+  .seat-5 { bottom: 40px; right: -40px; }
+}

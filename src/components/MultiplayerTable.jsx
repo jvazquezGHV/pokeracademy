@@ -15,27 +15,18 @@ const getAvatar = (userId) => {
   return AVATARS[Math.abs(hash) % AVATARS.length];
 };
 
-const getSeatPosition = (playerCount, offset) => {
-  const positions = {
-    0: { bottom: '-40px', left: '50%', transform: 'translateX(-50%)' },
-    1: { bottom: '40px', left: '-40px' },
-    2: { top: '20px', left: '-40px' },
-    3: { top: '-40px', left: '50%', transform: 'translateX(-50%)' },
-    4: { top: '20px', right: '-40px' },
-    5: { bottom: '40px', right: '-40px' },
-  };
-
+const getSeatClass = (playerCount, offset) => {
   if (playerCount === 2) {
-    if (offset === 1) return positions[3];
+    if (offset === 1) return 'seat-3';
   } else if (playerCount === 3) {
-    if (offset === 1) return positions[2];
-    if (offset === 2) return positions[4];
+    if (offset === 1) return 'seat-2';
+    if (offset === 2) return 'seat-4';
   } else if (playerCount === 4) {
-    if (offset === 1) return positions[1];
-    if (offset === 2) return positions[3];
-    if (offset === 3) return positions[5];
+    if (offset === 1) return 'seat-1';
+    if (offset === 2) return 'seat-3';
+    if (offset === 3) return 'seat-5';
   }
-  return positions[offset];
+  return `seat-${offset}`;
 };
 
 const MultiplayerTable = ({ session }) => {
@@ -414,7 +405,7 @@ const MultiplayerTable = ({ session }) => {
   const toCallUI = myPlayerState ? maxBet - myPlayerState.bet : 0;
 
   return (
-    <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+    <div className="multiplayer-container">
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <button onClick={() => navigate('/multiplayer')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
@@ -468,9 +459,9 @@ const MultiplayerTable = ({ session }) => {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', gap: '1.5rem', height: '100%', minHeight: 0 }}>
+        <div className="multiplayer-layout">
           
-          <div style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+          <div className="multiplayer-sidebar">
             <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
             <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
               {gs.history?.split('\n').map((line, i) => (
@@ -479,20 +470,12 @@ const MultiplayerTable = ({ session }) => {
             </div>
           </div>
 
-          <div style={{ 
-              flex: 1, minHeight: 0, minWidth: '500px',
-              background: 'radial-gradient(circle at center, #166534 0%, #064e3b 100%)', 
-              borderRadius: '250px', 
-              border: '15px solid #291a10', 
-              boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5)', 
-              position: 'relative', 
-              display: 'flex', justifyContent: 'center', alignItems: 'center'
-          }}>
+          <div className="poker-table-container">
             
             {gs.players?.map((p, idx) => {
               const isMe = p.user_id === session.user.id;
               const offset = (idx - myIndexInArray + gs.players.length) % gs.players.length;
-              const pos = getSeatPosition(gs.players.length, offset);
+              const seatClass = getSeatClass(gs.players.length, offset);
               const isTurn = gs.turnIndex === idx && gs.phase !== 'showdown' && gs.phase !== 'waiting_for_players';
               
               let timerPct = 100;
@@ -504,7 +487,7 @@ const MultiplayerTable = ({ session }) => {
               }
 
               return (
-                <div key={idx} style={{ position: 'absolute', ...pos, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : 1, zIndex: isMe ? 10 : 5 }}>
+                <div key={idx} className={`seat-pos ${seatClass}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : 1, zIndex: isMe ? 10 : 5 }}>
                    
                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', zIndex: 2, position: 'relative' }}>
                      {p.status === 'sitting_out' && (
@@ -559,9 +542,9 @@ const MultiplayerTable = ({ session }) => {
                     <h2 style={{ margin: 0, color: '#eab308', fontSize: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${gs.pot}</h2>
                   </div>
                </div>
-               <div style={{ display: 'flex', gap: '5px', height: '119px' }}>
+               <div className="board-container">
                   {gs.board?.map((c, i) => (
-                    <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
+                    <div key={i}>
                        <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                     </div>
                   ))}
@@ -571,7 +554,7 @@ const MultiplayerTable = ({ session }) => {
                </div>
             </div>
 
-            <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '150px', zIndex: 20 }}>
+            <div className="action-buttons-container">
                {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
                  amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap' }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : 'Play Next Hand'}</button>
                ) : (
@@ -602,7 +585,7 @@ const MultiplayerTable = ({ session }) => {
 
           </div>
 
-          <div style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="multiplayer-chat">
             <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                <h3 style={{ margin: 0, color: 'var(--accent-color)' }}>💬 Table Chat</h3>
             </div>
