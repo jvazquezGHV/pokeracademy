@@ -12,6 +12,7 @@ import ChallengeTable from './components/ChallengeTable';
 import RangeChart from './components/RangeChart';
 import HandHistoryLog from './components/HandHistoryLog';
 import HandReplayer from './components/HandReplayer';
+import PreflopTrainer from './components/PreflopTrainer';
 import Auth from './components/Auth';
 import './index.css';
 
@@ -118,8 +119,16 @@ function App() {
         <Route 
           path="/ranges" 
           element={
-            <ProtectedRoute session={session}>
+            <ProtectedRoute session={session} adminOnly={true}>
               <RangeChart />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/trainer/preflop" 
+          element={
+            <ProtectedRoute session={session} adminOnly={true}>
+              <PreflopTrainer />
             </ProtectedRoute>
           } 
         />

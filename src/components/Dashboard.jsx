@@ -142,6 +142,11 @@ const Dashboard = ({ session }) => {
               <span>Range Charts</span>
             </div>
 
+            <div className="nav-item" onClick={() => navigate('/trainer/preflop')}>
+              <span className="nav-icon">⚡</span>
+              <span>Preflop Trainer</span>
+            </div>
+
             <div className="nav-item" onClick={() => navigate('/history')}>
               <span className="nav-icon">📖</span>
               <span>Hand History Log</span>
