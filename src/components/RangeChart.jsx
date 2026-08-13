@@ -74,6 +74,26 @@ const RangeChart = () => {
               </p>
             </div>
             
+            <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '0.5rem' }}>
+              <h4 style={{ color: '#60a5fa', marginBottom: '0.75rem' }}>💡 How to Read the Chart</h4>
+              <ul style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.5', paddingLeft: '1.2rem', margin: 0 }}>
+                <li style={{ marginBottom: '0.5rem' }}><strong>Pairs (Diagonal):</strong> e.g., <span style={{ color: 'var(--text-primary)' }}>AA, KK</span>. Pocket pairs are the strongest starting hands.</li>
+                <li style={{ marginBottom: '0.5rem' }}><strong>"s" (Suited):</strong> Top-Right area. e.g., <span style={{ color: 'var(--text-primary)' }}>AKs</span>. Both cards share the same suit, making flushes easier.</li>
+                <li><strong>"o" (Offsuit):</strong> Bottom-Left area. e.g., <span style={{ color: 'var(--text-primary)' }}>AKo</span>. Cards have different suits.</li>
+              </ul>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '1rem', fontStyle: 'italic' }}>
+                *Notice how the green 'Raise' area gets larger the later you act. In poker, acting last is a huge advantage!
+              </p>
+              
+              <button 
+                className="action-button"
+                onClick={() => navigate('/')}
+                style={{ width: '100%', marginTop: '1rem', fontSize: '0.85rem', padding: '0.5rem', backgroundColor: '#3b82f6' }}
+              >
+                🎓 Study GTO in Curriculum
+              </button>
+            </div>
+            
             <div style={{ marginTop: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <div style={{ width: '20px', height: '20px', backgroundColor: '#10b981', borderRadius: '4px' }}></div>
