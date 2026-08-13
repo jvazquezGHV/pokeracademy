@@ -22,5 +22,13 @@
     "requiredLessonId": "i-m5",
     "requiredLessonTitle": "Intermediate: Bankroll Management & Tilt",
     "rubric": "Grade the user on emotional control. If the user makes massive, uncalculated over-bets with weak hands (punting), give them a Fail. If the user correctly folds to heavy aggression when they have a marginal or weak hand, give them a Pass. If the user plays solid, calculated poker, give them a Pass."
+  },
+  {
+    "id": "c-preflop-enforcer",
+    "title": "The Aggressor: VPIP / PFR Enforcer",
+    "description": "Limping is a cardinal sin. Prove you understand the Preflop Masterclass by ensuring your PFR is almost identical to your VPIP. Either raise, or fold!",
+    "requiredLessonId": "i-m8",
+    "requiredLessonTitle": "Intermediate: The Preflop Masterclass",
+    "rubric": "Grade this user strictly on Preflop Aggression. If the user limps (calls the Big Blind preflop without raising), give them a Fail. If the user enters the pot with a Raise (or folds), give them a Pass."
   }
 ]

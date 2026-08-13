@@ -35,11 +35,26 @@
               "title": "Quiz: Identify the Hand",
               "question": "What hand is currently face down on the table? Click the cards to flip them and find out!",
               "cards": [
-                { "suit": "spades", "rank": "10" },
-                { "suit": "spades", "rank": "J" },
-                { "suit": "spades", "rank": "Q" },
-                { "suit": "spades", "rank": "K" },
-                { "suit": "spades", "rank": "A" }
+                {
+                  "suit": "spades",
+                  "rank": "10"
+                },
+                {
+                  "suit": "spades",
+                  "rank": "J"
+                },
+                {
+                  "suit": "spades",
+                  "rank": "Q"
+                },
+                {
+                  "suit": "spades",
+                  "rank": "K"
+                },
+                {
+                  "suit": "spades",
+                  "rank": "A"
+                }
               ],
               "options": [
                 "Full House",
@@ -76,8 +91,14 @@
               "title": "Quiz: Best Position",
               "question": "Based on what you just learned, what is considered the best position at the poker table?",
               "cards": [
-                { "suit": "hearts", "rank": "A" },
-                { "suit": "diamonds", "rank": "A" }
+                {
+                  "suit": "hearts",
+                  "rank": "A"
+                },
+                {
+                  "suit": "diamonds",
+                  "rank": "A"
+                }
               ],
               "options": [
                 "Under the Gun (UTG)",
@@ -119,9 +140,18 @@
               "title": "Quiz: Community Cards",
               "question": "How many community cards are dealt face-up during 'The Flop'?",
               "cards": [
-                { "suit": "clubs", "rank": "2" },
-                { "suit": "hearts", "rank": "7" },
-                { "suit": "spades", "rank": "J" }
+                {
+                  "suit": "clubs",
+                  "rank": "2"
+                },
+                {
+                  "suit": "hearts",
+                  "rank": "7"
+                },
+                {
+                  "suit": "spades",
+                  "rank": "J"
+                }
               ],
               "options": [
                 "1",
@@ -235,34 +265,41 @@
       "modules": [
         {
           "id": "i-m1",
-          "title": "Pot Odds & Equity",
+          "title": "Poker Math & Pot Odds Masterclass",
           "lessons": [
             {
-              "id": "l-pot-odds",
-              "title": "Understanding Pot Odds",
-              "content": "Pot odds represent the ratio between the size of the pot and the size of the bet you face. For example, if the pot is $100 and you need to call $50, your pot odds are 2-to-1. You must win at least 33% of the time to make this a profitable call."
+              "id": "l-pot-odds-formula",
+              "title": "The Pot Odds Formula",
+              "content": "Pot odds tell you if calling a bet is mathematically profitable. The formula is: Risk / (Risk + Reward). Your 'Risk' is the amount you have to call. Your 'Reward' is the total pot AFTER you call (Original Pot + Villain Bet + Your Call). If the pot is  and Villain bets , your risk is . The reward is .  /  = 0.25 (25%). You must win 25% of the time to break even."
             },
             {
-              "id": "l-outs-equity",
-              "title": "Outs and Equity",
-              "content": "An 'out' is a card that will improve your hand to a winning one. You can estimate your equity (chance of winning) using the Rule of 4 and 2: Multiply your outs by 4 on the flop, or by 2 on the turn, to get your approximate percentage chance of hitting your card."
+              "id": "l-calculating-outs",
+              "title": "Calculating Outs",
+              "content": "An 'out' is any unseen card that will improve your hand to a winner. For example, if you hold two Hearts and there are two Hearts on the flop, you need one more Heart for a Flush. Since there are 13 Hearts in the deck and you see 4 of them, you have 9 outs to hit your flush."
             },
             {
-              "id": "q-pot-odds-1",
+              "id": "l-rule-of-4-and-2",
+              "title": "The Rule of 4 and 2",
+              "content": "To quickly convert your 'outs' into a percentage (Equity), use the Rule of 4 and 2. On the Flop (with two cards to come), multiply your outs by 4. (e.g., 9 outs for a flush * 4 = 36% chance to hit by the river). On the Turn (with one card to come), multiply your outs by 2. (e.g., 9 outs * 2 = 18%). Compare this percentage to your Pot Odds to see if you should call!"
+            },
+            {
+              "id": "l-implied-odds",
+              "title": "Implied Odds",
+              "content": "Sometimes your direct Pot Odds are slightly bad, but you can still call because of 'Implied Odds'. This refers to the extra money you expect to win on future streets if you hit your hand. If you hit a hidden straight, your opponent might bet into you again, increasing your total reward."
+            },
+            {
+              "id": "q-pot-math-exam",
               "type": "quiz",
-              "title": "Quiz: The Rule of 4",
-              "question": "You have a flush draw (9 outs) on the flop. Using the Rule of 4, what is your approximate chance of hitting your flush by the river?",
-              "cards": [
-                { "suit": "hearts", "rank": "2" },
-                { "suit": "hearts", "rank": "K" }
-              ],
+              "title": "Quiz: The Math Exam",
+              "question": "You are on the Turn (one card left). You have 8 outs to hit an open-ended straight. Using the Rule of 4 and 2, what is your approximate Equity?",
+              "cards": [],
               "options": [
-                "18%",
-                "27%",
-                "36%",
-                "45%"
+                "16%",
+                "32%",
+                "8%",
+                "24%"
               ],
-              "correctAnswer": "36%"
+              "correctAnswer": "16%"
             }
           ]
         },
@@ -286,16 +323,22 @@
               "title": "Quiz: Premium vs Speculative",
               "question": "Which of the following is considered a 'Premium' starting hand that you should raise aggressively pre-flop?",
               "cards": [
-                { "suit": "spades", "rank": "A" },
-                { "suit": "clubs", "rank": "K" }
+                {
+                  "suit": "spades",
+                  "rank": "A"
+                },
+                {
+                  "suit": "clubs",
+                  "rank": "K"
+                }
               ],
               "options": [
-                "A♠ K♣ (Ace-King offsuit)",
-                "7♥ 8♥ (7-8 suited)",
-                "2♦ 2♣ (Pocket Twos)",
-                "J♠ 10♦ (Jack-Ten offsuit)"
+                "A\u00e2\u2122\u00a0 K\u00e2\u2122\u00a3 (Ace-King offsuit)",
+                "7\u00e2\u2122\u00a5 8\u00e2\u2122\u00a5 (7-8 suited)",
+                "2\u00e2\u2122\u00a6 2\u00e2\u2122\u00a3 (Pocket Twos)",
+                "J\u00e2\u2122\u00a0 10\u00e2\u2122\u00a6 (Jack-Ten offsuit)"
               ],
-              "correctAnswer": "A♠ K♣ (Ace-King offsuit)"
+              "correctAnswer": "A\u00e2\u2122\u00a0 K\u00e2\u2122\u00a3 (Ace-King offsuit)"
             }
           ]
         },
@@ -324,8 +367,14 @@
               "title": "Quiz: Value or Bluff?",
               "question": "If you bet on the river with the absolute best possible hand (the 'nuts'), what type of bet are you making?",
               "cards": [
-                { "suit": "diamonds", "rank": "A" },
-                { "suit": "diamonds", "rank": "K" }
+                {
+                  "suit": "diamonds",
+                  "rank": "A"
+                },
+                {
+                  "suit": "diamonds",
+                  "rank": "K"
+                }
               ],
               "options": [
                 "A continuation bet",
@@ -424,6 +473,46 @@
               "content": "'Tiling' means arranging tables side-by-side so you can see all action. 'Stacking' means putting all tables on top of each other, where the table requiring action pops to the front. Start with 2-4 tiled tables before trying to stack."
             }
           ]
+        },
+        {
+          "id": "i-m8",
+          "title": "The Preflop Masterclass",
+          "lessons": [
+            {
+              "id": "l-vpip-explained",
+              "title": "VPIP (Voluntarily Put in Pot)",
+              "content": "VPIP measures how often you choose to put money in the pot preflop (calling or raising). A GTO player has a VPIP between 20% and 25%. If your VPIP is 40%, you are playing too many weak hands and will bleed chips. If it's 10%, you are a 'nit' and are missing profitable opportunities."
+            },
+            {
+              "id": "l-pfr-explained",
+              "title": "PFR (Preflop Raise) & Limping",
+              "content": "PFR measures how often you raise preflop. Limping (just calling the Big Blind) is considered a massive leak. When you enter a pot, you should almost always raise. This gives you the initiative, thins the field, and allows you to win the pot immediately if everyone folds. Your PFR should be very close to your VPIP (e.g., 22% VPIP / 18% PFR)."
+            },
+            {
+              "id": "l-the-3-bet",
+              "title": "The 3-Bet",
+              "content": "A 3-Bet is when someone raises, and you re-raise them before the flop. This puts maximum pressure on the original raiser. You should 3-bet for value with premium hands (AA, KK, AK) and as a bluff with blockers (like A5 suited) to balance your strategy."
+            },
+            {
+              "id": "l-positional-ranges",
+              "title": "Positional Ranges",
+              "content": "Your VPIP changes drastically based on your seat. Under the Gun (UTG), you act first and have no information, so you should only play the top 10% of hands. On the Button (BTN), you act last, giving you a huge advantage, so you can raise with the top 40% of hands to steal the blinds."
+            },
+            {
+              "id": "q-preflop-stats",
+              "type": "quiz",
+              "title": "Quiz: Preflop Statistics",
+              "question": "If a player has a VPIP of 45% and a PFR of 5%, how would you describe their playstyle?",
+              "cards": [],
+              "options": [
+                "Tight Aggressive (TAG)",
+                "Loose Passive (Calling Station / Fish)",
+                "Loose Aggressive (LAG)",
+                "Tight Passive (Nit)"
+              ],
+              "correctAnswer": "Loose Passive (Calling Station / Fish)"
+            }
+          ]
         }
       ]
     },
@@ -444,7 +533,7 @@
             {
               "id": "l-exploitative-play",
               "title": "Exploitative Play",
-              "content": "While GTO makes you unexploitable, maximum profit often comes from Exploitative play—deviating from GTO to take advantage of specific weaknesses in your opponents' strategies, such as over-folding or calling too much."
+              "content": "While GTO makes you unexploitable, maximum profit often comes from Exploitative play\u00e2\u20ac\u201ddeviating from GTO to take advantage of specific weaknesses in your opponents' strategies, such as over-folding or calling too much."
             }
           ]
         },
