@@ -69,6 +69,11 @@ const MultiplayerTable = ({ session }) => {
   const [winnerAnimation, setWinnerAnimation] = useState(null);
   const [animationPlayed, setAnimationPlayed] = useState(false);
 
+  const gs = room?.game_state || {};
+  const amIHost = dbPlayers.find(p => p.user_id === session.user.id)?.is_host;
+  const isPlaying = room?.status === 'playing';
+  const meName = dbPlayers.find(p => p.user_id === session.user.id)?.display_name || 'Player';
+
   useEffect(() => { preloadAudio(); }, []);
 
   useEffect(() => {
@@ -154,11 +159,6 @@ const MultiplayerTable = ({ session }) => {
       subscriptionsRef.current = false;
     };
   }, [code, navigate]);
-
-  const amIHost = dbPlayers.find(p => p.user_id === session.user.id)?.is_host;
-  const gs = room?.game_state || {};
-  const isPlaying = room?.status === 'playing';
-  const meName = dbPlayers.find(p => p.user_id === session.user.id)?.display_name || 'Player';
 
   const sendChatMessage = (e) => {
     e.preventDefault();
