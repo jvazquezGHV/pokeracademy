@@ -56,7 +56,7 @@ const HandAnalyzer = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '1000px', marginTop: '2rem' }}>
+    <div className="container" style={{ maxWidth: '1400px', marginTop: '2rem' }}>
       <button onClick={() => navigate('/')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2rem' }}>
         ← Back to Dashboard
       </button>
