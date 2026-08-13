@@ -189,6 +189,22 @@
               "content": "In No-Limit games, you can bet all your chips at any time. In Limit games, bet sizes are fixed (e.g., $2 on the flop, $4 on the turn), making it a much more mathematical and less psychological game."
             }
           ]
+        },
+        {
+          "id": "b-m7",
+          "title": "Poker Terminology & Slang",
+          "lessons": [
+            {
+              "id": "l-common-terms",
+              "title": "Common Poker Terms",
+              "content": "Poker has its own language. The 'Nuts' means the best possible hand. A 'Bad Beat' is when a heavily favored hand loses to a lucky draw. Being 'In the Money' (ITM) means you have survived long enough in a tournament to guarantee a payout."
+            },
+            {
+              "id": "l-board-textures",
+              "title": "Board Textures",
+              "content": "A 'Dry' board (like 2-7-K of different suits) has few draw possibilities. A 'Wet' board (like 8-9-10 with two hearts) is very dangerous because it offers many straight and flush draws."
+            }
+          ]
         }
       ]
     },
@@ -357,6 +373,22 @@
               "content": "In tournaments, you pay a fixed entry fee for a starting stack. Blinds constantly increase, forcing action. Survival is key, and you cannot rebuy once you lose your chips (unless it's a specific rebuy tournament)."
             }
           ]
+        },
+        {
+          "id": "i-m7",
+          "title": "Multi-tabling Basics",
+          "lessons": [
+            {
+              "id": "l-why-multitable",
+              "title": "Why Multi-table?",
+              "content": "Online poker allows you to play multiple tables at once. This increases your hourly win rate by allowing you to play more hands per hour, smoothing out variance faster. However, your edge per table decreases as your attention is divided."
+            },
+            {
+              "id": "l-tiling-vs-stacking",
+              "title": "Tiling vs Stacking",
+              "content": "'Tiling' means arranging tables side-by-side so you can see all action. 'Stacking' means putting all tables on top of each other, where the table requiring action pops to the front. Start with 2-4 tiled tables before trying to stack."
+            }
+          ]
         }
       ]
     },
@@ -442,6 +474,22 @@
               "id": "l-solvers",
               "title": "Poker Solvers (PIO/GTO+)",
               "content": "A solver is a program that calculates Game Theory Optimal (GTO) strategies for specific poker situations. Advanced players spend hundreds of hours studying solver outputs to understand complex river bluffs and range balancing."
+            }
+          ]
+        },
+        {
+          "id": "a-m6",
+          "title": "High Stakes & Metagame",
+          "lessons": [
+            {
+              "id": "l-the-metagame",
+              "title": "The Metagame",
+              "content": "The 'Metagame' refers to the game outside the game. When playing against the same regulars (regs) repeatedly, your past actions influence their future decisions. You might intentionally play a hand sub-optimally to set up a massive bluff in a future session."
+            },
+            {
+              "id": "l-table-selection",
+              "title": "Table Selection (Bumhunting)",
+              "content": "In high stakes cash games, table selection is paramount. 'Bumhunting' refers to the practice of only sitting at tables with a known recreational player (a 'fish'). If a table is entirely composed of strong professionals, the only winner is the casino collecting the rake."
             }
           ]
         }
