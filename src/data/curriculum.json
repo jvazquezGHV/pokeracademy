@@ -139,7 +139,130 @@
       "id": "intermediate",
       "title": "Intermediate: Strategy & Odds",
       "description": "Master pot odds, starting hand selection, and betting strategies.",
-      "modules": []
+      "modules": [
+        {
+          "id": "i-m1",
+          "title": "Pot Odds & Equity",
+          "lessons": [
+            {
+              "id": "l-pot-odds",
+              "title": "Understanding Pot Odds",
+              "content": "Pot odds represent the ratio between the size of the pot and the size of the bet you face. For example, if the pot is $100 and you need to call $50, your pot odds are 2-to-1. You must win at least 33% of the time to make this a profitable call."
+            },
+            {
+              "id": "l-outs-equity",
+              "title": "Outs and Equity",
+              "content": "An 'out' is a card that will improve your hand to a winning one. You can estimate your equity (chance of winning) using the Rule of 4 and 2: Multiply your outs by 4 on the flop, or by 2 on the turn, to get your approximate percentage chance of hitting your card."
+            },
+            {
+              "id": "q-pot-odds-1",
+              "type": "quiz",
+              "title": "Quiz: The Rule of 4",
+              "question": "You have a flush draw (9 outs) on the flop. Using the Rule of 4, what is your approximate chance of hitting your flush by the river?",
+              "cards": [
+                { "suit": "hearts", "rank": "2" },
+                { "suit": "hearts", "rank": "K" }
+              ],
+              "options": [
+                "18%",
+                "27%",
+                "36%",
+                "45%"
+              ],
+              "correctAnswer": "36%"
+            }
+          ]
+        },
+        {
+          "id": "i-m2",
+          "title": "Starting Hand Selection",
+          "lessons": [
+            {
+              "id": "l-premium-hands",
+              "title": "Premium Hands",
+              "content": "Premium hands include big pocket pairs (AA, KK, QQ) and strong connectors (AK). These hands should almost always be raised pre-flop to build the pot and thin the field."
+            },
+            {
+              "id": "l-speculative-hands",
+              "title": "Speculative Hands",
+              "content": "Speculative hands like suited connectors (e.g., 8-9 suited) or small pocket pairs rely on hitting a strong flop (like a straight, flush, or set). They play best in late position and multi-way pots where the implied odds are high."
+            },
+            {
+              "id": "q-starting-hands-1",
+              "type": "quiz",
+              "title": "Quiz: Premium vs Speculative",
+              "question": "Which of the following is considered a 'Premium' starting hand that you should raise aggressively pre-flop?",
+              "cards": [
+                { "suit": "spades", "rank": "A" },
+                { "suit": "clubs", "rank": "K" }
+              ],
+              "options": [
+                "A♠ K♣ (Ace-King offsuit)",
+                "7♥ 8♥ (7-8 suited)",
+                "2♦ 2♣ (Pocket Twos)",
+                "J♠ 10♦ (Jack-Ten offsuit)"
+              ],
+              "correctAnswer": "A♠ K♣ (Ace-King offsuit)"
+            }
+          ]
+        },
+        {
+          "id": "i-m3",
+          "title": "Bet Sizing & Bluffing",
+          "lessons": [
+            {
+              "id": "l-value-betting",
+              "title": "Value Betting",
+              "content": "A value bet is made when you believe you have the best hand, and you want a worse hand to call. The goal is to maximize the amount of money you extract from your opponent without betting so much that they fold."
+            },
+            {
+              "id": "l-bluffing",
+              "title": "Effective Bluffing",
+              "content": "Bluffing is betting with a weak hand to force better hands to fold. The most effective bluffs tell a believable story across multiple betting rounds and target opponents who are capable of folding."
+            },
+            {
+              "id": "q-bet-sizing-1",
+              "type": "quiz",
+              "title": "Quiz: Value or Bluff?",
+              "question": "If you bet on the river with the absolute best possible hand (the 'nuts'), what type of bet are you making?",
+              "cards": [
+                { "suit": "diamonds", "rank": "A" },
+                { "suit": "diamonds", "rank": "K" }
+              ],
+              "options": [
+                "A continuation bet",
+                "A bluff",
+                "A value bet",
+                "A probe bet"
+              ],
+              "correctAnswer": "A value bet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "Advanced: GTO & Exploitative Play",
+      "description": "Learn Game Theory Optimal (GTO) concepts and how to exploit opponent tendencies.",
+      "modules": [
+        {
+          "id": "a-m1",
+          "title": "GTO Fundamentals",
+          "lessons": [
+            {
+              "id": "l-what-is-gto",
+              "title": "What is GTO?",
+              "content": "Game Theory Optimal (GTO) poker involves playing a balanced, mathematically sound strategy that makes you unexploitable by your opponents. By balancing your value bets and bluffs perfectly, your opponents' decisions become indifferent."
+            },
+            {
+              "id": "l-exploitative-play",
+              "title": "Exploitative Play",
+              "content": "While GTO makes you unexploitable, maximum profit often comes from Exploitative play—deviating from GTO to take advantage of specific weaknesses in your opponents' strategies, such as over-folding or calling too much."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
