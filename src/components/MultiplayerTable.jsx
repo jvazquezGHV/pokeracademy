@@ -597,15 +597,19 @@ const MultiplayerTable = ({ session }) => {
             <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
               {gs.history?.split('\n').map((line, i) => {
                 if (!line) return null;
-                const names = dbPlayers.map(p => p.display_name).filter(Boolean);
+                const escapedNames = dbPlayers.map(p => p.display_name ? p.display_name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '').filter(Boolean);
                 let parts = [line];
-                if (names.length > 0) {
-                   const regex = new RegExp(`(${names.join('|')})`, 'g');
-                   parts = line.split(regex);
+                if (escapedNames.length > 0) {
+                   try {
+                     const regex = new RegExp(`(${escapedNames.join('|')})`, 'g');
+                     parts = line.split(regex);
+                   } catch(e) {
+                     console.error("Regex error:", e);
+                   }
                 }
                 return (
                   <div key={i} style={{ padding: line.startsWith('---') ? '10px 0' : '0', color: line.startsWith('---') ? 'var(--accent-color)' : 'inherit', fontWeight: line.startsWith('---') ? 'bold' : 'normal' }}>
-                    {parts.map((part, pIdx) => names.includes(part) ? <span key={pIdx} style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{part}</span> : part)}
+                    {parts.map((part, pIdx) => dbPlayers.some(p => p.display_name === part) ? <span key={pIdx} style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{part}</span> : part)}
                   </div>
                 );
               })}
