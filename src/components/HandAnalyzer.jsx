@@ -57,9 +57,18 @@ const HandAnalyzer = () => {
 
   return (
     <div className="container" style={{ maxWidth: '1400px', marginTop: '2rem' }}>
-      <button onClick={() => navigate('/')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2rem' }}>
-        ← Back to Dashboard
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
+          ← Back to Dashboard
+        </button>
+        <button 
+          className="btn-secondary" 
+          onClick={() => { setHoleCards([]); setCommunityCards([]); setResult(null); }}
+          style={{ padding: '0.5rem 1rem' }}
+        >
+          Reset Cards
+        </button>
+      </div>
 
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="text-accent">Hand Analyzer</h1>
