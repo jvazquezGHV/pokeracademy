@@ -173,6 +173,22 @@
               "content": "A 'tell' is a clue a player gives about the strength of their hand. Physical tells include shaking hands or staring at chips. In online poker, 'timing tells' (how fast someone acts) are very common. A fast call often indicates a draw or marginal hand, while a long tank followed by a big raise usually means immense strength."
             }
           ]
+        },
+        {
+          "id": "b-m6",
+          "title": "Poker Formats",
+          "lessons": [
+            {
+              "id": "l-texas-holdem",
+              "title": "Texas Hold'em vs Omaha",
+              "content": "While Texas Hold'em (2 hole cards) is the most popular variant, Pot Limit Omaha (PLO) is another major game where you receive 4 hole cards but MUST use exactly 2 of them to make your hand."
+            },
+            {
+              "id": "l-limit-vs-nolimit",
+              "title": "Limit vs. No-Limit",
+              "content": "In No-Limit games, you can bet all your chips at any time. In Limit games, bet sizes are fixed (e.g., $2 on the flop, $4 on the turn), making it a much more mathematical and less psychological game."
+            }
+          ]
         }
       ]
     },
@@ -325,6 +341,22 @@
               "correctAnswer": "$50"
             }
           ]
+        },
+        {
+          "id": "i-m6",
+          "title": "Tournaments vs. Cash Games",
+          "lessons": [
+            {
+              "id": "l-cash-games",
+              "title": "Cash Game Dynamics",
+              "content": "In cash games, chips represent real money, and you can rebuy at any time. The blinds stay the same, allowing you to patiently wait for good hands. The goal is long-term profit."
+            },
+            {
+              "id": "l-tournaments",
+              "title": "Tournament Dynamics",
+              "content": "In tournaments, you pay a fixed entry fee for a starting stack. Blinds constantly increase, forcing action. Survival is key, and you cannot rebuy once you lose your chips (unless it's a specific rebuy tournament)."
+            }
+          ]
         }
       ]
     },
@@ -394,6 +426,22 @@
               "id": "l-blockers",
               "title": "Using Blockers",
               "content": "A 'blocker' is a card in your hand that makes it impossible (or less likely) for your opponent to have a specific hand. For example, if you hold the Ace of Spades, you 'block' your opponent from having the nut flush in spades. Blockers are heavily used in advanced bluffing and calling strategies."
+            }
+          ]
+        },
+        {
+          "id": "a-m5",
+          "title": "Study Tools & Software",
+          "lessons": [
+            {
+              "id": "l-hud-tracking",
+              "title": "HUDs and Tracking Software",
+              "content": "Heads-Up Displays (HUDs) overlay statistics on your opponents in real-time (like VPIP and PFR). Tracking software databases your hands, allowing you to review your play and plug leaks in your strategy."
+            },
+            {
+              "id": "l-solvers",
+              "title": "Poker Solvers (PIO/GTO+)",
+              "content": "A solver is a program that calculates Game Theory Optimal (GTO) strategies for specific poker situations. Advanced players spend hundreds of hours studying solver outputs to understand complex river bluffs and range balancing."
             }
           ]
         }
