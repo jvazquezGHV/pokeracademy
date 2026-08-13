@@ -10,6 +10,8 @@ import MultiplayerLobby from './components/MultiplayerLobby';
 import MultiplayerTable from './components/MultiplayerTable';
 import ChallengeTable from './components/ChallengeTable';
 import RangeChart from './components/RangeChart';
+import HandHistoryLog from './components/HandHistoryLog';
+import HandReplayer from './components/HandReplayer';
 import Auth from './components/Auth';
 import './index.css';
 
@@ -118,6 +120,22 @@ function App() {
           element={
             <ProtectedRoute session={session}>
               <RangeChart />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/history" 
+          element={
+            <ProtectedRoute session={session}>
+              <HandHistoryLog />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/replayer/:id" 
+          element={
+            <ProtectedRoute session={session}>
+              <HandReplayer />
             </ProtectedRoute>
           } 
         />

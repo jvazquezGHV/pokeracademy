@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Card from './Card';
 import { createDeck, calculateOdds, toSolverFormat } from '../utils/pokerLogic';
 import { getAIFeedback } from '../api/getAIFeedback';
+import { supabase } from '../lib/supabaseClient';
 import { Hand } from 'pokersolver';
 
 const GameEngine = () => {
@@ -261,6 +262,22 @@ const GameEngine = () => {
     Hero (Player) Hole Cards: ${heroHandStr}
     Villain (Computer) Hole Cards: ${villainHandStr}
     Community Board Cards: ${boardStr || "None"}`;
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const won = finalResultMsg.includes("You win");
+        await supabase.from('hand_histories').insert([{
+          user_id: session.user.id,
+          game_mode: 'AI Sandbox',
+          history_json: { historyStr: finalHistory, heroCards, villainCards, board },
+          won: won,
+          profit_loss: 0
+        }]);
+      }
+    } catch (error) {
+      console.error("Error saving hand history:", error);
+    }
     
     const feedback = await getAIFeedback(finalHistory);
     setAiFeedback(feedback);

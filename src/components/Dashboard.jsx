@@ -141,6 +141,11 @@ const Dashboard = ({ session }) => {
               <span className="nav-icon">📊</span>
               <span>Range Charts</span>
             </div>
+
+            <div className="nav-item" onClick={() => navigate('/history')}>
+              <span className="nav-icon">📖</span>
+              <span>Hand History Log</span>
+            </div>
             
             <div className="nav-item" onClick={() => navigate('/sandbox')}>
               <span className="nav-icon">🤖</span>
