@@ -286,3 +286,28 @@ p {
   .seat-4 { top: 20px; right: -40px; }
   .seat-5 { bottom: 40px; right: -40px; }
 }
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .poker-table-container {
+    height: 250px;
+    border-width: 4px;
+    margin: 2.5rem 0;
+  }
+  .board-container {
+    transform: scale(0.35);
+  }
+  .seat-0 { transform: translateX(-50%) scale(0.6); bottom: -30px; }
+  .seat-1 { transform: scale(0.6); transform-origin: left bottom; left: -10px; bottom: -10px; }
+  .seat-2 { transform: scale(0.6); transform-origin: left top; left: -10px; top: -20px; }
+  .seat-3 { transform: translateX(-50%) scale(0.6); top: -40px; }
+  .seat-4 { transform: scale(0.6); transform-origin: right top; right: -10px; top: -20px; }
+  .seat-5 { transform: scale(0.6); transform-origin: right bottom; right: -10px; bottom: -10px; }
+  
+  .action-buttons-container {
+    transform: scale(0.7);
+    transform-origin: bottom right;
+    right: 0px;
+    bottom: -30px;
+  }
+}
+
