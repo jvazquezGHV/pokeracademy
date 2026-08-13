@@ -336,3 +336,33 @@ p {
   }
 }
 
+
+.sandbox-container {
+  display: flex;
+  gap: 1.5rem;
+  min-height: calc(100vh - 80px);
+}
+
+@media screen and (max-width: 768px) {
+  .sandbox-container {
+    flex-direction: column;
+  }
+  
+  .sandbox-col-left, .sandbox-col-right {
+    flex: none !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+  
+  .sandbox-table {
+    border-radius: 100px !important;
+    border-width: 8px !important;
+    padding: 1rem !important;
+    min-height: 400px;
+  }
+  
+  .analyzer-col {
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}

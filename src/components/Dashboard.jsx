@@ -24,6 +24,7 @@ const lessonIndexMap = buildGlobalLessonMap();
 const Dashboard = ({ session }) => {
   const navigate = useNavigate();
   const [completedLessons, setCompletedLessons] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Default to Beginner track as requested by user
   const [activeSection, setActiveSection] = useState('track-beginner'); 
@@ -122,10 +123,34 @@ const Dashboard = ({ session }) => {
 
   return (
     <div className="dashboard-layout">
-      {/* Left Sidebar */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-header">
+      {/* Mobile Topbar (Only visible on mobile via CSS) */}
+      <div className="mobile-topbar" style={{ display: window.innerWidth > 768 ? 'none' : 'flex' }}>
+        <h1 className="sidebar-title" style={{ fontSize: '1.2rem' }}>Poker Academy</h1>
+        <button 
+          className="hamburger-btn" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Overlay for mobile sidebar */}
+      {isMobileMenuOpen && window.innerWidth <= 768 && (
+        <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
+      )}
+
+      {/* Sidebar */}
+      <aside className={`dashboard-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 className="sidebar-title">Poker Academy</h1>
+          {window.innerWidth <= 768 && (
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              ✕
+            </button>
+          )}
         </div>
         
         <nav className="sidebar-nav">
@@ -179,7 +204,10 @@ const Dashboard = ({ session }) => {
             
             <div 
               className={`nav-item ${activeSection === 'challenges' ? 'active' : ''}`} 
-              onClick={() => setActiveSection('challenges')}
+              onClick={() => {
+                 setActiveSection('challenges');
+                 setIsMobileMenuOpen(false);
+              }}
             >
               <span className="nav-icon">⚔️</span>
               <span>Boss Challenges</span>
@@ -193,7 +221,10 @@ const Dashboard = ({ session }) => {
               <div 
                 key={track.id}
                 className={`nav-item ${activeSection === 'track-' + track.id ? 'active' : ''}`}
-                onClick={() => setActiveSection('track-' + track.id)}
+                onClick={() => {
+                   setActiveSection('track-' + track.id);
+                   setIsMobileMenuOpen(false);
+                }}
               >
                 <span className="nav-icon">📚</span>
                 <span>{track.title.split(':')[0]}</span>

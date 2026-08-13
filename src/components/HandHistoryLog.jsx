@@ -58,7 +58,7 @@ const HandHistoryLog = () => {
           <button className="btn-primary" onClick={() => navigate('/sandbox')} style={{ marginTop: '1.5rem' }}>Go to Sandbox</button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', overflowX: 'auto' }}>
           {histories.map((hand) => {
             const date = new Date(hand.created_at).toLocaleString();
             return (

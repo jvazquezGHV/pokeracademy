@@ -100,7 +100,7 @@ const HandAnalyzer = () => {
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginBottom: '3rem', justifyContent: 'center' }}>
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '1', minWidth: '250px' }}>
+        <div className="analyzer-col" style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '1', minWidth: '250px' }}>
           <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Your Cards (2)</h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', minHeight: '140px' }}>
             {holeCards.map((c, i) => <Card key={i} suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} onClick={() => handleCardClick(c.rank, c.suit)} />)}
@@ -110,7 +110,7 @@ const HandAnalyzer = () => {
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '1', minWidth: '250px' }}>
+        <div className="analyzer-col" style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '1', minWidth: '250px' }}>
           <h3 style={{ marginBottom: '1rem', color: 'var(--danger-color)' }}>Opponent (2)</h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', minHeight: '140px' }}>
             {villainCards.map((c, i) => <Card key={i} suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} onClick={() => handleCardClick(c.rank, c.suit)} />)}
@@ -120,7 +120,7 @@ const HandAnalyzer = () => {
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '2', minWidth: '400px' }}>
+        <div className="analyzer-col" style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', textAlign: 'center', flex: '2', minWidth: '400px' }}>
           <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Community Cards</h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', minHeight: '140px' }}>
             {communityCards.map((c, i) => <Card key={i} suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} onClick={() => handleCardClick(c.rank, c.suit)} />)}

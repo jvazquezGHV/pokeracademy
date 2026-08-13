@@ -289,10 +289,10 @@ const GameEngine = () => {
   const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
 
   return (
-    <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem', display: 'flex', gap: '1.5rem', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+    <div className="container sandbox-container" style={{ maxWidth: '1400px', marginTop: '1rem' }}>
       
       {/* LEFT COL: Action Log */}
-      <div style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+      <div className="sandbox-col-left" style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
         <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
         <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
           {history.split('\n').map((line, i) => (
@@ -303,12 +303,12 @@ const GameEngine = () => {
       </div>
 
       {/* CENTER COL: Game Table */}
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div className="sandbox-col-center" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <button onClick={() => navigate('/')} style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
           ← Exit Sandbox
         </button>
 
-        <div style={{ 
+        <div className="sandbox-table" style={{ 
           width: '100%', maxWidth: '900px', flex: 1, minHeight: 0,
           background: 'radial-gradient(circle at center, #166534 0%, #064e3b 100%)', 
           borderRadius: '250px', 
@@ -421,7 +421,7 @@ const GameEngine = () => {
       </div>
 
       {/* RIGHT COL: AI Coach */}
-      <div style={{ flex: '0 0 350px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+      <div className="sandbox-col-right" style={{ flex: '0 0 350px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
         <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
           🤖 AI Coach
         </h3>
