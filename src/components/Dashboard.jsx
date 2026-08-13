@@ -152,6 +152,11 @@ const Dashboard = ({ session }) => {
               <span>Pot Odds Drill</span>
             </div>
 
+            <div className="nav-item" onClick={() => navigate('/trainer/postflop')}>
+              <span className="nav-icon">🧩</span>
+              <span>Post-Flop Simulator</span>
+            </div>
+
             <div className="nav-item" onClick={() => navigate('/analytics')}>
               <span className="nav-icon">📈</span>
               <span>Leak Tracker</span>
