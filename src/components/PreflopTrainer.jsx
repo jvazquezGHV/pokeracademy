@@ -22,10 +22,15 @@ const getHandString = (c1, c2) => {
   return `${high}${low}o`;
 };
 
+const PREMIUM_HANDS = ['AA','KK','QQ','JJ','TT','AKs','AQs','AKo','AQo'];
+const TRASH_HANDS = ['72o','83o','94o','J3o','Q4o','T2o','62o','52o','92o','82o','73o','84o','93o'];
+const BORDERLINE_HANDS = ['A5s','A4s','A3s','A2s','T9s','98s','87s','76s','65s','54s','K9s','Q9s','J9s','T8s','97s','22','33','44','55','AJo','ATo','KQo','KJo'];
+
 const PreflopTrainer = () => {
   const navigate = useNavigate();
   
   const [timerConfig, setTimerConfig] = useState(0); // 0 = off
+  const [trainingFocus, setTrainingFocus] = useState('beginner'); // beginner, intermediate, advanced
   const [timeLeft, setTimeLeft] = useState(null);
   
   const [currentCards, setCurrentCards] = useState([]);
@@ -40,8 +45,26 @@ const PreflopTrainer = () => {
   const dealNextHand = useCallback(() => {
     setFeedback(null);
     setFeedbackMessage('');
-    const deck = createDeck();
-    setCurrentCards([deck.pop(), deck.pop()]);
+    
+    let c1, c2;
+    
+    if (trainingFocus === 'beginner' || trainingFocus === 'intermediate') {
+      const isGoodHand = Math.random() > 0.5;
+      const targetPool = trainingFocus === 'beginner' 
+        ? (isGoodHand ? PREMIUM_HANDS : TRASH_HANDS)
+        : (isGoodHand ? BORDERLINE_HANDS : TRASH_HANDS);
+        
+      while(true) {
+         const deck = createDeck();
+         c1 = deck.pop(); c2 = deck.pop();
+         if (targetPool.includes(getHandString(c1, c2))) break;
+      }
+    } else {
+      const deck = createDeck();
+      c1 = deck.pop(); c2 = deck.pop();
+    }
+    
+    setCurrentCards([c1, c2]);
     
     // Pick random position from rangeData
     const randomPosIndex = Math.floor(Math.random() * rangeData.positions.length);
@@ -129,18 +152,33 @@ const PreflopTrainer = () => {
         <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
           <h2 style={{ marginBottom: '1rem' }}>Trainer Settings</h2>
           
-          <div style={{ marginBottom: '2rem', textAlign: 'left', maxWidth: '300px', margin: '0 auto 2rem auto' }}>
-            <label style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', display: 'block' }}>Timer (Simulate Pressure)</label>
-            <select 
-              value={timerConfig}
-              onChange={(e) => setTimerConfig(Number(e.target.value))}
-              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
-            >
-              <option value={0}>Off (No Pressure)</option>
-              <option value={3}>3 Seconds (Hardcore)</option>
-              <option value={5}>5 Seconds (Standard)</option>
-              <option value={10}>10 Seconds (Beginner)</option>
-            </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px', margin: '0 auto 2rem auto', textAlign: 'left' }}>
+            <div>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', display: 'block' }}>Difficulty Level</label>
+              <select 
+                value={trainingFocus}
+                onChange={(e) => setTrainingFocus(e.target.value)}
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+              >
+                <option value="beginner">Beginner (Premium Hands vs Obvious Trash)</option>
+                <option value="intermediate">Intermediate (Borderline Hands vs Trash)</option>
+                <option value="advanced">Advanced (True Random, Any 2 Cards)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', display: 'block' }}>Timer (Simulate Pressure)</label>
+              <select 
+                value={timerConfig}
+                onChange={(e) => setTimerConfig(Number(e.target.value))}
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+              >
+                <option value={0}>Off (No Pressure)</option>
+                <option value={3}>3 Seconds (Hardcore)</option>
+                <option value={5}>5 Seconds (Standard)</option>
+                <option value={10}>10 Seconds (Beginner)</option>
+              </select>
+            </div>
           </div>
 
           <button className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.2rem' }} onClick={() => setIsPlaying(true)}>
