@@ -137,6 +137,11 @@ const Dashboard = ({ session }) => {
               <span>Hand Analyzer</span>
             </div>
             
+            <div className="nav-item" onClick={() => navigate('/ranges')}>
+              <span className="nav-icon">📊</span>
+              <span>Range Charts</span>
+            </div>
+            
             <div className="nav-item" onClick={() => navigate('/sandbox')}>
               <span className="nav-icon">🤖</span>
               <span>AI Sandbox</span>

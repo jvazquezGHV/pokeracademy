@@ -1,0 +1,34 @@
+{
+  "positions": [
+    {
+      "id": "utg",
+      "name": "Under The Gun (UTG)",
+      "description": "The first player to act pre-flop. You must play very tight from this position.",
+      "raise": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "AKs", "AQs", "AJs", "ATs", "A9s", "KQs", "KJs", "KTs", "QJs", "QTs", "JTs", "T9s", "98s", "87s", "76s", "65s", "AKo", "AQo", "AJo"]
+    },
+    {
+      "id": "mp",
+      "name": "Middle Position (MP)",
+      "description": "Acting after UTG but before the cutoff. You can open slightly wider.",
+      "raise": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "QJs", "QTs", "Q9s", "JTs", "J9s", "T9s", "98s", "87s", "76s", "65s", "54s", "AKo", "AQo", "AJo", "ATo", "KQo", "KJo"]
+    },
+    {
+      "id": "co",
+      "name": "Cutoff (CO)",
+      "description": "One seat to the right of the Button. An excellent position to steal the blinds.",
+      "raise": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "QJs", "QTs", "Q9s", "Q8s", "JTs", "J9s", "J8s", "T9s", "T8s", "98s", "97s", "87s", "86s", "76s", "75s", "65s", "54s", "AKo", "AQo", "AJo", "ATo", "A9o", "A8o", "KQo", "KJo", "KTo", "QJo", "QTo", "JTo"]
+    },
+    {
+      "id": "btn",
+      "name": "The Button (BTN)",
+      "description": "The best position at the table. You should open raise very aggressively here.",
+      "raise": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s", "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s", "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "T9s", "T8s", "T7s", "T6s", "98s", "97s", "96s", "87s", "86s", "85s", "76s", "75s", "74s", "65s", "64s", "54s", "53s", "43s", "AKo", "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o", "KQo", "KJo", "KTo", "K9o", "K8o", "QJo", "QTo", "Q9o", "Q8o", "JTo", "J9o", "J8o", "T9o", "T8o", "98o"]
+    },
+    {
+      "id": "sb",
+      "name": "Small Blind (SB)",
+      "description": "When it folds to you in the SB, you only have one opponent left (the BB), but you will be out of position post-flop.",
+      "raise": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s", "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "JTs", "J9s", "J8s", "J7s", "T9s", "T8s", "T7s", "98s", "97s", "87s", "86s", "76s", "65s", "54s", "AKo", "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "KQo", "KJo", "KTo", "K9o", "QJo", "QTo", "Q9o", "JTo", "J9o", "T9o"]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import GameEngine from './components/GameEngine';
 import MultiplayerLobby from './components/MultiplayerLobby';
 import MultiplayerTable from './components/MultiplayerTable';
 import ChallengeTable from './components/ChallengeTable';
+import RangeChart from './components/RangeChart';
 import Auth from './components/Auth';
 import './index.css';
 
@@ -109,6 +110,14 @@ function App() {
           element={
             <ProtectedRoute session={session}>
               <MultiplayerLobby session={session} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/ranges" 
+          element={
+            <ProtectedRoute session={session}>
+              <RangeChart />
             </ProtectedRoute>
           } 
         />
