@@ -49,7 +49,13 @@ const MultiplayerTable = ({ session }) => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  const subscriptionsRef = useRef(false);
+
   useEffect(() => {
+    let roomSub = null;
+    let playersSub = null;
+    let chatSub = null;
+
     const fetchRoom = async () => {
       try {
         const { data: roomData, error: roomError } = await supabase.from('poker_rooms').select('*').eq('code', code).single();
@@ -59,6 +65,28 @@ const MultiplayerTable = ({ session }) => {
         const { data: playersData, error: playersError } = await supabase.from('poker_players').select('*').eq('room_id', roomData.id).order('seat_index', { ascending: true });
         if (playersError) throw playersError;
         setDbPlayers(playersData);
+
+        if (!subscriptionsRef.current) {
+          subscriptionsRef.current = true;
+
+          roomSub = supabase.channel(`room_${roomData.id}`)
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'poker_rooms', filter: `id=eq.${roomData.id}` }, (payload) => {
+              setRoom(prev => ({ ...prev, ...payload.new }));
+            })
+            .subscribe();
+
+          playersSub = supabase.channel(`players_${roomData.id}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'poker_players', filter: `room_id=eq.${roomData.id}` }, () => {
+              fetchRoom();
+            })
+            .subscribe();
+
+          chatSub = supabase.channel(`chat_${code}`)
+            .on('broadcast', { event: 'chat' }, (payload) => {
+              setChatMessages((prev) => [...prev, payload.payload]);
+            })
+            .subscribe();
+        }
       } catch (err) {
         console.error(err);
         navigate('/multiplayer');
@@ -68,26 +96,11 @@ const MultiplayerTable = ({ session }) => {
     };
     fetchRoom();
 
-    const roomSub = supabase.channel(`public:poker_rooms:code=${code}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'poker_rooms', filter: `code=eq.${code}` }, (payload) => {
-        setRoom(payload.new);
-      })
-      .subscribe();
-
-    const playersSub = supabase.channel(`public:poker_players`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'poker_players' }, () => fetchRoom())
-      .subscribe();
-
-    const chatSub = supabase.channel(`public:poker_chat:${code}`)
-      .on('broadcast', { event: 'chat' }, (payload) => {
-        setChatMessages((prev) => [...prev, payload.payload]);
-      })
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(roomSub);
-      supabase.removeChannel(playersSub);
-      supabase.removeChannel(chatSub);
+      if (roomSub) supabase.removeChannel(roomSub);
+      if (playersSub) supabase.removeChannel(playersSub);
+      if (chatSub) supabase.removeChannel(chatSub);
+      subscriptionsRef.current = false;
     };
   }, [code, navigate]);
 
