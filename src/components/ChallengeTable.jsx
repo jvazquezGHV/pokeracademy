@@ -1,0 +1,522 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '../lib/supabaseClient';
+import Card from './Card';
+import { createDeck, calculateOdds, toSolverFormat } from '../utils/pokerLogic';
+import { gradeChallengeHand } from '../api/gradeChallengeHand';
+import challenges from '../data/challenges.json';
+import { Hand } from 'pokersolver';
+
+const ChallengeTable = ({ session }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  const challenge = challenges.find(c => c.id === id);
+  
+  // Game State
+  const [deck, setDeck] = useState([]);
+  const [heroCards, setHeroCards] = useState([]);
+  const [villainCards, setVillainCards] = useState([]);
+  const [board, setBoard] = useState([]);
+  
+  const [phase, setPhase] = useState('preflop'); 
+  const [pot, setPot] = useState(0);
+  const [heroStack, setHeroStack] = useState(1000);
+  const [villainStack, setVillainStack] = useState(1000);
+  
+  const [heroBet, setHeroBet] = useState(0);
+  const [villainBet, setVillainBet] = useState(0);
+  const [turn, setTurn] = useState('hero');
+  
+  const [winPct, setWinPct] = useState(0);
+  const [history, setHistory] = useState("");
+  
+  // Challenge State
+  const [stars, setStars] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [lastFeedback, setLastFeedback] = useState(null);
+  const [challengeWon, setChallengeWon] = useState(false);
+  const [challengeFailed, setChallengeFailed] = useState(false);
+  
+  // UI Locks & States
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showRaiseOptions, setShowRaiseOptions] = useState(false);
+  
+  const logEndRef = useRef(null);
+
+  // Synchronization Ref
+  const stateRef = useRef({ deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn });
+  useEffect(() => {
+    stateRef.current = { deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn };
+  }, [deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn]);
+
+  // Auto-scroll action log
+  useEffect(() => {
+    if (logEndRef.current) logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [history]);
+
+  useEffect(() => {
+    if (!challenge) {
+      navigate('/');
+      return;
+    }
+    startHand();
+    // eslint-disable-next-line
+  }, [challenge]);
+
+  const startHand = () => {
+    if (heroStack <= 0) {
+      setChallengeFailed(true);
+      return;
+    }
+    setShowRaiseOptions(false);
+    setIsProcessing(true);
+    const newDeck = createDeck();
+    setHeroCards([newDeck.pop(), newDeck.pop()]);
+    setVillainCards([newDeck.pop(), newDeck.pop()]);
+    setDeck(newDeck);
+    setBoard([]);
+    setPhase('preflop');
+    
+    // Post blinds (Hero SB=10, Villain BB=20)
+    let postedHero = Math.min(heroStack, 10);
+    let postedVillain = Math.min(villainStack, 20);
+    
+    setHeroStack(prev => prev - postedHero);
+    setVillainStack(prev => prev - postedVillain);
+    setHeroBet(postedHero);
+    setVillainBet(postedVillain);
+    setPot(postedHero + postedVillain);
+    setTurn('hero');
+    setLastFeedback(null);
+    setHistory("--- NEW HAND ---\nBlinds posted.\n");
+    setIsProcessing(false);
+  };
+
+  useEffect(() => {
+    if (heroCards.length === 2 && phase !== 'showdown') {
+      calculateOdds(heroCards, villainCards, board).then(pct => setWinPct(pct));
+    }
+  }, [heroCards, villainCards, board, phase]);
+
+  const addToHistory = (msg) => setHistory(prev => prev + msg);
+
+  // --- STATE MACHINE LOGIC --- //
+  
+  const nextPhase = (currentDeck) => {
+    const { phase: currentPhase } = stateRef.current;
+    setHeroBet(0);
+    setVillainBet(0);
+    setTurn('villain'); 
+    
+    if (currentPhase === 'preflop') {
+      const b1 = currentDeck.pop();
+      const b2 = currentDeck.pop();
+      const b3 = currentDeck.pop();
+      setDeck([...currentDeck]);
+      setBoard([b1, b2, b3]);
+      setPhase('flop');
+      addToHistory("\n--- FLOP ---\n");
+      villainAction();
+    } else if (currentPhase === 'flop') {
+      const b1 = currentDeck.pop();
+      setDeck([...currentDeck]);
+      setBoard(prev => [...prev, b1]);
+      setPhase('turn');
+      addToHistory("\n--- TURN ---\n");
+      villainAction();
+    } else if (currentPhase === 'turn') {
+      const b1 = currentDeck.pop();
+      setDeck([...currentDeck]);
+      setBoard(prev => [...prev, b1]);
+      setPhase('river');
+      addToHistory("\n--- RIVER ---\n");
+      villainAction();
+    } else if (currentPhase === 'river') {
+      setPhase('showdown');
+      
+      const { heroCards: hc, villainCards: vc, board: currentBoard } = stateRef.current;
+      const heroSolver = hc.map(toSolverFormat);
+      const villainSolver = vc.map(toSolverFormat);
+      const boardSolver = currentBoard.map(toSolverFormat);
+      
+      const heroHandObj = Hand.solve([...heroSolver, ...boardSolver]);
+      const villainHandObj = Hand.solve([...villainSolver, ...boardSolver]);
+      const winners = Hand.winners([heroHandObj, villainHandObj]);
+      
+      let resultMsg = "";
+      setPot(finalPot => {
+         if (winners.length === 2) {
+            resultMsg = `Split Pot! Both have ${heroHandObj.name}.`;
+            setHeroStack(s => s + (finalPot / 2));
+            setVillainStack(s => s + (finalPot / 2));
+         } else if (winners[0] === heroHandObj) {
+            resultMsg = `You win $${finalPot} with ${heroHandObj.name}!`;
+            setHeroStack(s => s + finalPot);
+         } else {
+            resultMsg = `Computer wins $${finalPot} with ${villainHandObj.name}.`;
+            setVillainStack(s => s + finalPot);
+         }
+         addToHistory(`\n--- SHOWDOWN ---\n${resultMsg}\n`);
+         analyzeChallengeHand(resultMsg);
+         return 0;
+      });
+    }
+  };
+
+  const villainAction = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      const { pot: currentPot, heroBet: hb, villainBet: vb, phase: currentPhase, villainStack: vs, deck: currentDeck } = stateRef.current;
+      const toCall = hb - vb;
+      
+      let action = 'fold';
+      let amount = 0;
+      
+      if (toCall > 0) {
+         if (Math.random() < 0.15) { 
+            action = 'fold';
+         } else if (Math.random() < 0.35 && vs > toCall + (currentPot * 0.5)) {
+            action = 'raise';
+            amount = toCall + Math.floor(currentPot * 0.5);
+         } else {
+            action = 'call';
+         }
+      } else {
+         if (Math.random() < 0.35) {
+            action = 'bet';
+            amount = Math.floor(currentPot * 0.5);
+         } else {
+            action = 'check';
+         }
+      }
+      
+      if (action === 'fold') {
+         addToHistory("Computer Folds.\n");
+         endHand("You win!");
+      } else if (action === 'raise' || action === 'bet') {
+         addToHistory(`Computer ${action === 'raise' ? 'Raises to' : 'Bets'} ${vb + amount}.\n`);
+         setVillainStack(prev => prev - amount);
+         setVillainBet(prev => prev + amount);
+         setPot(prev => prev + amount);
+         setTurn('hero');
+         setIsProcessing(false);
+      } else if (action === 'call') {
+         addToHistory(`Computer Calls ${toCall}.\n`);
+         setVillainStack(prev => prev - toCall);
+         setVillainBet(prev => prev + toCall);
+         setPot(prev => prev + toCall);
+         nextPhase(currentDeck);
+      } else if (action === 'check') {
+         addToHistory("Computer Checks.\n");
+         if (currentPhase === 'preflop') {
+            nextPhase(currentDeck);
+         } else {
+            setTurn('hero');
+            setIsProcessing(false);
+         }
+      }
+    }, 1500);
+  };
+
+  const handleHeroAction = (action, raiseAmount = 0) => {
+    if (turn !== 'hero' || isProcessing) return;
+    setIsProcessing(true);
+    setShowRaiseOptions(false);
+    
+    const { heroBet: hb, villainBet: vb, deck: currentDeck, phase: currentPhase } = stateRef.current;
+    const toCall = vb - hb;
+    
+    if (action === 'fold') {
+      addToHistory("You Fold.\n");
+      endHand("Computer wins.");
+    } else if (action === 'call') {
+      if (toCall === 0) {
+        addToHistory("You Check.\n");
+        nextPhase(currentDeck); 
+      } else {
+        addToHistory(`You Call ${toCall}.\n`);
+        setHeroStack(prev => prev - toCall);
+        setHeroBet(prev => prev + toCall);
+        setPot(prev => prev + toCall);
+        
+        if (currentPhase === 'preflop' && hb === 10 && vb === 20) {
+           setTurn('villain');
+           villainAction();
+        } else {
+           nextPhase(currentDeck);
+        }
+      }
+    } else if (action === 'raise') {
+      const totalCostToHero = toCall + raiseAmount;
+      addToHistory(`You Raise to ${vb + raiseAmount}.\n`);
+      setHeroStack(prev => prev - totalCostToHero);
+      setHeroBet(prev => prev + totalCostToHero);
+      setPot(prev => prev + totalCostToHero);
+      setTurn('villain');
+      villainAction();
+    }
+  };
+
+  const endHand = (resultMsg) => {
+    setPhase('showdown');
+    addToHistory(resultMsg + "\n");
+    setIsProcessing(true);
+    analyzeChallengeHand();
+  };
+
+  const analyzeChallengeHand = async (finalResultMsg = "") => {
+    setIsAnalyzing(true);
+    let finalHistory = history + finalResultMsg + "\n";
+    if (phase === 'river') finalHistory += "Went to showdown.\n";
+    
+    const heroHandStr = heroCards.map(c => `${c.rank} of ${c.suit}`).join(", ");
+    const villainHandStr = villainCards.map(c => `${c.rank} of ${c.suit}`).join(", ");
+    const boardStr = board.map(c => `${c.rank} of ${c.suit}`).join(", ");
+    
+    finalHistory += `\n\n--- CARDS AT END OF HAND ---
+    Hero (Player) Hole Cards: ${heroHandStr}
+    Villain (Computer) Hole Cards: ${villainHandStr}
+    Community Board Cards: ${boardStr || "None"}`;
+    
+    const result = await gradeChallengeHand(finalHistory, challenge.rubric);
+    setLastFeedback(result);
+    
+    if (result.passed) {
+      setStars(prev => {
+        const newStars = prev + 1;
+        if (newStars >= 3) {
+          handleChallengeWin();
+        }
+        return newStars;
+      });
+    }
+    
+    setIsAnalyzing(false);
+  };
+
+  const handleChallengeWin = async () => {
+    setChallengeWon(true);
+    if (session?.user) {
+      const { data: currentData } = await supabase
+        .from('user_progress')
+        .select('completed_lessons')
+        .eq('user_id', session.user.id)
+        .single();
+      
+      const currentLessons = currentData?.completed_lessons || [];
+      if (!currentLessons.includes(challenge.id)) {
+        await supabase
+          .from('user_progress')
+          .update({ completed_lessons: [...currentLessons, challenge.id] })
+          .eq('user_id', session.user.id);
+      }
+    }
+  };
+
+  const toCallUI = villainBet - heroBet;
+  const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
+
+  if (!challenge) return null;
+
+  return (
+    <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem', display: 'flex', gap: '1.5rem', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      
+      {/* LEFT COL: Action Log */}
+      <div style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
+        <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
+          {history.split('\n').map((line, i) => (
+            line && <div key={i} style={{ padding: line.startsWith('---') ? '10px 0' : '0', color: line.startsWith('---') ? 'var(--accent-color)' : 'inherit', fontWeight: line.startsWith('---') ? 'bold' : 'normal' }}>{line}</div>
+          ))}
+          <div ref={logEndRef} />
+        </div>
+      </div>
+
+      {/* CENTER COL: Game Table */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <button onClick={() => navigate('/')} style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          ← Exit Challenge
+        </button>
+
+        <div style={{ 
+          width: '100%', maxWidth: '900px', flex: 1, minHeight: 0,
+          background: 'radial-gradient(circle at center, #166534 0%, #064e3b 100%)', 
+          borderRadius: '250px', 
+          border: '15px solid #291a10', 
+          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5)', 
+          position: 'relative', 
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between', 
+          padding: '1.5rem 2rem' 
+        }}>
+          
+          {/* Top / Villain */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+             <div style={{ width: '100px', height: '20px', background: 'linear-gradient(to right, #666, #aaa, #666)', borderRadius: '10px', marginBottom: '1rem', boxShadow: '0 5px 15px rgba(0,0,0,0.5)', border: '1px solid #444' }}></div>
+             
+             <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
+               {villainCards.map((c, i) => (
+                 <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
+                   <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
+                 </div>
+               ))}
+             </div>
+             
+             <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1.5rem', borderRadius: '1.5rem', marginTop: '-1.5rem', zIndex: 2, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1rem' }}>AI Opponent</p>
+                <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
+                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${villainStack}</p>
+                {villainBet > 0 && <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Bet: ${villainBet}</span>}
+             </div>
+             {turn === 'villain' && phase !== 'showdown' && (
+                <div style={{ position: 'absolute', top: '18%', color: 'var(--accent-color)', fontWeight: 'bold', animation: 'pulse 1.5s infinite', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem' }}>Thinking...</div>
+             )}
+          </div>
+
+          {/* Center / Board Area */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+             <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1.5rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+                <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
+                <h2 style={{ margin: 0, color: '#eab308', fontSize: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${pot}</h2>
+             </div>
+             <div style={{ display: 'flex', gap: '8px', height: '119px' }}>
+                {board.map((c, i) => (
+                  <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
+                     <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                  </div>
+                ))}
+                {[...Array(5 - board.length)].map((_, i) => (
+                   <div key={`empty-${i}`} style={{ width: '85px', height: '119px', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                ))}
+             </div>
+          </div>
+
+          {/* Bottom / Hero Area */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+             
+             {phase !== 'showdown' && (
+               <div style={{ position: 'absolute', left: '5%', bottom: '20%', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem 1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+                 <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase' }}>Win Prob</p>
+                 <h2 style={{ margin: '5px 0 0 0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1.8rem' }}>{winPct}%</h2>
+               </div>
+             )}
+
+             <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1.5rem', borderRadius: '1.5rem', marginBottom: '-1.5rem', zIndex: 2, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1rem' }}>You</p>
+                <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
+                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${heroStack}</p>
+                {heroBet > 0 && <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Bet: ${heroBet}</span>}
+             </div>
+
+             <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
+               {heroCards.map((c, i) => (
+                 <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'bottom center' }}>
+                   <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                 </div>
+               ))}
+             </div>
+             
+             <div style={{ position: 'absolute', right: '5%', bottom: '0', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '120px' }}>
+                {phase !== 'showdown' ? (
+                  <>
+                    {showRaiseOptions ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <button className="btn-primary" onClick={() => handleHeroAction('raise', 20)} disabled={!isHeroTurn}>Min</button>
+                        <button className="btn-primary" onClick={() => handleHeroAction('raise', Math.floor(pot * 0.5))} disabled={!isHeroTurn}>1/2 Pot</button>
+                        <button className="btn-primary" onClick={() => handleHeroAction('raise', pot)} disabled={!isHeroTurn}>Pot</button>
+                        <button className="btn-primary" onClick={() => handleHeroAction('raise', heroStack)} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--danger-color)' }}>All-In</button>
+                        <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <button className="btn-primary" onClick={() => handleHeroAction('fold')} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--danger-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>Fold</button>
+                        <button className="btn-primary" onClick={() => handleHeroAction('call')} disabled={!isHeroTurn} style={{ opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
+                          {toCallUI > 0 ? `Call ${toCallUI}` : 'Check'}
+                        </button>
+                        <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--accent-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
+                          {toCallUI > 0 ? 'Raise' : 'Bet'}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  !challengeWon && !challengeFailed && (
+                    <button className="btn-primary" onClick={startHand} disabled={isAnalyzing} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', right: '0', position: 'absolute', bottom: '0' }}>
+                      {isAnalyzing ? "Grading..." : "Play Next Hand"}
+                    </button>
+                  )
+                )}
+             </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT COL: AI Grader */}
+      <div style={{ flex: '0 0 350px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-color)' }}>{challenge.title}</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{challenge.description}</p>
+        
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '2rem' }}>
+          {[1, 2, 3].map(s => (
+             <div key={s} style={{ fontSize: '2.5rem', filter: stars >= s ? 'none' : 'grayscale(100%) opacity(0.3)' }}>⭐</div>
+          ))}
+        </div>
+
+        <h4 style={{ margin: '0 0 1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Feedback</h4>
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+          {isAnalyzing ? (
+            <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '2rem' }}>
+               <div style={{ fontSize: '2rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>⏳</div>
+               Grading your play...
+            </div>
+          ) : lastFeedback ? (
+            <div style={{ 
+               padding: '1rem', 
+               borderRadius: '0.5rem', 
+               backgroundColor: lastFeedback.passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+               border: lastFeedback.passed ? '1px solid #10b981' : '1px solid #ef4444'
+            }}>
+               <h3 style={{ margin: '0 0 0.5rem 0', color: lastFeedback.passed ? '#10b981' : '#ef4444' }}>
+                 {lastFeedback.passed ? "Pass!" : "Fail"}
+               </h3>
+               <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{lastFeedback.feedback}</p>
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', marginTop: '2rem', opacity: 0.5 }}>
+               Play a hand to receive a grade from the AI Coach.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Victory / Failure Modals */}
+      {challengeWon && (
+         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '2rem', textAlign: 'center', border: '2px solid #10b981', maxWidth: '500px' }}>
+               <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏆</div>
+               <h2 style={{ color: '#10b981', fontSize: '2rem', marginBottom: '1rem' }}>Challenge Complete!</h2>
+               <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '1.1rem' }}>You earned 3 stars and proved your mastery of {challenge.title}.</p>
+               <button className="btn-primary" onClick={() => navigate('/')} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>Return to Dashboard</button>
+            </div>
+         </div>
+      )}
+
+      {challengeFailed && (
+         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '2rem', textAlign: 'center', border: '2px solid #ef4444', maxWidth: '500px' }}>
+               <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>💔</div>
+               <h2 style={{ color: '#ef4444', fontSize: '2rem', marginBottom: '1rem' }}>Challenge Failed</h2>
+               <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '1.1rem' }}>You lost all your chips before earning 3 stars. Review the lesson and try again!</p>
+               <button className="btn-primary" onClick={() => { setChallengeFailed(false); setStars(0); setHeroStack(1000); setVillainStack(1000); startHand(); }} style={{ padding: '1rem 2rem', fontSize: '1.2rem', marginBottom: '1rem' }}>Retry Challenge</button>
+               <br />
+               <button className="btn-secondary" onClick={() => navigate('/')}>Return to Dashboard</button>
+            </div>
+         </div>
+      )}
+
+    </div>
+  );
+};
+
+export default ChallengeTable;

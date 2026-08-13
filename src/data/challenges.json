@@ -1,0 +1,26 @@
+[
+  {
+    "id": "c-preflop-selection",
+    "title": "The Preflop Discipline Challenge",
+    "description": "Test your starting hand selection. Prove you can fold garbage hands and aggressively play your premium hands.",
+    "requiredLessonId": "b-m3",
+    "requiredLessonTitle": "Beginner: Betting Rounds",
+    "rubric": "Grade this user ONLY on whether they folded bad starting hands (e.g., 7-2 offsuit, J-4) and raised/played premium hands (e.g., AA, KK, AK). If they folded a bad hand, give them a Pass. If they played a bad hand, give them a Fail. If they aggressively played a premium hand, give them a Pass. If they folded a premium hand preflop, give them a Fail. Ignore post-flop play."
+  },
+  {
+    "id": "c-pot-odds",
+    "title": "The Mathematician: Pot Odds",
+    "description": "Prove you understand pot odds. Make profitable calls when drawing, and fold when you aren't getting the right price.",
+    "requiredLessonId": "i-m1",
+    "requiredLessonTitle": "Intermediate: Pot Odds & Equity",
+    "rubric": "Grade this user on their adherence to pot odds. If they called a bet on a draw (flush/straight draw) and the pot odds mathematically justified the call based on their outs, give them a Pass. If they called a huge overbet with a weak draw where pot odds were bad, give them a Fail. If they made a value bet of an appropriate size, give them a Pass."
+  },
+  {
+    "id": "c-bankroll-tilt",
+    "title": "The Stoic: Emotional Control",
+    "description": "Demonstrate that you can avoid 'tilt' by folding when clearly beaten, instead of aggressively trying to bluff out of frustration.",
+    "requiredLessonId": "i-m5",
+    "requiredLessonTitle": "Intermediate: Bankroll Management & Tilt",
+    "rubric": "Grade the user on emotional control. If the user makes massive, uncalculated over-bets with weak hands (punting), give them a Fail. If the user correctly folds to heavy aggression when they have a marginal or weak hand, give them a Pass. If the user plays solid, calculated poker, give them a Pass."
+  }
+]

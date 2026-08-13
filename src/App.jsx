@@ -8,6 +8,7 @@ import HandAnalyzer from './components/HandAnalyzer';
 import GameEngine from './components/GameEngine';
 import MultiplayerLobby from './components/MultiplayerLobby';
 import MultiplayerTable from './components/MultiplayerTable';
+import ChallengeTable from './components/ChallengeTable';
 import Auth from './components/Auth';
 import './index.css';
 
@@ -116,6 +117,14 @@ function App() {
           element={
             <ProtectedRoute session={session}>
               <MultiplayerTable session={session} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/challenge/:id" 
+          element={
+            <ProtectedRoute session={session} adminOnly={true}>
+              <ChallengeTable session={session} />
             </ProtectedRoute>
           } 
         />
