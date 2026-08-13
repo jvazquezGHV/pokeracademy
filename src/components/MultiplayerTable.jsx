@@ -89,7 +89,14 @@ const MultiplayerTable = ({ session }) => {
             .on('broadcast', { event: 'chat' }, (payload) => {
               setChatMessages((prev) => [...prev, payload.payload]);
             })
-            .subscribe();
+            .on('broadcast', { event: 'game_sync' }, () => {
+              fetchRoom();
+            })
+            .subscribe((status) => {
+              if (status === 'SUBSCRIBED') {
+                supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+              }
+            });
         }
       } catch (err) {
         console.error(err);
@@ -164,6 +171,7 @@ const MultiplayerTable = ({ session }) => {
        supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
           supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
              if (data) setRoom(data);
+             supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
           });
        });
     }
@@ -184,6 +192,9 @@ const MultiplayerTable = ({ session }) => {
         newState.turnIndex = getNextActivePlayer(newState.players, idx);
         newState.turnStartTime = Date.now();
         await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+        const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
+        if (data) setRoom(data);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -297,7 +308,12 @@ const MultiplayerTable = ({ session }) => {
         newState.turnStartTime = Date.now();
       }
 
-      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then();
+      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
+          supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
+             if (data) setRoom(data);
+             supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+          });
+      });
       
       if (newState.phase === 'showdown') {
         triggerAIDealer(newState.history);
@@ -339,6 +355,9 @@ const MultiplayerTable = ({ session }) => {
         };
         const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
         if (error) throw error;
+        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+        const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
+        if (data) setRoom(data);
         return;
       }
 
@@ -366,6 +385,9 @@ const MultiplayerTable = ({ session }) => {
 
       const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
       if (error) throw error;
+      supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+      const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
+      if (data) setRoom(data);
     } catch (err) {
       console.error('Start Game Error:', err);
       alert('Failed to start game: ' + err.message);
@@ -414,6 +436,9 @@ const MultiplayerTable = ({ session }) => {
     setShowRaiseOptions(false);
 
     await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+    supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+    const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
+    if (data) setRoom(data);
   };
 
   if (loading) return <div style={{ color: 'white', padding: '2rem', textAlign: 'center' }}>Loading room...</div>;
