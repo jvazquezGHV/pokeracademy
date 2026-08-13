@@ -785,6 +785,7 @@ const MultiplayerTable = ({ session }) => {
                          <button className="btn-primary" onClick={() => handleAction('raise', 20)}>Min</button>
                          <button className="btn-primary" onClick={() => handleAction('raise', Math.floor(gs.pot * 0.5))}>1/2 Pot</button>
                          <button className="btn-primary" onClick={() => handleAction('raise', gs.pot)}>Pot</button>
+                         <button className="btn-primary" onClick={() => handleAction('raise', myPlayerState?.chips || 0)} style={{ backgroundColor: 'var(--danger-color)' }}>All-In</button>
                          <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
                        </div>
                      ) : (
