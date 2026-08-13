@@ -203,6 +203,26 @@
               "id": "l-board-textures",
               "title": "Board Textures",
               "content": "A 'Dry' board (like 2-7-K of different suits) has few draw possibilities. A 'Wet' board (like 8-9-10 with two hearts) is very dangerous because it offers many straight and flush draws."
+            },
+            {
+              "id": "l-player-types",
+              "title": "Fish vs Sharks",
+              "content": "In poker slang, a 'Fish' is a weak, inexperienced player who frequently makes mistakes and calls too often. A 'Shark' is a highly skilled, predatory player who makes money by exploiting the fish at the table."
+            },
+            {
+              "id": "l-tilt",
+              "title": "Going on Tilt",
+              "content": "'Tilt' is a state of emotional frustration and confusion, often caused by suffering a bad beat. When a player is 'on tilt', they abandon strategy and start playing recklessly aggressive or loose."
+            },
+            {
+              "id": "l-limping",
+              "title": "Limping",
+              "content": "'Limping' means simply calling the Big Blind pre-flop instead of raising. It is generally considered a passive and weak play, as it invites multiple opponents into the pot without taking control of the hand."
+            },
+            {
+              "id": "l-the-bubble",
+              "title": "The Bubble",
+              "content": "In a poker tournament, 'The Bubble' is the phase of the game exactly one elimination away from the prize money. The player who busts out on the bubble finishes in the highest position that receives no payout."
             }
           ]
         }
