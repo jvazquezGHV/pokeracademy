@@ -29,6 +29,29 @@ const getSeatClass = (playerCount, offset) => {
   return `seat-${offset}`;
 };
 
+const FlyingChips = ({ seatClass, amount }) => {
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    requestAnimationFrame(() => setActive(true));
+  }, []);
+  
+  return (
+    <div className={`seat-pos ${seatClass}`} style={{ zIndex: 1000, pointerEvents: 'none' }}>
+      <div style={{
+         transition: 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)',
+         transform: active ? 'translateY(0) scale(1)' : 'translateY(100px) scale(0)',
+         opacity: active ? 1 : 0,
+         display: 'flex',
+         flexDirection: 'column',
+         alignItems: 'center'
+      }}>
+         <ChipStack amount={amount} />
+         <div style={{ color: '#eab308', fontWeight: 'bold', textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontSize: '1.5rem', animation: 'floatUp 1s ease-out forwards' }}>+${amount}</div>
+      </div>
+    </div>
+  );
+};
+
 const MultiplayerTable = ({ session }) => {
   const { code } = useParams();
   const navigate = useNavigate();
@@ -42,8 +65,24 @@ const MultiplayerTable = ({ session }) => {
   const [messageInput, setMessageInput] = useState('');
   const chatEndRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [isAiThinking, setIsAiThinking] = useState(false);
+  const [winnerAnimation, setWinnerAnimation] = useState(null);
+  const [animationPlayed, setAnimationPlayed] = useState(false);
 
   useEffect(() => { preloadAudio(); }, []);
+
+  useEffect(() => {
+    if (gs.phase !== 'showdown') {
+       setAnimationPlayed(false);
+       setWinnerAnimation(null);
+    }
+    if (gs.phase === 'showdown' && gs.winners && !animationPlayed) {
+       setAnimationPlayed(true);
+       setWinnerAnimation(gs.winners);
+       const t = setTimeout(() => setWinnerAnimation(null), 2000);
+       return () => clearTimeout(t);
+    }
+  }, [gs.phase, gs.winners, animationPlayed]);
 
   useEffect(() => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -133,6 +172,7 @@ const MultiplayerTable = ({ session }) => {
 
   const triggerAIDealer = async (history) => {
     try {
+        setIsAiThinking(true);
         const customPrompt = `You are a professional but witty high-stakes casino dealer. Summarize this poker hand in 1 sentence and add a clever, slightly roasting remark about the losing play. Do not use terms of endearment like "darling" or "sweetie". Keep it brief and sound like a real casino. Action history:\n${history}`;
         const response = await getAIFeedback(history, customPrompt);
         const msg = { user: '🤖 Dealer', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
@@ -140,6 +180,8 @@ const MultiplayerTable = ({ session }) => {
         setChatMessages((prev) => [...prev, msg]);
     } catch (err) {
         console.error(err);
+    } finally {
+        setIsAiThinking(false);
     }
   };
 
@@ -305,6 +347,10 @@ const MultiplayerTable = ({ session }) => {
           });
 
           const splitAmt = Math.floor(newState.pot / winners.length);
+          newState.winners = winners.map(w => ({
+             user_id: w.user_id,
+             amount: splitAmt
+          }));
           winners.forEach(w => {
             const p = newState.players.find(pl => pl.user_id === w.user_id);
             p.chips += splitAmt;
@@ -549,13 +595,31 @@ const MultiplayerTable = ({ session }) => {
           <div className="multiplayer-sidebar">
             <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
             <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
-              {gs.history?.split('\n').map((line, i) => (
-                line && <div key={i} style={{ padding: line.startsWith('---') ? '10px 0' : '0', color: line.startsWith('---') ? 'var(--accent-color)' : 'inherit', fontWeight: line.startsWith('---') ? 'bold' : 'normal' }}>{line}</div>
-              ))}
+              {gs.history?.split('\n').map((line, i) => {
+                if (!line) return null;
+                const names = dbPlayers.map(p => p.display_name).filter(Boolean);
+                let parts = [line];
+                if (names.length > 0) {
+                   const regex = new RegExp(`(${names.join('|')})`, 'g');
+                   parts = line.split(regex);
+                }
+                return (
+                  <div key={i} style={{ padding: line.startsWith('---') ? '10px 0' : '0', color: line.startsWith('---') ? 'var(--accent-color)' : 'inherit', fontWeight: line.startsWith('---') ? 'bold' : 'normal' }}>
+                    {parts.map((part, pIdx) => names.includes(part) ? <span key={pIdx} style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{part}</span> : part)}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           <div className="poker-table-container">
+            {winnerAnimation && winnerAnimation.map((w, i) => {
+                const pIdx = gs.players.findIndex(p => p.user_id === w.user_id);
+                if (pIdx === -1) return null;
+                const offset = (pIdx - myIndexInArray + gs.players.length) % gs.players.length;
+                const seatClass = getSeatClass(gs.players.length, offset);
+                return <FlyingChips key={`anim-${i}`} seatClass={seatClass} amount={w.amount} />;
+            })}
             
             {gs.players?.map((p, idx) => {
               const isMe = p.user_id === session.user.id;
@@ -571,10 +635,12 @@ const MultiplayerTable = ({ session }) => {
                 else if (timerPct < 50) timerColor = '#eab308';
               }
 
+              const isBottomSeat = idx === 0 || idx === 1 || idx === 5;
+
               return (
-                <div key={idx} className={`seat-pos ${seatClass}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : 1, zIndex: isMe ? 10 : 5 }}>
+                <div key={idx} className={`seat-pos ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : 1, zIndex: isMe ? 10 : 5 }}>
                    
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', zIndex: 2, position: 'relative' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
                      {p.status === 'sitting_out' && (
                        <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#dc2626', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Waiting for next hand</div>
                      )}
@@ -602,9 +668,9 @@ const MultiplayerTable = ({ session }) => {
                      )}
                    </div>
 
-                   <div style={{ display: 'flex', gap: '5px', height: '80px' }}>
+                   <div className="playing-cards-wrapper">
                      {p.cards?.map((c, i) => (
-                       <div key={i} style={{ transform: 'scale(0.7)', transformOrigin: 'top center' }}>
+                       <div key={i}>
                          <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
                        </div>
                      ))}
@@ -641,7 +707,7 @@ const MultiplayerTable = ({ session }) => {
 
             <div className="action-buttons-container">
                {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
-                 amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap' }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : 'Play Next Hand'}</button>
+                 amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2 || isAiThinking || winnerAnimation} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', opacity: (isAiThinking || winnerAnimation) ? 0.5 : 1 }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : (isAiThinking ? 'AI Dealer Typing...' : 'Play Next Hand')}</button>
                ) : (
                  myPlayerState?.status !== 'sitting_out' && (
                    <>
