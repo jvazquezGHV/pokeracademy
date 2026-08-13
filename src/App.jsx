@@ -13,6 +13,7 @@ import RangeChart from './components/RangeChart';
 import HandHistoryLog from './components/HandHistoryLog';
 import HandReplayer from './components/HandReplayer';
 import PreflopTrainer from './components/PreflopTrainer';
+import MathTrainer from './components/MathTrainer';
 import Analytics from './components/Analytics';
 import Auth from './components/Auth';
 import './index.css';
@@ -130,6 +131,14 @@ function App() {
           element={
             <ProtectedRoute session={session} adminOnly={true}>
               <PreflopTrainer />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/trainer/math" 
+          element={
+            <ProtectedRoute session={session} adminOnly={true}>
+              <MathTrainer />
             </ProtectedRoute>
           } 
         />
