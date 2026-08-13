@@ -99,7 +99,7 @@ const HandAnalyzer = () => {
         <h3 style={{ textAlign: 'center', marginBottom: '2rem', color: 'var(--text-primary)' }}>Deck Picker</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {SUITS.map(suit => (
-            <div key={suit} style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', justifyContent: 'center' }}>
+            <div key={suit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1rem' }}>
               {RANKS.map((rank, i) => {
                 const selected = isCardSelected(rank, suit);
                 return (
