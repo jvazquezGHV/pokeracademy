@@ -167,6 +167,16 @@ const MultiplayerTable = ({ session }) => {
       }
     });
 
+    // Remove players who left
+    for (let i = newState.players.length - 1; i >= 0; i--) {
+       const p = newState.players[i];
+       if (dbPlayers.length > 0 && !dbPlayers.find(dp => dp.user_id === p.user_id)) {
+           newState.players.splice(i, 1);
+           newState.history += `\n<<< ${p.display_name} left the table.`;
+           stateChanged = true;
+       }
+    }
+
     if (stateChanged) {
        supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
           supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
@@ -441,6 +451,22 @@ const MultiplayerTable = ({ session }) => {
     if (data) setRoom(data);
   };
 
+  const handleLeaveTable = async () => {
+    if (window.confirm("Are you sure you want to leave the table?")) {
+      await supabase.from('poker_players').delete().eq('user_id', session.user.id).eq('room_id', room?.id);
+      supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
+      navigate('/multiplayer');
+    }
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (room?.id) supabase.from('poker_players').delete().eq('user_id', session.user.id).eq('room_id', room.id).then();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [room?.id, session.user.id]);
+
   if (loading) return <div style={{ color: 'white', padding: '2rem', textAlign: 'center' }}>Loading room...</div>;
   if (!room) return <div style={{ color: 'white', padding: '2rem', textAlign: 'center' }}>Room not found.</div>;
 
@@ -454,7 +480,7 @@ const MultiplayerTable = ({ session }) => {
     <div className="multiplayer-container">
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <button onClick={() => navigate('/multiplayer')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
+        <button onClick={handleLeaveTable} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
           ← Leave Table
         </button>
         <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.5rem 1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
