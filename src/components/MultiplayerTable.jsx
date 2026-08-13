@@ -50,6 +50,7 @@ const MultiplayerTable = ({ session }) => {
   }, [chatMessages]);
 
   const subscriptionsRef = useRef(false);
+  const lastDealerTriggerRef = useRef(null);
 
   useEffect(() => {
     let roomSub = null;
@@ -326,7 +327,10 @@ const MultiplayerTable = ({ session }) => {
       });
       
       if (newState.phase === 'showdown') {
-        triggerAIDealer(newState.history);
+        if (lastDealerTriggerRef.current !== newState.history) {
+           lastDealerTriggerRef.current = newState.history;
+           triggerAIDealer(newState.history);
+        }
       }
     }
   }, [gs, amIHost, isPlaying, room?.id]);
@@ -479,7 +483,16 @@ const MultiplayerTable = ({ session }) => {
   return (
     <div className="multiplayer-container">
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div className="landscape-prompt">
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔄</div>
+          <h2>Please Rotate Your Device</h2>
+          <p>Poker Academy is best played in landscape mode.</p>
+        </div>
+      </div>
+
+      <div className="multiplayer-content">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <button onClick={handleLeaveTable} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
           ← Leave Table
         </button>
@@ -705,6 +718,7 @@ const MultiplayerTable = ({ session }) => {
         </div>
       )}
 
+      </div>
     </div>
   );
 };
