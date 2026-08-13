@@ -127,15 +127,15 @@ const MultiplayerTable = ({ session }) => {
     const msg = { user: meName, text: messageInput.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setChatMessages((prev) => [...prev, msg]);
     setMessageInput('');
-    supabase.channel(`public:poker_chat:${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
+    supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
   };
 
   const triggerAIDealer = async (history) => {
     try {
-        const customPrompt = `You are a sassy casino dealer. Summarize this poker hand in 1 sentence and roast the loser. Keep it extremely brief and fun. Action history:\n${history}`;
+        const customPrompt = `You are a professional but witty high-stakes casino dealer. Summarize this poker hand in 1 sentence and add a clever, slightly roasting remark about the losing play. Do not use terms of endearment like "darling" or "sweetie". Keep it brief and sound like a real casino. Action history:\n${history}`;
         const response = await getAIFeedback(history, customPrompt);
         const msg = { user: '🤖 Dealer', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        supabase.channel(`public:poker_chat:${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
+        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
         setChatMessages((prev) => [...prev, msg]);
     } catch (err) {
         console.error(err);
