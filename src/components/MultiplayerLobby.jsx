@@ -6,6 +6,12 @@ const MultiplayerLobby = ({ session }) => {
   const [joinCode, setJoinCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Settings
+  const [gameMode, setGameMode] = useState('cash');
+  const [startingChips, setStartingChips] = useState(1000);
+  const [blindInterval, setBlindInterval] = useState(5);
+  
   const navigate = useNavigate();
 
   const isAdmin = session?.user?.email === 'jvazquez.sd@outlook.com';
@@ -21,9 +27,15 @@ const MultiplayerLobby = ({ session }) => {
     
     try {
       // 1. Create Room
+      const initialState = {
+         mode: gameMode,
+         startingChips: parseInt(startingChips),
+         blindInterval: parseInt(blindInterval)
+      };
+
       const { data: room, error: roomError } = await supabase
         .from('poker_rooms')
-        .insert([{ code, status: 'waiting', game_state: {} }])
+        .insert([{ code, status: 'waiting', game_state: initialState }])
         .select()
         .single();
         
@@ -37,7 +49,7 @@ const MultiplayerLobby = ({ session }) => {
           user_id: session.user.id,
           display_name: session.user.email.split('@')[0], // Simple fallback
           seat_index: 0,
-          chips: 1000,
+          chips: parseInt(startingChips),
           is_host: true
         }]);
 
@@ -96,7 +108,7 @@ const MultiplayerLobby = ({ session }) => {
             user_id: session.user.id,
             display_name: session.user.email.split('@')[0],
             seat_index: existingPlayers.length,
-            chips: 1000,
+            chips: room.game_state?.startingChips || 1000,
             is_host: false
           }]);
           
@@ -132,11 +144,55 @@ const MultiplayerLobby = ({ session }) => {
       <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', gap: '3rem', border: '1px solid rgba(255,255,255,0.05)' }}>
         
         {/* Create Room */}
-        <div>
-          <h2 style={{ marginBottom: '1rem' }}>Host a Private Game</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
+          <h2 style={{ margin: 0, textAlign: 'center' }}>Host a Private Game</h2>
+          
+          <div>
+            <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Game Mode</label>
+            <select 
+              value={gameMode} 
+              onChange={(e) => setGameMode(e.target.value)}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+            >
+              <option value="cash">Cash Game (Static Blinds, Rebuys Allowed)</option>
+              <option value="tournament">Tournament (Increasing Blinds, Elimination)</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Starting Chips</label>
+              <select 
+                value={startingChips} 
+                onChange={(e) => setStartingChips(e.target.value)}
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+              >
+                <option value="1000">1,000</option>
+                <option value="2000">2,000</option>
+                <option value="5000">5,000</option>
+                <option value="10000">10,000</option>
+              </select>
+            </div>
+
+            {gameMode === 'tournament' && (
+              <div style={{ flex: 1 }}>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Blind Interval</label>
+                <select 
+                  value={blindInterval} 
+                  onChange={(e) => setBlindInterval(e.target.value)}
+                  style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+                >
+                  <option value="3">3 Minutes</option>
+                  <option value="5">5 Minutes</option>
+                  <option value="10">10 Minutes</option>
+                </select>
+              </div>
+            )}
+          </div>
+
           <button 
             className="btn-primary" 
-            style={{ width: '100%', fontSize: '1.2rem', padding: '1rem' }}
+            style={{ width: '100%', fontSize: '1.2rem', padding: '1rem', marginTop: '1rem' }}
             onClick={handleCreateRoom}
             disabled={loading}
           >

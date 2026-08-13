@@ -195,6 +195,8 @@ const MultiplayerTable = ({ session }) => {
     dbPlayers.forEach(p => {
       const exists = newState.players.find(ep => ep.user_id === p.user_id);
       if (!exists) {
+        if (gs.mode === 'tournament') return; // No late registration for tournaments
+        
         newState.players.push({
           user_id: p.user_id,
           display_name: p.display_name,
@@ -389,28 +391,41 @@ const MultiplayerTable = ({ session }) => {
       
       const gamePlayers = dbPlayers.map(p => {
         const existing = gs.players?.find(ep => ep.user_id === p.user_id);
+        const chips = existing?.chips !== undefined ? existing.chips : p.chips;
+        const isEliminated = gs.mode === 'tournament' && existing && chips <= 0;
+        
         return {
           user_id: p.user_id,
           display_name: p.display_name,
           avatar: existing?.avatar || getAvatar(p.user_id),
-          chips: existing?.chips !== undefined ? existing.chips : p.chips,
+          chips: chips,
           cards: [],
           bet: 0,
-          status: 'active',
+          status: isEliminated ? 'eliminated' : 'active',
           acted: false
         };
       });
 
-      if (gamePlayers.length < 2) {
+      const activePlayers = gamePlayers.filter(p => p.status === 'active');
+
+      if (activePlayers.length < 2) {
+        if (gs.mode === 'tournament' && activePlayers.length === 1 && gs.players) {
+            const winner = activePlayers[0];
+            const endState = {
+                ...gs,
+                phase: 'waiting_for_players',
+                history: `\n\n🏆 🏆 🏆 🏆 🏆\n${winner.display_name} HAS WON THE TOURNAMENT!\n🏆 🏆 🏆 🏆 🏆\n`,
+                tournamentWinner: winner.display_name
+            };
+            await supabase.from('poker_rooms').update({ status: 'waiting', game_state: endState }).eq('id', room.id);
+            return;
+        }
+
         const initialState = {
+          mode: gs.mode, startingChips: gs.startingChips, blindInterval: gs.blindInterval,
           phase: 'waiting_for_players',
-          pot: 0,
-          board: [],
-          deck: [],
-          players: gamePlayers,
-          turnIndex: 0, 
-          timerLength: gs.timerLength || timerConfig,
-          turnStartTime: Date.now(),
+          pot: 0, board: [], deck: [], players: gamePlayers, turnIndex: 0, 
+          timerLength: gs.timerLength || timerConfig, turnStartTime: Date.now(),
           history: "--- TABLE OPEN ---\nWaiting for challengers to drop in...\n"
         };
         const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
@@ -421,27 +436,55 @@ const MultiplayerTable = ({ session }) => {
         return;
       }
 
+      let newBlindsLevel = gs.blindsLevel || 1;
+      let newTourneyStart = gs.tournamentStartTime || Date.now();
+      
+      if (gs.mode === 'tournament' && gs.blindInterval) {
+         const elapsedMs = Date.now() - newTourneyStart;
+         const intervalMs = gs.blindInterval * 60 * 1000;
+         if (elapsedMs > intervalMs * newBlindsLevel) {
+            newBlindsLevel = Math.floor(elapsedMs / intervalMs) + 1;
+         }
+      }
+
+      let sbAmt = 10;
+      let bbAmt = 20;
+      if (gs.mode === 'tournament') {
+         sbAmt = 10 * Math.pow(2, newBlindsLevel - 1);
+         bbAmt = 20 * Math.pow(2, newBlindsLevel - 1);
+      }
+
       playSound('deal');
-      gamePlayers.forEach(p => p.cards = [deck.pop(), deck.pop()]);
+      activePlayers.forEach(p => p.cards = [deck.pop(), deck.pop()]);
 
-      gamePlayers[0].chips -= 10;
-      gamePlayers[0].bet = 10;
-      gamePlayers[1].chips -= 20;
-      gamePlayers[1].bet = 20;
+      const actualSB = Math.min(activePlayers[0].chips, sbAmt);
+      activePlayers[0].chips -= actualSB;
+      activePlayers[0].bet = actualSB;
 
+      const actualBB = Math.min(activePlayers[1].chips, bbAmt);
+      activePlayers[1].chips -= actualBB;
+      activePlayers[1].bet = actualBB;
+
+      let historyStr = `--- NEW HAND ---\nBlinds posted (SB: ${sbAmt}, BB: ${bbAmt}).\n`;
+      if (gs.mode === 'tournament' && newBlindsLevel > (gs.blindsLevel || 1)) {
+         historyStr = `\n⚠️ --- BLINDS INCREASED! ---\nLevel ${newBlindsLevel}: ${sbAmt}/${bbAmt}\n\n` + historyStr;
+      }
+
+      const firstToAct = activePlayers.length > 2 ? 2 : 0;
+      
       const initialState = {
+        mode: gs.mode, startingChips: gs.startingChips, blindInterval: gs.blindInterval,
+        tournamentStartTime: newTourneyStart, blindsLevel: newBlindsLevel,
         phase: 'preflop',
         pot: 0,
         board: [],
         deck: deck,
         players: gamePlayers,
-        turnIndex: gamePlayers.length > 2 ? 2 : 0, 
+        turnIndex: gamePlayers.indexOf(activePlayers[firstToAct]),
         timerLength: gs.timerLength || timerConfig,
         turnStartTime: Date.now(),
-        history: "--- NEW HAND ---\nBlinds posted (SB: 10, BB: 20).\n"
+        history: historyStr
       };
-
-      if (gamePlayers.length === 2) initialState.turnIndex = 0;
 
       const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
       if (error) throw error;
@@ -640,12 +683,16 @@ const MultiplayerTable = ({ session }) => {
               }
 
               const isBottomSeat = idx === 0 || idx === 1 || idx === 5;
+              const isEliminated = p.status === 'eliminated';
 
               return (
-                <div key={idx} className={`seat-pos ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : 1, zIndex: isMe ? 10 : 5 }}>
+                <div key={idx} className={`seat-pos ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : (isEliminated ? 0.2 : 1), zIndex: isMe ? 10 : 5 }}>
                    
                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
-                     {p.status === 'sitting_out' && (
+                     {isEliminated && (
+                       <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#000', color: 'red', border: '1px solid red', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Eliminated</div>
+                     )}
+                     {p.status === 'sitting_out' && !isEliminated && (
                        <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#dc2626', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Waiting for next hand</div>
                      )}
                      {idx === 0 && (
@@ -684,10 +731,28 @@ const MultiplayerTable = ({ session }) => {
             })}
 
             {gs.phase === 'waiting_for_players' && (
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '1rem', border: '2px dashed var(--accent-color)', zIndex: 10 }}>
-                <h2 style={{ color: 'white', margin: 0, textAlign: 'center' }}>Waiting for challengers...</h2>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '1rem', border: '2px dashed var(--accent-color)', zIndex: 10, textAlign: 'center' }}>
+                {gs.tournamentWinner ? (
+                   <>
+                     <h1 style={{ color: '#eab308', margin: '0 0 1rem 0', fontSize: '3rem', textShadow: '0 0 20px #eab308' }}>🏆 {gs.tournamentWinner} 🏆</h1>
+                     <h2 style={{ color: 'white', margin: 0 }}>Wins the Tournament!</h2>
+                   </>
+                ) : (
+                   <h2 style={{ color: 'white', margin: 0 }}>Waiting for challengers...</h2>
+                )}
               </div>
             )}
+
+            <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', color: 'white', zIndex: 1 }}>
+               <h3 style={{ margin: '0 0 5px 0', color: 'var(--accent-color)' }}>Room: {code}</h3>
+               {gs.mode === 'tournament' && (
+                  <div style={{ fontSize: '0.9rem' }}>
+                    <div style={{ color: '#eab308', fontWeight: 'bold' }}>Tournament Mode</div>
+                    <div>Blinds Level: {gs.blindsLevel || 1}</div>
+                    <div>Interval: {gs.blindInterval}m</div>
+                  </div>
+               )}
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, zIndex: 1 }}>
                <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
