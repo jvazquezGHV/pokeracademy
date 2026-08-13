@@ -100,7 +100,7 @@ const HandAnalyzer = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {SUITS.map(suit => (
             <div key={suit} style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', justifyContent: 'center' }}>
-              {RANKS.map(rank => {
+              {RANKS.map((rank, i) => {
                 const selected = isCardSelected(rank, suit);
                 return (
                   <div 
@@ -109,11 +109,13 @@ const HandAnalyzer = () => {
                     style={{ 
                       opacity: selected ? 0.3 : 1, 
                       cursor: 'pointer',
-                      transform: 'scale(0.7)',
-                      margin: '-20px' 
+                      width: '70px',
+                      height: '100px'
                     }}
                   >
-                    <Card suit={suit} rank={rank} isFaceUp={true} disableFlip={true} />
+                    <div style={{ transform: 'scale(0.7)', transformOrigin: 'top left' }}>
+                      <Card suit={suit} rank={rank} isFaceUp={true} disableFlip={true} />
+                    </div>
                   </div>
                 )
               })}
