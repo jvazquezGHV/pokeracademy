@@ -366,3 +366,32 @@ p {
     flex: 1 1 100% !important;
   }
 }
+
+.sandbox-stats-left {
+  position: absolute;
+  left: 5%;
+  bottom: 20%;
+}
+
+.sandbox-actions-right {
+  position: absolute;
+  right: 5%;
+  bottom: 0;
+}
+
+.sandbox-next-hand-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .sandbox-stats-left, .sandbox-actions-right, .sandbox-next-hand-btn {
+    position: static !important;
+    margin-top: 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+  }
+}

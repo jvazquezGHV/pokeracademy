@@ -366,7 +366,7 @@ const GameEngine = () => {
              
              {/* Left Absolute: Win Pct */}
              {phase !== 'showdown' && (
-               <div style={{ position: 'absolute', left: '5%', bottom: '20%', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem 1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+               <div className="sandbox-stats-left" style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem 1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
                  <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase' }}>Win Prob</p>
                  <h2 style={{ margin: '5px 0 0 0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1.8rem' }}>{winPct}%</h2>
                </div>
@@ -388,7 +388,7 @@ const GameEngine = () => {
              </div>
              
              {/* Right Absolute: Action Buttons */}
-             <div style={{ position: 'absolute', right: '5%', bottom: '0', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '120px' }}>
+             <div className="sandbox-actions-right" style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '120px' }}>
                 {phase !== 'showdown' ? (
                   <>
                     {showRaiseOptions ? (
@@ -412,7 +412,7 @@ const GameEngine = () => {
                     )}
                   </>
                 ) : (
-                  <button className="btn-primary" onClick={startHand} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', right: '0', position: 'absolute', bottom: '0' }}>Play Next Hand</button>
+                  <button className="btn-primary sandbox-next-hand-btn" onClick={startHand} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap' }}>Play Next Hand</button>
                 )}
              </div>
 
