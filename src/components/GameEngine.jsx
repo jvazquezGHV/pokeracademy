@@ -324,9 +324,9 @@ const GameEngine = () => {
              {/* Dealer Tray Graphic */}
              <div style={{ width: '100px', height: '20px', background: 'linear-gradient(to right, #666, #aaa, #666)', borderRadius: '10px', marginBottom: '1rem', boxShadow: '0 5px 15px rgba(0,0,0,0.5)', border: '1px solid #444' }}></div>
              
-             <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
+             <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '10px' }}>
                {villainCards.map((c, i) => (
-                 <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
+                 <div key={i}>
                    <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
                  </div>
                ))}
@@ -349,14 +349,14 @@ const GameEngine = () => {
                 <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
                 <h2 style={{ margin: 0, color: '#eab308', fontSize: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${pot}</h2>
              </div>
-             <div style={{ display: 'flex', gap: '8px', height: '119px' }}>
+             <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
                 {board.map((c, i) => (
-                  <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
+                  <div key={i}>
                      <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                   </div>
                 ))}
                 {[...Array(5 - board.length)].map((_, i) => (
-                   <div key={`empty-${i}`} style={{ width: '85px', height: '119px', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                   <div key={`empty-${i}`} style={{ width: '140px', height: '200px', margin: '10px', border: '4px dashed rgba(255,255,255,0.2)', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
                 ))}
              </div>
           </div>
@@ -379,9 +379,9 @@ const GameEngine = () => {
                 {heroBet > 0 && <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Bet: ${heroBet}</span>}
              </div>
 
-             <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
+             <div className="sandbox-hero-wrapper" style={{ display: 'flex', gap: '10px' }}>
                {heroCards.map((c, i) => (
-                 <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'bottom center' }}>
+                 <div key={i}>
                    <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                  </div>
                ))}

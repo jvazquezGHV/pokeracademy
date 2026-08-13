@@ -396,3 +396,41 @@ p {
     align-items: stretch;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .sandbox-board-wrapper {
+    transform: scale(0.45);
+    transform-origin: top center;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+  }
+  .sandbox-hero-wrapper {
+    transform: scale(0.65);
+    transform-origin: top center;
+    height: 150px;
+  }
+  .sandbox-villain-wrapper {
+    transform: scale(0.65);
+    transform-origin: top center;
+    height: 150px;
+  }
+}
+@media screen and (min-width: 769px) {
+  .sandbox-board-wrapper {
+    transform: scale(0.85);
+    transform-origin: center center;
+    height: 190px;
+  }
+  .sandbox-hero-wrapper {
+    transform: scale(0.85);
+    transform-origin: bottom center;
+    height: 190px;
+  }
+  .sandbox-villain-wrapper {
+    transform: scale(0.85);
+    transform-origin: top center;
+    height: 190px;
+  }
+}
