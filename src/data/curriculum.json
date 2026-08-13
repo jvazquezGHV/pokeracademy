@@ -132,6 +132,31 @@
               "correctAnswer": "3"
             }
           ]
+        },
+        {
+          "id": "b-m4",
+          "title": "Basic Poker Math",
+          "lessons": [
+            {
+              "id": "l-chip-counting",
+              "title": "Counting Chips & Pot Size",
+              "content": "Always keep track of how many chips are in the pot. This determines whether a bet is large or small. A $10 bet into a $20 pot is a half-pot bet, while a $10 bet into a $100 pot is very small."
+            },
+            {
+              "id": "q-pot-math-1",
+              "type": "quiz",
+              "title": "Quiz: Pot Sizing",
+              "question": "If the pot is $50 and you bet $25, what fraction of the pot did you bet?",
+              "cards": [],
+              "options": [
+                "A quarter-pot",
+                "A half-pot",
+                "A full-pot",
+                "An over-bet"
+              ],
+              "correctAnswer": "A half-pot"
+            }
+          ]
         }
       ]
     },
@@ -238,6 +263,22 @@
               "correctAnswer": "A value bet"
             }
           ]
+        },
+        {
+          "id": "i-m4",
+          "title": "Positional Awareness",
+          "lessons": [
+            {
+              "id": "l-playing-in-position",
+              "title": "Playing In Position (IP)",
+              "content": "Playing 'in position' means you act after your opponent on each betting round. This gives you complete information about their actions before you have to make yours, allowing you to control the size of the pot."
+            },
+            {
+              "id": "l-playing-out-of-position",
+              "title": "Playing Out of Position (OOP)",
+              "content": "Playing 'out of position' means acting first. You must play much stronger hands OOP because you lack information. It is harder to extract value and easier to get bluffed."
+            }
+          ]
         }
       ]
     },
@@ -259,6 +300,38 @@
               "id": "l-exploitative-play",
               "title": "Exploitative Play",
               "content": "While GTO makes you unexploitable, maximum profit often comes from Exploitative play—deviating from GTO to take advantage of specific weaknesses in your opponents' strategies, such as over-folding or calling too much."
+            }
+          ]
+        },
+        {
+          "id": "a-m2",
+          "title": "Advanced Betting Strategies",
+          "lessons": [
+            {
+              "id": "l-3-betting",
+              "title": "The Art of the 3-Bet",
+              "content": "A 3-bet is the second raise pre-flop (the big blind is the 1st bet, an open raise is the 2nd, and the re-raise is the 3-bet). A polarized 3-betting range includes your absolute best hands (AA, KK) and some bluffs (like A5 suited)."
+            },
+            {
+              "id": "l-c-betting",
+              "title": "Continuation Betting (C-Bet)",
+              "content": "A continuation bet is made on the flop by the pre-flop aggressor. A GTO c-betting strategy considers range advantage. If the flop heavily favors the pre-flop raiser's range (e.g., A-K-2), they should c-bet frequently."
+            }
+          ]
+        },
+        {
+          "id": "a-m3",
+          "title": "Tournament Play & ICM",
+          "lessons": [
+            {
+              "id": "l-icm-basics",
+              "title": "What is ICM?",
+              "content": "The Independent Chip Model (ICM) applies to tournaments. It assigns a real-dollar value to your tournament chips based on the payout structure. Under ICM, chips lost are worth more than chips gained, meaning you must play tighter near the money bubble."
+            },
+            {
+              "id": "l-push-fold",
+              "title": "Push/Fold Charts",
+              "content": "When your stack drops below 15 Big Blinds in a tournament, you should generally only go all-in or fold pre-flop. Memorizing push/fold Nash Equilibrium charts is essential for late-stage tournament success."
             }
           ]
         }
