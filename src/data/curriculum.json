@@ -255,6 +255,27 @@
               "content": "In a poker tournament, 'The Bubble' is the phase of the game exactly one elimination away from the prize money. The player who busts out on the bubble finishes in the highest position that receives no payout."
             }
           ]
+        },
+        {
+          "id": "b-m8",
+          "title": "Live Casino Poker",
+          "lessons": [
+            {
+              "id": "l-casino-rules",
+              "title": "Casino Etiquette & Rules",
+              "content": "When playing live, verbal declarations are binding. If you say 'raise', you must raise. Also, avoid 'string betting' (placing chips out in multiple motions) as it is illegal. Always use one fluid motion or verbally announce your bet size first."
+            },
+            {
+              "id": "l-physical-tells-mastery",
+              "title": "Physical Tells Mastery",
+              "content": "In live poker, physical tells can give away hand strength. A player suddenly stopping their conversation or staring intensely at the flop often means they connected. Conversely, players looking away and acting disinterested are often trying to hide a monster hand."
+            },
+            {
+              "id": "l-live-game-pace",
+              "title": "Live Game Pace",
+              "content": "Online poker moves at 200+ hands an hour. Live poker moves at roughly 25-30 hands an hour. You must adjust your patience! Do not play weak hands just because you are bored; discipline is the key to crushing live poker."
+            }
+          ]
         }
       ]
     },
@@ -513,6 +534,41 @@
               "correctAnswer": "Loose Passive (Calling Station / Fish)"
             }
           ]
+        },
+        {
+          "id": "i-m9",
+          "title": "The Post-Flop Masterclass",
+          "lessons": [
+            {
+              "id": "l-board-textures-deep-dive",
+              "title": "Board Textures Deep Dive",
+              "content": "A 'Static' board (like K-2-2) is unlikely to change who is winning on future streets. A 'Dynamic' board (like 9-10-J with two suits) means the best hand now might easily be the worst hand by the river. Adjust your bet sizing heavily based on the board texture."
+            },
+            {
+              "id": "l-street-planning",
+              "title": "Street-by-Street Planning",
+              "content": "Never bet the flop without a plan for the turn and river. Ask yourself: 'If I bet here, and he calls, what is my plan if a flush card hits the turn?' Professional players map out the entire hand tree before they even touch their chips."
+            },
+            {
+              "id": "l-pot-control",
+              "title": "Pot Control",
+              "content": "If you have a medium-strength hand (like middle pair), you generally do not want to play a massive pot. Checking behind on the flop or turn to keep the pot small is called 'Pot Control'. This ensures you don't price yourself out against stronger hands."
+            },
+            {
+              "id": "q-board-texture-exam",
+              "type": "quiz",
+              "title": "Quiz: The Board Texture Exam",
+              "question": "Which of the following is considered a highly 'Dynamic/Wet' board?",
+              "cards": [],
+              "options": [
+                "K\u2660 2\u2663 2\u2666",
+                "A\u2665 8\u2663 3\u2660",
+                "10\u2660 9\u2660 8\u2666",
+                "Q\u2663 Q\u2665 7\u2660"
+              ],
+              "correctAnswer": "10\u2660 9\u2660 8\u2666"
+            }
+          ]
         }
       ]
     },
@@ -614,6 +670,62 @@
               "id": "l-table-selection",
               "title": "Table Selection (Bumhunting)",
               "content": "In high stakes cash games, table selection is paramount. 'Bumhunting' refers to the practice of only sitting at tables with a known recreational player (a 'fish'). If a table is entirely composed of strong professionals, the only winner is the casino collecting the rake."
+            }
+          ]
+        },
+        {
+          "id": "a-m7",
+          "title": "Exploitative Play: Destroying Archetypes",
+          "lessons": [
+            {
+              "id": "l-beat-maniac",
+              "title": "How to Beat The Maniac",
+              "content": "A Maniac raises and bluffs constantly. To beat them, DO NOT bluff them back. Simply tighten your calling range, wait for a strong top pair or better, and let them aggressively bet all their chips into you."
+            },
+            {
+              "id": "l-beat-station",
+              "title": "How to Beat The Calling Station",
+              "content": "A Calling Station hates folding and will call any bet with bottom pair. To beat them, NEVER bluff them. Instead, utilize 'Thin Value Betting'\u2014betting medium-strength hands for value because you know they will stubbornly call with even worse hands."
+            },
+            {
+              "id": "l-beat-nit",
+              "title": "How to Beat The Nit",
+              "content": "A Nit plays very few hands and only raises premium hands. To beat them, steal their blinds relentlessly preflop. If you bet and a Nit raises you, believe them. Fold your top pair immediately, because they almost certainly have a set or better."
+            }
+          ]
+        },
+        {
+          "id": "a-m8",
+          "title": "Advanced Mental Game Mastery",
+          "lessons": [
+            {
+              "id": "l-handling-downswings",
+              "title": "Handling Downswings",
+              "content": "A downswing is a period of sustained losing caused by variance, not necessarily bad play. Even the best players in the world experience downswings lasting tens of thousands of hands. Accept variance as the tax you pay to play a game of skill disguised as luck."
+            },
+            {
+              "id": "l-a-game-c-game",
+              "title": "A-Game vs C-Game",
+              "content": "Your A-Game is when you are focused, analytical, and unemotional. Your C-Game is when you are tired, frustrated, and auto-piloting. The biggest difference between pros and amateurs is that pros immediately quit the session when they realize they have dropped to their C-Game."
+            },
+            {
+              "id": "l-winners-tilt",
+              "title": "Winner's Tilt",
+              "content": "Winner's Tilt happens when you are having a massive winning session and start feeling invincible. You begin playing trash hands and making reckless bluffs because you feel you 'can't lose'. Stay humble, or the poker gods will quickly take it all back."
+            },
+            {
+              "id": "q-mental-fortitude",
+              "type": "quiz",
+              "title": "Quiz: Mental Fortitude Check",
+              "question": "You just lost 3 buy-ins due to incredibly bad luck (Bad Beats). You are feeling frustrated and angry. What is the most profitable play?",
+              "cards": [],
+              "options": [
+                "Move up in stakes to win it back faster.",
+                "Start bluffing more to force opponents out of pots.",
+                "Quit the session immediately for the day.",
+                "Play tighter and wait for Aces."
+              ],
+              "correctAnswer": "Quit the session immediately for the day."
             }
           ]
         }

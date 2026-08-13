@@ -30,5 +30,13 @@
     "requiredLessonId": "i-m8",
     "requiredLessonTitle": "Intermediate: The Preflop Masterclass",
     "rubric": "Grade this user strictly on Preflop Aggression. If the user limps (calls the Big Blind preflop without raising), give them a Fail. If the user enters the pot with a Raise (or folds), give them a Pass."
+  },
+  {
+    "id": "c-exploitative",
+    "title": "The Exploiter: Crush the Archetypes",
+    "description": "Prove you can deviate from GTO and play exploitative poker. Thin value bet the stations and fold to the nits.",
+    "requiredLessonId": "a-m7",
+    "requiredLessonTitle": "Advanced: Exploitative Play",
+    "rubric": "Grade this user on their ability to exploit specific player types. If the context says the villain is a NIT and they raise the user, the user MUST fold (Pass). If they call or re-raise the Nit, give them a Fail. If the context says the villain is a CALLING STATION, the user MUST make a thin value bet (Pass). If they bluff the Calling Station, give them a Fail."
   }
 ]
