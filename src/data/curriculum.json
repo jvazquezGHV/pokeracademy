@@ -314,6 +314,11 @@
               "content": "Bluffing is betting with a weak hand to force better hands to fold. The most effective bluffs tell a believable story across multiple betting rounds and target opponents who are capable of folding."
             },
             {
+              "id": "l-overbetting",
+              "title": "Overbetting",
+              "content": "An overbet is a bet larger than the size of the pot. It is a highly polarized move, usually representing the absolute nuts or a total bluff. It puts maximum pressure on your opponent's medium-strength hands."
+            },
+            {
               "id": "q-bet-sizing-1",
               "type": "quiz",
               "title": "Quiz: Value or Bluff?",
@@ -345,6 +350,16 @@
               "id": "l-playing-out-of-position",
               "title": "Playing Out of Position (OOP)",
               "content": "Playing 'out of position' means acting first. You must play much stronger hands OOP because you lack information. It is harder to extract value and easier to get bluffed."
+            },
+            {
+              "id": "l-stealing-blinds",
+              "title": "Stealing the Blinds",
+              "content": "When it folds to you in Late Position (the Cutoff or the Button), you can often raise with a wide variety of hands to 'steal' the blinds. Because you have position, the blinds will often fold marginal hands rather than play OOP."
+            },
+            {
+              "id": "l-squeeze-play",
+              "title": "The Squeeze Play",
+              "content": "A squeeze play occurs when an early position player raises, another player calls (the 'limper'), and you put in a large 3-bet. This puts immense pressure on the original raiser and often forces both players to fold."
             }
           ]
         },
