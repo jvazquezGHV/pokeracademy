@@ -73,7 +73,11 @@ const MultiplayerTable = ({ session }) => {
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'poker_rooms', filter: `id=eq.${roomData.id}` }, (payload) => {
               setRoom(prev => ({ ...prev, ...payload.new }));
             })
-            .subscribe();
+            .subscribe((status) => {
+              if (status === 'SUBSCRIBED') {
+                fetchRoom();
+              }
+            });
 
           playersSub = supabase.channel(`players_${roomData.id}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'poker_players', filter: `room_id=eq.${roomData.id}` }, () => {
@@ -157,7 +161,11 @@ const MultiplayerTable = ({ session }) => {
     });
 
     if (stateChanged) {
-       supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then();
+       supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
+          supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
+             if (data) setRoom(data);
+          });
+       });
     }
   }, [dbPlayers, amIHost, isPlaying]);
 
