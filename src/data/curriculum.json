@@ -157,6 +157,22 @@
               "correctAnswer": "A half-pot"
             }
           ]
+        },
+        {
+          "id": "b-m5",
+          "title": "Table Etiquette & Tells",
+          "lessons": [
+            {
+              "id": "l-basic-etiquette",
+              "title": "Basic Table Etiquette",
+              "content": "Good etiquette keeps the game fun and fair. Always act in turn. Do not discuss your folded cards while a hand is still being played, as it can influence the action. Keep your cards visible to the dealer and other players at all times."
+            },
+            {
+              "id": "l-physical-tells",
+              "title": "Physical & Timing Tells",
+              "content": "A 'tell' is a clue a player gives about the strength of their hand. Physical tells include shaking hands or staring at chips. In online poker, 'timing tells' (how fast someone acts) are very common. A fast call often indicates a draw or marginal hand, while a long tank followed by a big raise usually means immense strength."
+            }
+          ]
         }
       ]
     },
@@ -279,6 +295,36 @@
               "content": "Playing 'out of position' means acting first. You must play much stronger hands OOP because you lack information. It is harder to extract value and easier to get bluffed."
             }
           ]
+        },
+        {
+          "id": "i-m5",
+          "title": "Bankroll Management & Tilt",
+          "lessons": [
+            {
+              "id": "l-bankroll-management",
+              "title": "Bankroll Management (BRM)",
+              "content": "Your bankroll is your poker lifeblood. A standard rule is to have at least 20 to 30 buy-ins for cash games, and 100 buy-ins for tournaments. Practicing good BRM ensures you can survive the natural mathematical variance (downswings) of the game without going broke."
+            },
+            {
+              "id": "l-tilt-control",
+              "title": "Understanding Tilt",
+              "content": "'Tilt' is a state of mental or emotional confusion where a player adopts a less than optimal strategy, usually resulting in the player becoming overly aggressive. Recognizing when you are on tilt and taking a break is one of the most profitable skills you can develop."
+            },
+            {
+              "id": "q-brm-1",
+              "type": "quiz",
+              "title": "Quiz: Bankroll Safety",
+              "question": "If you have a total poker bankroll of $1,000, what is the maximum buy-in cash game you should play to adhere to a conservative 20 buy-in rule?",
+              "cards": [],
+              "options": [
+                "$100",
+                "$50",
+                "$20",
+                "$10"
+              ],
+              "correctAnswer": "$50"
+            }
+          ]
         }
       ]
     },
@@ -332,6 +378,22 @@
               "id": "l-push-fold",
               "title": "Push/Fold Charts",
               "content": "When your stack drops below 15 Big Blinds in a tournament, you should generally only go all-in or fold pre-flop. Memorizing push/fold Nash Equilibrium charts is essential for late-stage tournament success."
+            }
+          ]
+        },
+        {
+          "id": "a-m4",
+          "title": "Range Analysis",
+          "lessons": [
+            {
+              "id": "l-thinking-in-ranges",
+              "title": "Thinking in Ranges",
+              "content": "Amateurs put their opponents on a specific hand (e.g., 'He has Ace-King'). Professionals put their opponents on a 'range' of possible hands based on their actions, position, and player type. You then compare how your specific hand performs against their entire range."
+            },
+            {
+              "id": "l-blockers",
+              "title": "Using Blockers",
+              "content": "A 'blocker' is a card in your hand that makes it impossible (or less likely) for your opponent to have a specific hand. For example, if you hold the Ace of Spades, you 'block' your opponent from having the nut flush in spades. Blockers are heavily used in advanced bluffing and calling strategies."
             }
           ]
         }
