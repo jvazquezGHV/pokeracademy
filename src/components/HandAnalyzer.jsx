@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from './Card';
+import { Hand } from 'pokersolver';
 
 const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
 const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -42,11 +43,9 @@ const HandAnalyzer = () => {
 
   useEffect(() => {
     if (holeCards.length === 2 && communityCards.length >= 3) {
-      import('pokersolver').then(({ Hand }) => {
-        const handFormat = [...holeCards, ...communityCards].map(c => toSolverFormat(c.rank, c.suit));
-        const solvedHand = Hand.solve(handFormat);
-        setResult(solvedHand);
-      });
+      const handFormat = [...holeCards, ...communityCards].map(c => toSolverFormat(c.rank, c.suit));
+      const solvedHand = Hand.solve(handFormat);
+      setResult(solvedHand);
     } else {
       setResult(null);
     }
