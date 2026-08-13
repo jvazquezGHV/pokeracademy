@@ -59,6 +59,7 @@ const MultiplayerTable = ({ session }) => {
   const [dbPlayers, setDbPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
+  const [customBet, setCustomBet] = useState(20);
   const [timerConfig, setTimerConfig] = useState(30);
   
   const [chatMessages, setChatMessages] = useState([]);
@@ -782,10 +783,24 @@ const MultiplayerTable = ({ session }) => {
                    <>
                      {showRaiseOptions ? (
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                         <button className="btn-primary" onClick={() => handleAction('raise', 20)}>Min</button>
-                         <button className="btn-primary" onClick={() => handleAction('raise', Math.floor(gs.pot * 0.5))}>1/2 Pot</button>
-                         <button className="btn-primary" onClick={() => handleAction('raise', gs.pot)}>Pot</button>
-                         <button className="btn-primary" onClick={() => handleAction('raise', myPlayerState?.chips || 0)} style={{ backgroundColor: 'var(--danger-color)' }}>All-In</button>
+                         <div style={{ display: 'flex', gap: '5px' }}>
+                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', 20)}>Min</button>
+                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', Math.floor(gs.pot * 0.5))}>1/2 Pot</button>
+                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', gs.pot)}>Pot</button>
+                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem', backgroundColor: 'var(--danger-color)' }} onClick={() => handleAction('raise', myPlayerState?.chips || 0)}>All-In</button>
+                         </div>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
+                           <input 
+                             type="range" 
+                             min={20} 
+                             max={myPlayerState?.chips || 1000} 
+                             value={customBet} 
+                             onChange={(e) => setCustomBet(Number(e.target.value))}
+                             style={{ flex: 1, cursor: 'pointer' }}
+                           />
+                           <span style={{ color: 'white', minWidth: '40px', fontWeight: 'bold' }}>${customBet}</span>
+                         </div>
+                         <button className="btn-primary" onClick={() => handleAction('raise', customBet)} style={{ backgroundColor: 'var(--accent-color)', marginTop: '5px' }}>Bet ${customBet}</button>
                          <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
                        </div>
                      ) : (

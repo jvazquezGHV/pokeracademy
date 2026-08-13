@@ -32,6 +32,7 @@ const GameEngine = () => {
   // UI Locks & States
   const [isProcessing, setIsProcessing] = useState(false);
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
+  const [customBet, setCustomBet] = useState(20);
   
   const logEndRef = useRef(null);
 
@@ -393,10 +394,24 @@ const GameEngine = () => {
                   <>
                     {showRaiseOptions ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <button className="btn-primary" onClick={() => handleHeroAction('raise', 20)} disabled={!isHeroTurn}>Min</button>
-                        <button className="btn-primary" onClick={() => handleHeroAction('raise', Math.floor(pot * 0.5))} disabled={!isHeroTurn}>1/2 Pot</button>
-                        <button className="btn-primary" onClick={() => handleHeroAction('raise', pot)} disabled={!isHeroTurn}>Pot</button>
-                        <button className="btn-primary" onClick={() => handleHeroAction('raise', heroStack)} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--danger-color)' }}>All-In</button>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleHeroAction('raise', 20)} disabled={!isHeroTurn}>Min</button>
+                          <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleHeroAction('raise', Math.floor(pot * 0.5))} disabled={!isHeroTurn}>1/2 Pot</button>
+                          <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleHeroAction('raise', pot)} disabled={!isHeroTurn}>Pot</button>
+                          <button className="btn-primary" style={{ flex: 1, padding: '0.5rem', backgroundColor: 'var(--danger-color)' }} onClick={() => handleHeroAction('raise', heroStack)} disabled={!isHeroTurn}>All-In</button>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
+                          <input 
+                            type="range" 
+                            min={20} 
+                            max={heroStack} 
+                            value={customBet} 
+                            onChange={(e) => setCustomBet(Number(e.target.value))}
+                            style={{ flex: 1, cursor: 'pointer' }}
+                          />
+                          <span style={{ color: 'white', minWidth: '40px', fontWeight: 'bold' }}>${customBet}</span>
+                        </div>
+                        <button className="btn-primary" onClick={() => handleHeroAction('raise', customBet)} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--accent-color)', marginTop: '5px' }}>Bet ${customBet}</button>
                         <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
                       </div>
                     ) : (
