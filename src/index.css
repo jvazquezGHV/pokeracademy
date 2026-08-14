@@ -460,6 +460,50 @@ p {
   flex-direction: column;
   align-items: center;
   z-index: 10;
+  margin-top: 2rem;
+}
+
+.bottom-cards-wrapper {
+  display: flex;
+  gap: 5px;
+  margin-bottom: -15px;
+  transform: scale(0.8);
+  transform-origin: bottom center;
+  z-index: 1;
+}
+
+.top-cards-wrapper {
+  display: flex;
+  gap: 5px;
+  margin-top: -25px;
+  transform: scale(0.8);
+  transform-origin: top center;
+  z-index: 1;
+}
+
+.pot-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: rgba(0,0,0,0.5);
+  padding: 0.2rem 1rem;
+  border-radius: 1rem;
+  min-width: 80px;
+}
+
+.pot-chip-scale {
+  transform: scale(0.6);
+  transform-origin: center right;
+  margin-right: -10px;
+}
+
+.multiplayer-main-layout {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  overflow: hidden;
 }
 
 .seat-container {
@@ -556,14 +600,50 @@ p {
 }
 
 @media (min-width: 1024px) {
+  .multiplayer-main-layout {
+    flex-direction: row;
+  }
   .mobile-log-toggle {
     display: none;
   }
   .mobile-log-panel {
     position: static;
-    height: auto;
+    width: 350px;
+    height: 100%;
     box-shadow: none;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 1.5rem;
+    border-radius: 0;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  .poker-table-oval {
+    width: 900px !important;
+    max-width: 90%;
+    border-width: 12px;
+  }
+  .seat-container {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .bottom-cards-wrapper {
+    transform: scale(1.4);
+    margin-bottom: -35px;
+  }
+  .top-cards-wrapper {
+    transform: scale(1.4);
+    margin-top: -45px;
+  }
+  .sandbox-board-wrapper {
+    transform: scale(1.5);
+    margin-top: 30px;
+  }
+  .pot-chip-scale {
+    transform: scale(1.2);
+    margin-right: 10px;
+  }
+  .pot-container {
+    transform: scale(1.3);
+  }
+  .action-bar-bottom {
+    transform: scale(1.3);
+    transform-origin: bottom center;
+    margin-bottom: 30px;
   }
 }
