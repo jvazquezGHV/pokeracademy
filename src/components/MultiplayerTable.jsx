@@ -636,10 +636,10 @@ const MultiplayerTable = ({ session }) => {
             </div>
           </div>
 
-          <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflowY: 'auto' }}>
              
              {/* Center Table */}
-             <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
                 <div className="poker-table-oval">
                   {winnerAnimation && winnerAnimation.map((w, i) => {
                       const pIdx = gs.players.findIndex(p => p.user_id === w.user_id);
