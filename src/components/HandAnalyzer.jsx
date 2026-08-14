@@ -114,9 +114,6 @@ const HandAnalyzer = () => {
           <h3 style={{ marginBottom: '1rem', color: 'var(--danger-color)' }}>Opponent (2)</h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', minHeight: '140px' }}>
             {villainCards.map((c, i) => <Card key={i} suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} onClick={() => handleCardClick(c.rank, c.suit)} />)}
-            {[...Array(2 - villainCards.length)].map((_, i) => (
-               <div key={`empty-villain-${i}`} style={{ width: '100px', height: '140px', border: '2px dashed rgba(239, 68, 68, 0.3)', borderRadius: '10px' }}></div>
-            ))}
           </div>
         </div>
 
@@ -124,9 +121,6 @@ const HandAnalyzer = () => {
           <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Community Cards</h3>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', minHeight: '140px' }}>
             {communityCards.map((c, i) => <Card key={i} suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} onClick={() => handleCardClick(c.rank, c.suit)} />)}
-            {[...Array(5 - communityCards.length)].map((_, i) => (
-               <div key={`empty-comm-${i}`} style={{ width: '100px', height: '140px', border: '2px dashed var(--surface-color-hover)', borderRadius: '10px' }}></div>
-            ))}
           </div>
         </div>
       </div>

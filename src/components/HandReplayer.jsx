@@ -133,54 +133,51 @@ const HandReplayer = () => {
         
         <div style={{ 
           width: '100%', maxWidth: '700px', 
-          background: 'radial-gradient(circle at center, #166534 0%, #064e3b 100%)', 
-          borderRadius: '200px', 
-          border: '15px solid #291a10', 
-          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5)', 
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center',
-          padding: '2rem',
           height: '500px'
         }}>
           
-          {/* Villain */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
-              {villainCards.map((c, i) => (
-                <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
-                  <Card suit={c.suit} rank={c.rank} isFaceUp={showVillain} disableFlip={true} />
-                </div>
-              ))}
-            </div>
-            <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginTop: '-20px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
-              Villain {showVillain ? "" : "(Hidden)"}
-            </div>
-          </div>
-
-          {/* Board */}
-          <div style={{ display: 'flex', gap: '10px', height: '119px', alignItems: 'center' }}>
-            {visibleBoard.map((c, i) => (
-              <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
-                <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+          {/* Table Background */}
+          <div className="poker-table-oval">
+            
+            {/* Villain */}
+            <div className="seat-container seat-top">
+              <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginBottom: '10px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
+                Villain {showVillain ? "" : "(Hidden)"}
               </div>
-            ))}
-            {/* Empty slots */}
-            {[...Array(5 - visibleBoard.length)].map((_, i) => (
-              <div key={`empty-${i}`} style={{ width: '85px', height: '119px', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
-            ))}
-          </div>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                {villainCards.map((c, i) => (
+                  <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
+                    <Card suit={c.suit} rank={c.rank} isFaceUp={showVillain} disableFlip={true} />
+                  </div>
+                ))}
+              </div>
+            </div>
 
-          {/* Hero */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-             <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginBottom: '-20px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
-              Hero
+            {/* Board */}
+            <div className="table-center-area">
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {visibleBoard.map((c, i) => (
+                  <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
+                    <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '10px', height: '119px' }}>
-              {heroCards.map((c, i) => (
-                <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'bottom center' }}>
-                  <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
-                </div>
-              ))}
+
+            {/* Hero */}
+            <div className="seat-container seat-bottom">
+              <div style={{ display: 'flex', gap: '5px' }}>
+                {heroCards.map((c, i) => (
+                  <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'bottom center' }}>
+                    <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                  </div>
+                ))}
+              </div>
+              <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginTop: '10px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
+                Hero
+              </div>
             </div>
+
           </div>
 
         </div>
