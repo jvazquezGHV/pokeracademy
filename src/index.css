@@ -481,6 +481,42 @@ p {
   z-index: 1;
 }
 
+.user-info-bubble {
+  background-color: rgba(0,0,0,0.8);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-avatar {
+  display: none; /* Hidden on mobile */
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-name-text {
+  color: white;
+  font-weight: bold;
+  font-size: 0.7rem;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-chips-text {
+  color: #eab308;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
 .pot-container {
   display: flex;
   align-items: center;
@@ -603,6 +639,23 @@ p {
   }
   .player-cards-side {
     transform: scale(0.8);
+  }
+  .user-info-bubble {
+    padding: 0.5rem;
+    border-radius: 1rem;
+  }
+  .user-avatar {
+    display: flex;
+    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+  }
+  .user-name-text {
+    font-size: 0.9rem;
+    max-width: 80px;
+  }
+  .user-chips-text {
+    font-size: 0.8rem;
   }
   .sandbox-board-wrapper {
     transform: scale(1.1);

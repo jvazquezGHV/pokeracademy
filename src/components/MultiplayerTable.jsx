@@ -720,16 +720,20 @@ const MultiplayerTable = ({ session }) => {
                               <div style={{ position: 'absolute', left: '-15px', top: '-15px', backgroundColor: 'white', color: 'black', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '12px', border: '2px solid #ccc', boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>D</div>
                            )}
 
-                           <div className={isTurn ? 'active-turn' : ''} style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(255,255,255,0.2)', position: 'relative', overflow: 'hidden' }}>
+                           <div className={`user-info-bubble ${isTurn ? 'active-turn' : ''}`}>
                               {isTurn && gs.timerLength < 1000 && (
                                 <div style={{ position: 'absolute', bottom: 0, left: 0, height: '4px', backgroundColor: timerColor, width: `${timerPct}%`, transition: 'width 0.1s linear, background-color 0.3s' }} />
                               )}
-                              <div style={{ fontSize: '1.2rem', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <div className="user-avatar">
                                 {p.avatar}
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <p style={{ margin: 0, fontWeight: 'bold', color: 'white', fontSize: '0.9rem', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{isMe ? 'You' : p.display_name}</p>
-                                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold', fontSize: '0.8rem' }}>${p.chips}</p>
+                                 <span className="user-name-text">
+                                    {isMe ? 'You' : p.display_name}
+                                 </span>
+                                 <span className="user-chips-text">
+                                    ${p.chips}
+                                 </span>
                               </div>
                            </div>
                            {p.bet > 0 && (
