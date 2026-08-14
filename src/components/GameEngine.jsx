@@ -314,10 +314,10 @@ const GameEngine = () => {
         </button>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflowY: 'auto' }}>
         
-        {/* CENTER COL: Game Table */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* TOP ROW: Game Table */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <div className="poker-table-oval">
             
             {/* Top / Villain */}
@@ -436,8 +436,8 @@ const GameEngine = () => {
                 )}
              </div>
 
-          {/* RIGHT COL: AI Coach */}
-        <div style={{ flex: '0 0 350px', backgroundColor: 'var(--surface-color)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', margin: '0 1rem 1rem 0' }}>
+        {/* BOTTOM ROW: AI Coach */}
+        <div style={{ backgroundColor: 'var(--surface-color)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', margin: '1rem', minHeight: '250px', flex: 'none' }}>
         <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
           🤖 AI Coach
         </h3>

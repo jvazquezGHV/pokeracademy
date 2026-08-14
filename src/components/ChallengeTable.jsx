@@ -345,10 +345,10 @@ const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
         </button>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflowY: 'auto' }}>
         
-        {/* CENTER COL: Game Table */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* TOP ROW: Game Table */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <div className="poker-table-oval">
             
             {/* Top / Villain */}
@@ -471,8 +471,8 @@ const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
                 )}
         </div>
 
-        {/* RIGHT COL: AI Grader */}
-        <div style={{ flex: '0 0 350px', backgroundColor: 'var(--surface-color)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', margin: '0 1rem 1rem 0' }}>
+        {/* BOTTOM ROW: AI Grader */}
+        <div style={{ backgroundColor: 'var(--surface-color)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', margin: '1rem', minHeight: '250px', flex: 'none' }}>
           <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-color)' }}>{challenge.title}</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{challenge.description}</p>
           
