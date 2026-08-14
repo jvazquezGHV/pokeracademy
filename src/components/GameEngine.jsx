@@ -357,9 +357,6 @@ const GameEngine = () => {
                        <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                     </div>
                   ))}
-                  {[...Array(5 - board.length)].map((_, i) => (
-                     <div key={`empty-${i}`} style={{ width: '140px', height: '200px', margin: '10px', border: '4px dashed rgba(255,255,255,0.2)', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
-                  ))}
                </div>
             </div>
 

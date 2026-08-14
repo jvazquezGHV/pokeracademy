@@ -437,8 +437,8 @@ p {
 
 /* OVAL POKER TABLE STYLES */
 .poker-table-oval {
-  width: 95%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 500px;
   aspect-ratio: 2.2 / 1;
   background: radial-gradient(circle at center, #166534 0%, #064e3b 100%);
   border-radius: 50%;
@@ -453,7 +453,7 @@ p {
 
 @media screen and (max-width: 768px) {
   .poker-table-oval {
-    width: 100%;
+    width: 85%;
     aspect-ratio: 1.8 / 1;
     border-width: 6px;
     margin: 1rem auto;
