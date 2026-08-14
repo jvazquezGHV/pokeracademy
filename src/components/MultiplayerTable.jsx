@@ -640,10 +640,6 @@ const MultiplayerTable = ({ session }) => {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
           
-          <div style={{ position: 'fixed', top: '10px', left: '10px', backgroundColor: 'rgba(0,0,0,0.8)', color: '#0f0', padding: '5px', fontSize: '10px', zIndex: 9999, pointerEvents: 'none' }}>
-             Host: {amIHost ? 'YES' : 'NO'} | Phase: {gs.phase || 'N/A'} | Players: {dbPlayers.length}
-          </div>
-
           <div className="mobile-log-toggle" onClick={() => setIsLogOpen(true)}>📜</div>
 
           <div className={`mobile-log-panel ${isLogOpen ? 'open' : ''}`}>
