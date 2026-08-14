@@ -702,6 +702,17 @@ const MultiplayerTable = ({ session }) => {
                     return (
                       <div key={idx} className={`seat-container ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : (isEliminated ? 0.2 : 1), zIndex: isMe ? 10 : 5 }}>
                          
+                         {/* Render cards ABOVE bubble for bottom seats so the bubble sits exactly on the outer edge */}
+                         {isBottomSeat && (
+                           <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '5px', marginBottom: '5px', transform: 'scale(0.8)', transformOrigin: 'bottom center' }}>
+                             {p.cards?.map((c, i) => (
+                               <div key={i}>
+                                 <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
+                               </div>
+                             ))}
+                           </div>
+                         )}
+
                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
                            {isEliminated && (
                              <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#000', color: 'red', border: '1px solid red', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Eliminated</div>
@@ -733,13 +744,17 @@ const MultiplayerTable = ({ session }) => {
                            )}
                          </div>
 
-                         <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '5px', marginTop: isBottomSeat ? '5px' : '-10px', transform: 'scale(0.8)', transformOrigin: isBottomSeat ? 'top center' : 'bottom center' }}>
-                           {p.cards?.map((c, i) => (
-                             <div key={i}>
-                               <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
-                             </div>
-                           ))}
-                         </div>
+                         {/* Render cards BELOW bubble for top seats so the bubble sits exactly on the outer edge */}
+                         {!isBottomSeat && (
+                           <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '5px', marginTop: '-10px', transform: 'scale(0.8)', transformOrigin: 'top center' }}>
+                             {p.cards?.map((c, i) => (
+                               <div key={i}>
+                                 <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
+                               </div>
+                             ))}
+                           </div>
+                         )}
+
                       </div>
                     );
                   })}
@@ -751,16 +766,15 @@ const MultiplayerTable = ({ session }) => {
                     </div>
                   )}
 
-                  <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', color: 'white', zIndex: 1 }}>
-                     <h3 style={{ margin: '0 0 5px 0', color: 'var(--accent-color)' }}>Room: {code}</h3>
-                     {gs.mode === 'tournament' && (
-                        <div style={{ fontSize: '0.9rem' }}>
-                          <div style={{ color: '#eab308', fontWeight: 'bold' }}>Tournament Mode</div>
-                          <div>Blinds Level: {gs.blindsLevel || 1}</div>
-                          <div>Interval: {gs.blindInterval}m</div>
-                        </div>
-                     )}
-                  </div>
+                  {gs.mode === 'tournament' && (
+                    <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', color: 'white', zIndex: 1 }}>
+                       <div style={{ fontSize: '0.9rem' }}>
+                         <div style={{ color: '#eab308', fontWeight: 'bold' }}>Tournament Mode</div>
+                         <div>Blinds Level: {gs.blindsLevel || 1}</div>
+                         <div>Interval: {gs.blindInterval}m</div>
+                       </div>
+                    </div>
+                  )}
 
                   <div className="table-center-area">
                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem' }}>
