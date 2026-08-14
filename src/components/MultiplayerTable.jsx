@@ -120,7 +120,27 @@ const MultiplayerTable = ({ session }) => {
 
         const { data: playersData, error: playersError } = await supabase.from('poker_players').select('*').eq('room_id', roomData.id).order('seat_index', { ascending: true });
         if (playersError) throw playersError;
-        setDbPlayers(playersData);
+
+        let currentPlayers = playersData;
+        const isAlreadyInRoom = currentPlayers.some(p => p.user_id === session.user.id);
+        
+        if (!isAlreadyInRoom && currentPlayers.length < 6) {
+          const { error: joinError } = await supabase.from('poker_players').insert([{
+            room_id: roomData.id,
+            user_id: session.user.id,
+            display_name: session.user.email ? session.user.email.split('@')[0] : `Guest_${Math.floor(Math.random() * 1000)}`,
+            seat_index: currentPlayers.length,
+            chips: roomData.game_state?.startingChips || 1000,
+            is_host: false
+          }]);
+          
+          if (!joinError) {
+            const { data: newPlayers } = await supabase.from('poker_players').select('*').eq('room_id', roomData.id).order('seat_index', { ascending: true });
+            if (newPlayers) currentPlayers = newPlayers;
+          }
+        }
+
+        setDbPlayers(currentPlayers);
 
         if (!subscriptionsRef.current) {
           subscriptionsRef.current = true;
