@@ -47,7 +47,7 @@ const FlyingChips = ({ seatClass, amount }) => {
   }, []);
   
   return (
-    <div className={`seat-pos ${seatClass}`} style={{ zIndex: 1000, pointerEvents: 'none' }}>
+    <div className={`seat-container ${seatClass}`} style={{ zIndex: 1000, pointerEvents: 'none' }}>
       <div style={{
          transition: 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)',
          transform: active ? 'translateY(0) scale(1)' : 'translateY(100px) scale(0)',
