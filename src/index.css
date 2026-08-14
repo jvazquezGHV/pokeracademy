@@ -479,6 +479,8 @@ p {
   gap: 5px;
   transform: scale(0.9);
   z-index: 1;
+}
+
 .pot-container {
   display: flex;
   align-items: center;
