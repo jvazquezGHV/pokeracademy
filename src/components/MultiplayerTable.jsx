@@ -80,7 +80,7 @@ const MultiplayerTable = ({ session }) => {
   const logEndRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [winnerAnimation, setWinnerAnimation] = useState(null);
-  const [animationPlayed, setAnimationPlayed] = useState(false);
+  const animationPlayed = useRef(false);
 
   const gs = room?.game_state || {};
   const amIHost = dbPlayers.find(p => p.user_id === session.user.id)?.is_host;
@@ -91,16 +91,15 @@ const MultiplayerTable = ({ session }) => {
 
   useEffect(() => {
     if (gs.phase !== 'showdown') {
-       setAnimationPlayed(false);
+       animationPlayed.current = false;
        setWinnerAnimation(null);
-    }
-    if (gs.phase === 'showdown' && gs.winners && !animationPlayed) {
-       setAnimationPlayed(true);
+    } else if (gs.phase === 'showdown' && gs.winners && !animationPlayed.current) {
+       animationPlayed.current = true;
        setWinnerAnimation(gs.winners);
        const t = setTimeout(() => setWinnerAnimation(null), 2000);
        return () => clearTimeout(t);
     }
-  }, [gs.phase, gs.winners, animationPlayed]);
+  }, [gs.phase, gs.winners]);
 
   useEffect(() => {
     if (logEndRef.current) logEndRef.current.scrollIntoView({ behavior: 'smooth' });
