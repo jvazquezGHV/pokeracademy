@@ -600,20 +600,6 @@ p {
 }
 
 @media (min-width: 1024px) {
-  .multiplayer-main-layout {
-    flex-direction: row;
-  }
-  .mobile-log-toggle {
-    display: none;
-  }
-  .mobile-log-panel {
-    position: static;
-    width: 350px;
-    height: 100%;
-    box-shadow: none;
-    border-radius: 0;
-    border-right: 1px solid rgba(255,255,255,0.1);
-  }
   .poker-table-oval {
     width: 900px !important;
     max-width: 90%;
@@ -624,11 +610,11 @@ p {
   }
   .bottom-cards-wrapper {
     transform: scale(1.4);
-    margin-bottom: -35px;
+    margin-bottom: -80px;
   }
   .top-cards-wrapper {
     transform: scale(1.4);
-    margin-top: -45px;
+    margin-top: -80px;
   }
   .sandbox-board-wrapper {
     transform: scale(1.5);
