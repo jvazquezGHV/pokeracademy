@@ -702,16 +702,13 @@ const MultiplayerTable = ({ session }) => {
                     return (
                       <div key={idx} className={`seat-container ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : (isEliminated ? 0.2 : 1), zIndex: isMe ? 10 : 5 }}>
                          
-                         {/* Render cards ABOVE bubble for bottom seats so the bubble sits exactly on the outer edge */}
-                         {isBottomSeat && (
-                           <div className="sandbox-villain-wrapper bottom-cards-wrapper">
-                             {p.cards?.map((c, i) => (
-                               <div key={i}>
-                                 <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
-                               </div>
-                             ))}
-                           </div>
-                         )}
+                         <div className="player-cards-side">
+                           {p.cards?.map((c, i) => (
+                             <div key={i}>
+                               <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
+                             </div>
+                           ))}
+                         </div>
 
                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
                            {isEliminated && (
@@ -743,17 +740,6 @@ const MultiplayerTable = ({ session }) => {
                               </div>
                            )}
                          </div>
-
-                         {/* Render cards BELOW bubble for top seats so the bubble sits exactly on the outer edge */}
-                         {!isBottomSeat && (
-                           <div className="sandbox-villain-wrapper top-cards-wrapper">
-                             {p.cards?.map((c, i) => (
-                               <div key={i}>
-                                 <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
-                               </div>
-                             ))}
-                           </div>
-                         )}
 
                       </div>
                     );

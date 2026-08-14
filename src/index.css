@@ -463,25 +463,23 @@ p {
   margin-top: 2rem;
 }
 
-.bottom-cards-wrapper {
+.seat-container {
+  position: absolute;
   display: flex;
-  gap: 5px;
-  margin-bottom: -30px;
-  transform: scale(0.8);
-  transform-origin: bottom center;
-  z-index: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transform: translate(-50%, -50%);
+  z-index: 20;
 }
 
-.top-cards-wrapper {
+.player-cards-side {
   display: flex;
   gap: 5px;
-  margin-top: -40px;
-  transform: scale(0.8);
-  transform-origin: top center;
+  transform: scale(0.9);
   z-index: 1;
 }
-
-.pot-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -506,14 +504,6 @@ p {
   overflow: hidden;
 }
 
-.seat-container {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: translate(-50%, -50%);
-  z-index: 20;
-}
 
 /* Top Center (AI/Dealer) */
 .seat-top {
@@ -608,13 +598,8 @@ p {
   .seat-container {
     transform: translate(-50%, -50%) scale(1.2);
   }
-  .bottom-cards-wrapper {
+  .player-cards-side {
     transform: scale(1.1);
-    margin-bottom: -50px;
-  }
-  .top-cards-wrapper {
-    transform: scale(1.1);
-    margin-top: -60px;
   }
   .sandbox-board-wrapper {
     transform: scale(1.5);
