@@ -270,17 +270,22 @@ const MultiplayerTable = ({ session }) => {
   useEffect(() => {
     if (!amIHost || !isPlaying || gs.phase === 'showdown' || gs.phase === 'waiting_for_players' || !gs.timerLength) return;
     const interval = setInterval(async () => {
-      const elapsed = (Date.now() - gs.turnStartTime) / 1000;
-      if (elapsed >= gs.timerLength) {
-        const newState = { ...gs };
-        const idx = gs.turnIndex;
-        const target = newState.players[idx];
-        target.acted = true;
-        target.status = 'fold';
-        newState.history += `${target.display_name} Times Out & Auto-Folds.\n`;
-        newState.turnIndex = getNextActivePlayer(newState.players, idx);
-        newState.turnStartTime = Date.now();
-        await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+      try {
+        const elapsed = (Date.now() - gs.turnStartTime) / 1000;
+        if (elapsed >= gs.timerLength) {
+          const newState = JSON.parse(JSON.stringify(gs));
+          const idx = gs.turnIndex;
+          const target = newState.players[idx];
+          target.acted = true;
+          target.status = 'fold';
+          newState.history += `${target.display_name} Times Out & Auto-Folds.\n`;
+          newState.turnIndex = getNextActivePlayer(newState.players, idx);
+          newState.turnStartTime = Date.now();
+          const { error } = await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+          if (error) console.error("Auto-fold update error:", error);
+        }
+      } catch (err) {
+        console.error("Auto fold timer error:", err);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -321,7 +326,8 @@ const MultiplayerTable = ({ session }) => {
     if (gs.phase === 'showdown' || gs.phase === 'waiting_for_players') return;
 
     if (checkRoundComplete(gs.players)) {
-      const newState = { ...gs };
+      try {
+        const newState = JSON.parse(JSON.stringify(gs));
       
       newState.players.forEach(p => {
         newState.pot += p.bet;
@@ -398,13 +404,18 @@ const MultiplayerTable = ({ session }) => {
         newState.turnStartTime = Date.now();
       }
 
-      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(({ error }) => {
+          if (error) console.error("Round completion update error:", error);
+      });
       
       if (newState.phase === 'showdown') {
         if (lastDealerTriggerRef.current !== newState.history) {
            lastDealerTriggerRef.current = newState.history;
            triggerAIDealer(newState.history);
         }
+      }
+      } catch (err) {
+        console.error("Round Completion Error:", err);
       }
     }
   }, [gs, amIHost, isPlaying, room?.id]);
@@ -516,8 +527,9 @@ const MultiplayerTable = ({ session }) => {
   };
 
   const handleAction = async (actionType, amount = 0) => {
-    const newState = { ...gs };
-    const myIndex = gs.turnIndex;
+    try {
+      const newState = JSON.parse(JSON.stringify(gs));
+      const myIndex = gs.turnIndex;
     const me = newState.players[myIndex];
 
     me.acted = true;
@@ -556,7 +568,11 @@ const MultiplayerTable = ({ session }) => {
     newState.turnStartTime = Date.now();
     setShowRaiseOptions(false);
 
-    await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+    const { error } = await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
+    if (error) console.error("Action update error:", error);
+    } catch (err) {
+      console.error("Action handler error:", err);
+    }
   };
 
   const handleLeaveTable = async () => {
