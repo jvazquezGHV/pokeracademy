@@ -394,10 +394,10 @@ p {
 
 @media screen and (max-width: 768px) {
   .sandbox-board-wrapper {
-    transform: scale(0.45);
+    transform: scale(0.8);
     transform-origin: top center;
     width: 100%;
-    height: 100px;
+    height: 140px;
     display: flex;
     justify-content: center;
   }
