@@ -140,6 +140,28 @@ const MultiplayerTable = ({ session }) => {
           }
         }
 
+        // Self-heal: If I am in currentPlayers but NOT in gs.players, add myself!
+        const meInDb = currentPlayers.find(p => p.user_id === session.user.id);
+        if (meInDb && roomData.status === 'playing' && roomData.game_state?.players) {
+           const amIInGameState = roomData.game_state.players.find(p => p.user_id === session.user.id);
+           if (!amIInGameState && roomData.game_state.mode !== 'tournament') {
+              const newGs = { ...roomData.game_state, players: [...roomData.game_state.players] };
+              newGs.players.push({
+                 user_id: meInDb.user_id,
+                 display_name: meInDb.display_name,
+                 avatar: getAvatar(meInDb.user_id),
+                 chips: meInDb.chips,
+                 cards: [],
+                 bet: 0,
+                 status: 'sitting_out',
+                 acted: false
+              });
+              newGs.history += `\n>>> ${meInDb.display_name} dropped into an open seat!`;
+              setRoom(prev => ({ ...prev, game_state: newGs }));
+              await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', roomData.id);
+           }
+        }
+
         setDbPlayers(currentPlayers);
 
         if (!subscriptionsRef.current) {
