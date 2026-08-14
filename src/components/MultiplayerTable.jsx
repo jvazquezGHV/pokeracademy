@@ -67,6 +67,9 @@ const MultiplayerTable = ({ session }) => {
   const { code } = useParams();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
+  
+  // Vercel deployment trigger log
+  console.log("Running MultiplayerTable v1.1 - AI Dealer logic removed");
   const [dbPlayers, setDbPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
