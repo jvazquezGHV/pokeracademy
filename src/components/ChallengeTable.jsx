@@ -42,6 +42,7 @@ const ChallengeTable = ({ session }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
   const [customBet, setCustomBet] = useState(20);
+  const [isLogOpen, setIsLogOpen] = useState(false);
   
   const logEndRef = useRef(null);
 
@@ -316,16 +317,20 @@ const ChallengeTable = ({ session }) => {
   };
 
   const toCallUI = villainBet - heroBet;
-  const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
+const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
 
   if (!challenge) return null;
 
   return (
-    <div className="container sandbox-container" style={{ maxWidth: '1400px', marginTop: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
       
-      {/* LEFT COL: Action Log */}
-      <div className="sandbox-col-left" style={{ flex: '0 0 300px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
+      <div className="mobile-log-toggle" onClick={() => setIsLogOpen(true)}>📜</div>
+
+      <div className={`mobile-log-panel ${isLogOpen ? 'open' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+          <h3 style={{ margin: 0, color: 'var(--accent-color)' }}>📜 Action Log</h3>
+          <button onClick={() => setIsLogOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+        </div>
         <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
           {history.split('\n').map((line, i) => (
             line && <div key={i} style={{ padding: line.startsWith('---') ? '10px 0' : '0', color: line.startsWith('---') ? 'var(--accent-color)' : 'inherit', fontWeight: line.startsWith('---') ? 'bold' : 'normal' }}>{line}</div>
@@ -334,90 +339,96 @@ const ChallengeTable = ({ session }) => {
         </div>
       </div>
 
-      {/* CENTER COL: Game Table */}
-      <div className="sandbox-col-center" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <button onClick={() => navigate('/')} style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+      <div style={{ padding: '1rem' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
           ← Exit Challenge
         </button>
+      </div>
 
-        <div className="sandbox-table" style={{ 
-          width: '100%', maxWidth: '900px', flex: 1, minHeight: 0,
-          background: 'radial-gradient(circle at center, #166534 0%, #064e3b 100%)', 
-          borderRadius: '250px', 
-          border: '15px solid #291a10', 
-          boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5)', 
-          position: 'relative', 
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between', 
-          padding: '1.5rem 2rem' 
-        }}>
-          
-          {/* Top / Villain */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-             <div style={{ width: '100px', height: '20px', background: 'linear-gradient(to right, #666, #aaa, #666)', borderRadius: '10px', marginBottom: '1rem', boxShadow: '0 5px 15px rgba(0,0,0,0.5)', border: '1px solid #444' }}></div>
-             
-             <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '10px' }}>
-               {villainCards.map((c, i) => (
-                 <div key={i}>
-                   <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
-                 </div>
-               ))}
-             </div>
-             
-             <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1.5rem', borderRadius: '1.5rem', marginTop: '-1.5rem', zIndex: 2, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1rem' }}>AI Opponent</p>
-                <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
-                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${villainStack}</p>
-                {villainBet > 0 && <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Bet: ${villainBet}</span>}
-             </div>
-             {turn === 'villain' && phase !== 'showdown' && (
-                <div style={{ position: 'absolute', top: '18%', color: 'var(--accent-color)', fontWeight: 'bold', animation: 'pulse 1.5s infinite', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem' }}>Thinking...</div>
-             )}
-          </div>
-
-          {/* Center / Board Area */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1 }}>
-             <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
-                <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
-                <h2 style={{ margin: 0, color: '#eab308', fontSize: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${pot}</h2>
-             </div>
-             <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
-                {board.map((c, i) => (
-                  <div key={i}>
-                     <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
-                  </div>
-                ))}
-                {[...Array(5 - board.length)].map((_, i) => (
-                   <div key={`empty-${i}`} style={{ width: '140px', height: '200px', margin: '10px', border: '4px dashed rgba(255,255,255,0.2)', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
-                ))}
-             </div>
-          </div>
-
-          {/* Bottom / Hero Area */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-             
-             {phase !== 'showdown' && (
-               <div className="sandbox-stats-left" style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem 1.5rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
-                 <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase' }}>Win Prob</p>
-                 <h2 style={{ margin: '5px 0 0 0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1.8rem' }}>{winPct}%</h2>
+      <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
+        
+        {/* CENTER COL: Game Table */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="poker-table-oval">
+            
+            {/* Top / Villain */}
+            <div className="seat-container seat-top">
+               <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>AI Computer</p>
+                  <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${villainStack}</p>
                </div>
-             )}
+               
+               <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '5px' }}>
+                 {villainCards.map((c, i) => (
+                   <div key={i}>
+                     <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
+                   </div>
+                 ))}
+               </div>
+               
+               {turn === 'villain' && phase !== 'showdown' && (
+                  <div style={{ position: 'absolute', top: '-30px', color: 'var(--accent-color)', fontWeight: 'bold', animation: 'pulse 1.5s infinite', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem', whiteSpace: 'nowrap' }}>Thinking...</div>
+               )}
+               {villainBet > 0 && (
+                  <div style={{ marginTop: '10px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308' }}>
+                     <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Bet: </span><span style={{ color: '#eab308', fontWeight: 'bold' }}>${villainBet}</span>
+                  </div>
+               )}
+            </div>
 
-             <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1.5rem', borderRadius: '1.5rem', marginBottom: '-1.5rem', zIndex: 2, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1rem' }}>You</p>
-                <div style={{ height: '20px', width: '1px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
-                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${heroStack}</p>
-                {heroBet > 0 && <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Bet: ${heroBet}</span>}
-             </div>
+            {/* Center / Board Area */}
+            <div className="table-center-area">
+               <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+                  <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
+                  <h2 style={{ margin: 0, color: '#eab308', fontSize: '1.5rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${pot}</h2>
+               </div>
+               <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
+                  {board.map((c, i) => (
+                    <div key={i}>
+                       <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                    </div>
+                  ))}
+                  {[...Array(5 - board.length)].map((_, i) => (
+                     <div key={`empty-${i}`} style={{ width: '140px', height: '200px', margin: '10px', border: '4px dashed rgba(255,255,255,0.2)', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                  ))}
+               </div>
+            </div>
 
-             <div className="sandbox-hero-wrapper" style={{ display: 'flex', gap: '10px' }}>
-               {heroCards.map((c, i) => (
-                 <div key={i}>
-                   <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+            {/* Bottom / Hero Area */}
+            <div className="seat-container seat-bottom">
+               
+               {/* Win Pct (Absolute above hero cards) */}
+               {phase !== 'showdown' && (
+                 <div style={{ position: 'absolute', top: '-40px', left: '-80px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+                   <p style={{ margin: 0, color: '#aaa', fontSize: '0.7rem', textTransform: 'uppercase' }}>Win Prob</p>
+                   <h2 style={{ margin: '0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1.2rem' }}>{winPct}%</h2>
                  </div>
-               ))}
-             </div>
-             
-             <div className="sandbox-actions-right" style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '120px' }}>
+               )}
+
+               {heroBet > 0 && (
+                  <div style={{ marginBottom: '10px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308' }}>
+                     <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Bet: </span><span style={{ color: '#eab308', fontWeight: 'bold' }}>${heroBet}</span>
+                  </div>
+               )}
+
+               <div className="sandbox-hero-wrapper" style={{ display: 'flex', gap: '5px' }}>
+                 {heroCards.map((c, i) => (
+                   <div key={i}>
+                     <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                   </div>
+                 ))}
+               </div>
+               
+               <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1.5rem', marginTop: '10px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>You</p>
+                  <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${heroStack}</p>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons (Fixed Bottom Right) */}
+        <div className="action-bar-bottom">
                 {phase !== 'showdown' ? (
                   <>
                     {showRaiseOptions ? (
@@ -461,47 +472,44 @@ const ChallengeTable = ({ session }) => {
                     </button>
                   )
                 )}
-             </div>
+        </div>
 
+        {/* RIGHT COL: AI Grader */}
+        <div style={{ flex: '0 0 350px', backgroundColor: 'var(--surface-color)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', margin: '0 1rem 1rem 0' }}>
+          <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-color)' }}>{challenge.title}</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{challenge.description}</p>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '2rem' }}>
+            {[1, 2, 3].map(s => (
+               <div key={s} style={{ fontSize: '2.5rem', filter: stars >= s ? 'none' : 'grayscale(100%) opacity(0.3)' }}>⭐</div>
+            ))}
           </div>
-        </div>
-      </div>
 
-      {/* RIGHT COL: AI Grader */}
-      <div className="sandbox-col-right" style={{ flex: '0 0 350px', minHeight: 0, backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-color)' }}>{challenge.title}</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{challenge.description}</p>
-        
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '2rem' }}>
-          {[1, 2, 3].map(s => (
-             <div key={s} style={{ fontSize: '2.5rem', filter: stars >= s ? 'none' : 'grayscale(100%) opacity(0.3)' }}>⭐</div>
-          ))}
-        </div>
-
-        <h4 style={{ margin: '0 0 1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Feedback</h4>
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-          {isAnalyzing ? (
-            <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '2rem' }}>
-               <div style={{ fontSize: '2rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>⏳</div>
-               Grading your play...
-            </div>
-          ) : lastFeedback ? (
-            <div style={{ 
-               padding: '1rem', 
-               borderRadius: '0.5rem', 
-               backgroundColor: lastFeedback.passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-               border: lastFeedback.passed ? '1px solid #10b981' : '1px solid #ef4444'
-            }}>
-               <h3 style={{ margin: '0 0 0.5rem 0', color: lastFeedback.passed ? '#10b981' : '#ef4444' }}>
-                 {lastFeedback.passed ? "Pass!" : "Fail"}
-               </h3>
-               <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{lastFeedback.feedback}</p>
-            </div>
-          ) : (
-            <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', marginTop: '2rem', opacity: 0.5 }}>
-               Play a hand to receive a grade from the AI Coach.
-            </div>
-          )}
+          <h4 style={{ margin: '0 0 1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Feedback</h4>
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+            {isAnalyzing ? (
+              <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '2rem' }}>
+                 <div style={{ fontSize: '2rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>⏳</div>
+                 Grading your play...
+              </div>
+            ) : lastFeedback ? (
+              <div style={{ 
+                 padding: '1rem', 
+                 borderRadius: '0.5rem', 
+                 backgroundColor: lastFeedback.passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                 border: lastFeedback.passed ? '1px solid #10b981' : '1px solid #ef4444'
+              }}>
+                 <h3 style={{ margin: '0 0 0.5rem 0', color: lastFeedback.passed ? '#10b981' : '#ef4444' }}>
+                   {lastFeedback.passed ? "Pass!" : "Fail"}
+                 </h3>
+                 <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>{lastFeedback.feedback}</p>
+              </div>
+            ) : (
+              <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', marginTop: '2rem', opacity: 0.5 }}>
+                 Play a hand to receive a grade from the AI Coach.
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -529,7 +537,6 @@ const ChallengeTable = ({ session }) => {
             </div>
          </div>
       )}
-
     </div>
   );
 };

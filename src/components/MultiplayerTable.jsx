@@ -16,17 +16,28 @@ const getAvatar = (userId) => {
 };
 
 const getSeatClass = (playerCount, offset) => {
+  // Always seat the hero (offset 0) at the bottom
+  if (offset === 0) return 'seat-bottom';
+  
   if (playerCount === 2) {
-    if (offset === 1) return 'seat-3';
+    if (offset === 1) return 'seat-top';
   } else if (playerCount === 3) {
-    if (offset === 1) return 'seat-2';
-    if (offset === 2) return 'seat-4';
+    if (offset === 1) return 'seat-top-left';
+    if (offset === 2) return 'seat-top-right';
   } else if (playerCount === 4) {
-    if (offset === 1) return 'seat-1';
-    if (offset === 2) return 'seat-3';
-    if (offset === 3) return 'seat-5';
+    if (offset === 1) return 'seat-bottom-left';
+    if (offset === 2) return 'seat-top';
+    if (offset === 3) return 'seat-bottom-right';
+  } else if (playerCount === 5) {
+    if (offset === 1) return 'seat-bottom-left';
+    if (offset === 2) return 'seat-top-left';
+    if (offset === 3) return 'seat-top-right';
+    if (offset === 4) return 'seat-bottom-right';
+  } else {
+    // 6 players
+    const seats = ['seat-bottom', 'seat-bottom-left', 'seat-top-left', 'seat-top', 'seat-top-right', 'seat-bottom-right'];
+    return seats[offset] || 'seat-bottom';
   }
-  return `seat-${offset}`;
 };
 
 const FlyingChips = ({ seatClass, amount }) => {
@@ -62,9 +73,8 @@ const MultiplayerTable = ({ session }) => {
   const [customBet, setCustomBet] = useState(20);
   const [timerConfig, setTimerConfig] = useState(30);
   
-  const [chatMessages, setChatMessages] = useState([]);
-  const [messageInput, setMessageInput] = useState('');
-  const chatEndRef = useRef(null);
+  const [isLogOpen, setIsLogOpen] = useState(false);
+  const logEndRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [winnerAnimation, setWinnerAnimation] = useState(null);
@@ -91,8 +101,8 @@ const MultiplayerTable = ({ session }) => {
   }, [gs.phase, gs.winners, animationPlayed]);
 
   useEffect(() => {
-    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
+    if (logEndRef.current) logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [gs.history]);
 
   const subscriptionsRef = useRef(false);
   const lastDealerTriggerRef = useRef(null);
@@ -132,9 +142,6 @@ const MultiplayerTable = ({ session }) => {
             .subscribe();
 
           chatSub = supabase.channel(`chat_${code}`)
-            .on('broadcast', { event: 'chat' }, (payload) => {
-              setChatMessages((prev) => [...prev, payload.payload]);
-            })
             .on('broadcast', { event: 'game_sync' }, () => {
               fetchRoom();
             })
@@ -156,29 +163,18 @@ const MultiplayerTable = ({ session }) => {
     return () => {
       if (roomSub) supabase.removeChannel(roomSub);
       if (playersSub) supabase.removeChannel(playersSub);
-      if (chatSub) supabase.removeChannel(chatSub);
       subscriptionsRef.current = false;
     };
   }, [code, navigate]);
-
-  const sendChatMessage = (e) => {
-    e.preventDefault();
-    if (!messageInput.trim()) return;
-    
-    const msg = { user: meName, text: messageInput.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    setChatMessages((prev) => [...prev, msg]);
-    setMessageInput('');
-    supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
-  };
 
   const triggerAIDealer = async (history) => {
     try {
         setIsAiThinking(true);
         const customPrompt = `You are a professional but witty high-stakes casino dealer. Summarize this poker hand in 1 sentence and add a clever, slightly roasting remark about the losing play. Do not use terms of endearment like "darling" or "sweetie". Keep it brief and sound like a real casino. Action history:\n${history}`;
         const response = await getAIFeedback(history, customPrompt);
-        const msg = { user: '🤖 Dealer', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'chat', payload: msg });
-        setChatMessages((prev) => [...prev, msg]);
+        const state = { ...gs };
+        state.history += `\n🤖 Dealer: ${response}`;
+        await supabase.from('poker_rooms').update({ game_state: state }).eq('id', room.id);
     } catch (err) {
         console.error(err);
     } finally {
@@ -224,12 +220,7 @@ const MultiplayerTable = ({ session }) => {
     }
 
     if (stateChanged) {
-       supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
-          supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
-             if (data) setRoom(data);
-             supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-          });
-       });
+       supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
     }
   }, [dbPlayers, amIHost, isPlaying]);
 
@@ -248,9 +239,6 @@ const MultiplayerTable = ({ session }) => {
         newState.turnIndex = getNextActivePlayer(newState.players, idx);
         newState.turnStartTime = Date.now();
         await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
-        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-        const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
-        if (data) setRoom(data);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -368,12 +356,7 @@ const MultiplayerTable = ({ session }) => {
         newState.turnStartTime = Date.now();
       }
 
-      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id).then(() => {
-          supabase.from('poker_rooms').select('*').eq('id', room.id).single().then(({data}) => {
-             if (data) setRoom(data);
-             supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-          });
-      });
+      supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
       
       if (newState.phase === 'showdown') {
         if (lastDealerTriggerRef.current !== newState.history) {
@@ -429,11 +412,7 @@ const MultiplayerTable = ({ session }) => {
           timerLength: gs.timerLength || timerConfig, turnStartTime: Date.now(),
           history: "--- TABLE OPEN ---\nWaiting for challengers to drop in...\n"
         };
-        const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
-        if (error) throw error;
-        supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-        const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
-        if (data) setRoom(data);
+        await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
         return;
       }
 
@@ -487,11 +466,7 @@ const MultiplayerTable = ({ session }) => {
         history: historyStr
       };
 
-      const { error } = await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
-      if (error) throw error;
-      supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-      const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
-      if (data) setRoom(data);
+      await supabase.from('poker_rooms').update({ status: 'playing', game_state: initialState }).eq('id', room.id);
     } catch (err) {
       console.error('Start Game Error:', err);
       alert('Failed to start game: ' + err.message);
@@ -540,15 +515,11 @@ const MultiplayerTable = ({ session }) => {
     setShowRaiseOptions(false);
 
     await supabase.from('poker_rooms').update({ game_state: newState }).eq('id', room.id);
-    supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
-    const { data } = await supabase.from('poker_rooms').select('*').eq('id', room.id).single();
-    if (data) setRoom(data);
   };
 
   const handleLeaveTable = async () => {
     if (window.confirm("Are you sure you want to leave the table?")) {
       await supabase.from('poker_players').delete().eq('user_id', session.user.id).eq('room_id', room?.id);
-      supabase.channel(`chat_${code}`).send({ type: 'broadcast', event: 'game_sync', payload: {} });
       navigate('/multiplayer');
     }
   };
@@ -634,11 +605,16 @@ const MultiplayerTable = ({ session }) => {
           </div>
         </div>
       ) : (
-        <div className="multiplayer-layout">
+        <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
           
-          <div className="multiplayer-sidebar">
-            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent-color)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>📜 Action Log</h3>
-            <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
+          <div className="mobile-log-toggle" onClick={() => setIsLogOpen(true)}>📜</div>
+
+          <div className={`mobile-log-panel ${isLogOpen ? 'open' : ''}`}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+                <h3 style={{ margin: 0, color: 'var(--accent-color)' }}>📜 Action Log</h3>
+                <button onClick={() => setIsLogOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+             </div>
+             <div style={{ flex: 1, overflowY: 'auto', fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace' }}>
               {gs.history?.split('\n').map((line, i) => {
                 if (!line) return null;
                 const escapedNames = dbPlayers.map(p => p.display_name ? p.display_name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '').filter(Boolean);
@@ -660,212 +636,172 @@ const MultiplayerTable = ({ session }) => {
             </div>
           </div>
 
-          <div className="poker-table-container">
-            {winnerAnimation && winnerAnimation.map((w, i) => {
-                const pIdx = gs.players.findIndex(p => p.user_id === w.user_id);
-                if (pIdx === -1) return null;
-                const offset = (pIdx - myIndexInArray + gs.players.length) % gs.players.length;
-                const seatClass = getSeatClass(gs.players.length, offset);
-                return <FlyingChips key={`anim-${i}`} seatClass={seatClass} amount={w.amount} />;
-            })}
-            
-            {gs.players?.map((p, idx) => {
-              const isMe = p.user_id === session.user.id;
-              const offset = (idx - myIndexInArray + gs.players.length) % gs.players.length;
-              const seatClass = getSeatClass(gs.players.length, offset);
-              const isTurn = gs.turnIndex === idx && gs.phase !== 'showdown' && gs.phase !== 'waiting_for_players';
-              
-              let timerPct = 100;
-              let timerColor = 'var(--accent-color)';
-              if (isTurn && timeLeft !== null && gs.timerLength) {
-                timerPct = (timeLeft / gs.timerLength) * 100;
-                if (timerPct < 25) timerColor = '#dc2626';
-                else if (timerPct < 50) timerColor = '#eab308';
-              }
+          <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
+             
+             {/* Center Table */}
+             <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div className="poker-table-oval">
+                  {winnerAnimation && winnerAnimation.map((w, i) => {
+                      const pIdx = gs.players.findIndex(p => p.user_id === w.user_id);
+                      if (pIdx === -1) return null;
+                      const offset = (pIdx - myIndexInArray + gs.players.length) % gs.players.length;
+                      const seatClass = getSeatClass(gs.players.length, offset);
+                      return <FlyingChips key={`anim-${i}`} seatClass={seatClass} amount={w.amount} />;
+                  })}
+                  
+                  {gs.players?.map((p, idx) => {
+                    const isMe = p.user_id === session.user.id;
+                    const offset = (idx - myIndexInArray + gs.players.length) % gs.players.length;
+                    const seatClass = getSeatClass(gs.players.length, offset);
+                    const isTurn = gs.turnIndex === idx && gs.phase !== 'showdown' && gs.phase !== 'waiting_for_players';
+                    
+                    let timerPct = 100;
+                    let timerColor = 'var(--accent-color)';
+                    if (isTurn && timeLeft !== null && gs.timerLength) {
+                      timerPct = (timeLeft / gs.timerLength) * 100;
+                      if (timerPct < 25) timerColor = '#dc2626';
+                      else if (timerPct < 50) timerColor = '#eab308';
+                    }
 
-              const isBottomSeat = idx === 0 || idx === 1 || idx === 5;
-              const isEliminated = p.status === 'eliminated';
+                    const isBottomSeat = seatClass.includes('bottom');
+                    const isEliminated = p.status === 'eliminated';
 
-              return (
-                <div key={idx} className={`seat-pos ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : (isEliminated ? 0.2 : 1), zIndex: isMe ? 10 : 5 }}>
-                   
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
-                     {isEliminated && (
-                       <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#000', color: 'red', border: '1px solid red', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Eliminated</div>
-                     )}
-                     {p.status === 'sitting_out' && !isEliminated && (
-                       <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#dc2626', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Waiting for next hand</div>
-                     )}
-                     {idx === 0 && (
-                        <div style={{ position: 'absolute', left: '-15px', top: '-15px', backgroundColor: 'white', color: 'black', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '12px', border: '2px solid #ccc', boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>D</div>
-                     )}
+                    return (
+                      <div key={idx} className={`seat-container ${seatClass} ${isBottomSeat ? 'bottom-seat' : ''}`} style={{ opacity: (p.status === 'fold' || p.status === 'sitting_out') ? 0.4 : (isEliminated ? 0.2 : 1), zIndex: isMe ? 10 : 5 }}>
+                         
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative' }}>
+                           {isEliminated && (
+                             <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#000', color: 'red', border: '1px solid red', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Eliminated</div>
+                           )}
+                           {p.status === 'sitting_out' && !isEliminated && (
+                             <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#dc2626', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', whiteSpace: 'nowrap', zIndex: 5, fontWeight: 'bold' }}>Waiting for next hand</div>
+                           )}
+                           {idx === gs.dealerIndex && (
+                              <div style={{ position: 'absolute', left: '-15px', top: '-15px', backgroundColor: 'white', color: 'black', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '12px', border: '2px solid #ccc', boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>D</div>
+                           )}
 
-                     <div className={isTurn ? 'active-turn' : ''} style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(255,255,255,0.2)', position: 'relative', overflow: 'hidden' }}>
-                        {isTurn && gs.timerLength < 1000 && (
-                          <div style={{ position: 'absolute', bottom: 0, left: 0, height: '4px', backgroundColor: timerColor, width: `${timerPct}%`, transition: 'width 0.1s linear, background-color 0.3s' }} />
-                        )}
-                        <div style={{ fontSize: '1.2rem', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          {p.avatar}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <p style={{ margin: 0, fontWeight: 'bold', color: 'white', fontSize: '0.9rem', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{isMe ? 'You' : p.display_name}</p>
-                          <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold', fontSize: '0.8rem' }}>${p.chips}</p>
-                        </div>
-                     </div>
-                     {p.bet > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                           <ChipStack amount={p.bet} />
-                           <span style={{ color: '#ccc', fontWeight: 'bold', fontSize: '0.9rem' }}>${p.bet}</span>
-                        </div>
-                     )}
-                   </div>
+                           <div className={isTurn ? 'active-turn' : ''} style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(255,255,255,0.2)', position: 'relative', overflow: 'hidden' }}>
+                              {isTurn && gs.timerLength < 1000 && (
+                                <div style={{ position: 'absolute', bottom: 0, left: 0, height: '4px', backgroundColor: timerColor, width: `${timerPct}%`, transition: 'width 0.1s linear, background-color 0.3s' }} />
+                              )}
+                              <div style={{ fontSize: '1.2rem', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                {p.avatar}
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <p style={{ margin: 0, fontWeight: 'bold', color: 'white', fontSize: '0.9rem', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{isMe ? 'You' : p.display_name}</p>
+                                <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold', fontSize: '0.8rem' }}>${p.chips}</p>
+                              </div>
+                           </div>
+                           {p.bet > 0 && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                 <ChipStack amount={p.bet} />
+                                 <span style={{ color: '#ccc', fontWeight: 'bold', fontSize: '0.9rem' }}>${p.bet}</span>
+                              </div>
+                           )}
+                         </div>
 
-                   <div className="playing-cards-wrapper">
-                     {p.cards?.map((c, i) => (
-                       <div key={i}>
-                         <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
-                       </div>
-                     ))}
-                   </div>
-                </div>
-              );
-            })}
+                         <div className="sandbox-villain-wrapper" style={{ display: 'flex', gap: '5px', marginTop: isBottomSeat ? '5px' : '-10px', transform: 'scale(0.8)', transformOrigin: isBottomSeat ? 'top center' : 'bottom center' }}>
+                           {p.cards?.map((c, i) => (
+                             <div key={i}>
+                               <Card suit={c.suit} rank={c.rank} isFaceUp={gs.phase === 'showdown' || isMe} disableFlip={true} />
+                             </div>
+                           ))}
+                         </div>
+                      </div>
+                    );
+                  })}
 
-            {gs.phase === 'waiting_for_players' && (
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '1rem', border: '2px dashed var(--accent-color)', zIndex: 10, textAlign: 'center' }}>
-                {gs.tournamentWinner ? (
-                   <>
-                     <h1 style={{ color: '#eab308', margin: '0 0 1rem 0', fontSize: '3rem', textShadow: '0 0 20px #eab308' }}>🏆 {gs.tournamentWinner} 🏆</h1>
-                     <h2 style={{ color: 'white', margin: 0 }}>Wins the Tournament!</h2>
-                   </>
-                ) : (
-                   <h2 style={{ color: 'white', margin: 0 }}>Waiting for challengers...</h2>
-                )}
-              </div>
-            )}
-
-            <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', color: 'white', zIndex: 1 }}>
-               <h3 style={{ margin: '0 0 5px 0', color: 'var(--accent-color)' }}>Room: {code}</h3>
-               {gs.mode === 'tournament' && (
-                  <div style={{ fontSize: '0.9rem' }}>
-                    <div style={{ color: '#eab308', fontWeight: 'bold' }}>Tournament Mode</div>
-                    <div>Blinds Level: {gs.blindsLevel || 1}</div>
-                    <div>Interval: {gs.blindInterval}m</div>
-                  </div>
-               )}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, zIndex: 1 }}>
-               <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                  <ChipStack amount={gs.pot} />
-                  <div>
-                    <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
-                    <h2 style={{ margin: 0, color: '#eab308', fontSize: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${gs.pot}</h2>
-                  </div>
-               </div>
-               <div className="board-container">
-                  {gs.board?.map((c, i) => (
-                    <div key={i}>
-                       <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                  {gs.phase === 'waiting_for_players' && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '1rem', border: '2px dashed var(--accent-color)', zIndex: 10, textAlign: 'center' }}>
+                      {gs.tournamentWinner ? (
+                         <>
+                           <h1 style={{ color: '#eab308', margin: '0 0 1rem 0', fontSize: '3rem', textShadow: '0 0 20px #eab308' }}>🏆 {gs.tournamentWinner} 🏆</h1>
+                           <h2 style={{ color: 'white', margin: 0 }}>Wins the Tournament!</h2>
+                         </>
+                      ) : (
+                         <h2 style={{ color: 'white', margin: 0 }}>Waiting for challengers...</h2>
+                      )}
                     </div>
-                  ))}
-                  {[...Array(5 - (gs.board?.length || 0))].map((_, i) => (
-                     <div key={`empty-${i}`} style={{ width: '85px', height: '119px', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
-                  ))}
-               </div>
-            </div>
+                  )}
 
-            <div className="action-buttons-container">
-               {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
-                 amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2 || isAiThinking || winnerAnimation} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', opacity: (isAiThinking || winnerAnimation) ? 0.5 : 1 }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : (isAiThinking ? 'AI Dealer Typing...' : 'Play Next Hand')}</button>
-               ) : (
-                 myPlayerState?.status !== 'sitting_out' && (
-                   <>
-                     {showRaiseOptions ? (
-                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                         <div style={{ display: 'flex', gap: '5px' }}>
-                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', 20)}>Min</button>
-                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', Math.floor(gs.pot * 0.5))}>1/2 Pot</button>
-                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', gs.pot)}>Pot</button>
-                           <button className="btn-primary" style={{ flex: 1, padding: '0.5rem', backgroundColor: 'var(--danger-color)' }} onClick={() => handleAction('raise', myPlayerState?.chips || 0)}>All-In</button>
-                         </div>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
-                           <input 
-                             type="range" 
-                             min={20} 
-                             max={myPlayerState?.chips || 1000} 
-                             value={customBet} 
-                             onChange={(e) => setCustomBet(Number(e.target.value))}
-                             style={{ flex: 1, cursor: 'pointer' }}
-                           />
-                           <span style={{ color: 'white', minWidth: '40px', fontWeight: 'bold' }}>${customBet}</span>
-                         </div>
-                         <button className="btn-primary" onClick={() => handleAction('raise', customBet)} style={{ backgroundColor: 'var(--accent-color)', marginTop: '5px' }}>Bet ${customBet}</button>
-                         <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
-                       </div>
-                     ) : (
-                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: myTurn ? 1 : 0, pointerEvents: myTurn ? 'auto' : 'none', transition: 'opacity 0.2s', transform: myTurn ? 'translateY(0)' : 'translateY(20px)' }}>
-                         <button className="btn-primary" onClick={() => handleAction('fold')} style={{ backgroundColor: 'var(--danger-color)', padding: '1rem' }}>Fold</button>
-                         <button className="btn-primary" onClick={() => handleAction('call')} style={{ padding: '1rem' }}>
-                           {toCallUI > 0 ? `Call ${toCallUI}` : 'Check'}
-                         </button>
-                         <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} style={{ backgroundColor: 'var(--accent-color)', padding: '1rem' }}>
-                           {toCallUI > 0 ? 'Raise' : 'Bet'}
-                         </button>
-                       </div>
+                  <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', color: 'white', zIndex: 1 }}>
+                     <h3 style={{ margin: '0 0 5px 0', color: 'var(--accent-color)' }}>Room: {code}</h3>
+                     {gs.mode === 'tournament' && (
+                        <div style={{ fontSize: '0.9rem' }}>
+                          <div style={{ color: '#eab308', fontWeight: 'bold' }}>Tournament Mode</div>
+                          <div>Blinds Level: {gs.blindsLevel || 1}</div>
+                          <div>Interval: {gs.blindInterval}m</div>
+                        </div>
                      )}
-                   </>
-                 )
-               )}
-            </div>
+                  </div>
 
-          </div>
-
-          <div className="multiplayer-chat">
-            <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-               <h3 style={{ margin: 0, color: 'var(--accent-color)' }}>💬 Table Chat</h3>
-            </div>
-            
-            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-               {chatMessages.length === 0 && (
-                 <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontStyle: 'italic', marginTop: '2rem' }}>No messages yet. Say hello!</p>
-               )}
-               {chatMessages.map((msg, i) => {
-                 const isMe = msg.user === meName;
-                 const isDealer = msg.user === '🤖 Dealer';
-                 return (
-                   <div key={i} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
-                     {!isMe && <div style={{ fontSize: '0.75rem', color: isDealer ? 'var(--accent-color)' : 'var(--text-secondary)', marginBottom: '2px', fontWeight: isDealer ? 'bold' : 'normal' }}>{msg.user}</div>}
-                     <div style={{ 
-                        backgroundColor: isMe ? 'var(--accent-color)' : (isDealer ? '#1e293b' : 'rgba(255,255,255,0.1)'), 
-                        color: isMe ? '#000' : (isDealer ? 'var(--accent-color)' : '#fff'),
-                        border: isDealer ? '1px solid var(--accent-color)' : 'none',
-                        padding: '0.6rem 1rem', 
-                        borderRadius: '1rem',
-                        borderBottomRightRadius: isMe ? '0' : '1rem',
-                        borderBottomLeftRadius: !isMe ? '0' : '1rem'
-                     }}>
-                       {msg.text}
+                  <div className="table-center-area">
+                     <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <ChipStack amount={gs.pot} />
+                        <div>
+                          <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
+                          <h2 style={{ margin: 0, color: '#eab308', fontSize: '1.5rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${gs.pot}</h2>
+                        </div>
                      </div>
-                     <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px', textAlign: isMe ? 'right' : 'left' }}>{msg.time}</div>
-                   </div>
-                 );
-               })}
-               <div ref={chatEndRef} />
-            </div>
-
-            <form onSubmit={sendChatMessage} style={{ padding: '1rem', backgroundColor: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '0.5rem' }}>
-               <input 
-                 type="text" 
-                 value={messageInput}
-                 onChange={(e) => setMessageInput(e.target.value)}
-                 placeholder="Type a message..." 
-                 style={{ flex: 1, padding: '0.5rem 1rem', borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'var(--bg-color)', color: 'white' }}
-               />
-               <button type="submit" disabled={!messageInput.trim()} className="btn-primary" style={{ padding: '0.5rem 1rem', borderRadius: '1.5rem' }}>Send</button>
-            </form>
+                     <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
+                        {gs.board?.map((c, i) => (
+                          <div key={i}>
+                             <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                          </div>
+                        ))}
+                        {[...Array(5 - (gs.board?.length || 0))].map((_, i) => (
+                           <div key={`empty-${i}`} style={{ width: '140px', height: '200px', margin: '10px', border: '4px dashed rgba(255,255,255,0.2)', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                        ))}
+                     </div>
+                  </div>
+                </div>
+             </div>
+             
+             {/* Action Buttons */}
+             <div className="action-bar-bottom">
+                 {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
+                   amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2 || isAiThinking || winnerAnimation} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', opacity: (isAiThinking || winnerAnimation) ? 0.5 : 1 }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : (isAiThinking ? 'AI Dealer Typing...' : 'Play Next Hand')}</button>
+                 ) : (
+                   myPlayerState?.status !== 'sitting_out' && (
+                     <>
+                       {showRaiseOptions ? (
+                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                           <div style={{ display: 'flex', gap: '5px' }}>
+                             <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', 20)}>Min</button>
+                             <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', Math.floor(gs.pot * 0.5))}>1/2 Pot</button>
+                             <button className="btn-primary" style={{ flex: 1, padding: '0.5rem' }} onClick={() => handleAction('raise', gs.pot)}>Pot</button>
+                             <button className="btn-primary" style={{ flex: 1, padding: '0.5rem', backgroundColor: 'var(--danger-color)' }} onClick={() => handleAction('raise', myPlayerState?.chips || 0)}>All-In</button>
+                           </div>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
+                             <input 
+                               type="range" 
+                               min={20} 
+                               max={myPlayerState?.chips || 1000} 
+                               value={customBet} 
+                               onChange={(e) => setCustomBet(Number(e.target.value))}
+                               style={{ flex: 1, cursor: 'pointer' }}
+                             />
+                             <span style={{ color: 'white', minWidth: '40px', fontWeight: 'bold' }}>${customBet}</span>
+                           </div>
+                           <button className="btn-primary" onClick={() => handleAction('raise', customBet)} style={{ backgroundColor: 'var(--accent-color)', marginTop: '5px' }}>Bet ${customBet}</button>
+                           <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
+                         </div>
+                       ) : (
+                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: myTurn ? 1 : 0, pointerEvents: myTurn ? 'auto' : 'none', transition: 'opacity 0.2s', transform: myTurn ? 'translateY(0)' : 'translateY(20px)' }}>
+                           <button className="btn-primary" onClick={() => handleAction('fold')} style={{ backgroundColor: 'var(--danger-color)', padding: '1rem' }}>Fold</button>
+                           <button className="btn-primary" onClick={() => handleAction('call')} style={{ padding: '1rem' }}>
+                             {toCallUI > 0 ? `Call ${toCallUI}` : 'Check'}
+                           </button>
+                           <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} style={{ backgroundColor: 'var(--accent-color)', padding: '1rem' }}>
+                             {toCallUI > 0 ? 'Raise' : 'Bet'}
+                           </button>
+                         </div>
+                       )}
+                     </>
+                   )
+                 )}
+              </div>
           </div>
-
         </div>
       )}
 
