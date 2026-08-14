@@ -784,12 +784,12 @@ const MultiplayerTable = ({ session }) => {
                            <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
                          </div>
                        ) : (
-                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: myTurn ? 1 : 0, pointerEvents: myTurn ? 'auto' : 'none', transition: 'opacity 0.2s', transform: myTurn ? 'translateY(0)' : 'translateY(20px)' }}>
-                           <button className="btn-primary" onClick={() => handleAction('fold')} style={{ backgroundColor: 'var(--danger-color)', padding: '1rem' }}>Fold</button>
-                           <button className="btn-primary" onClick={() => handleAction('call')} style={{ padding: '1rem' }}>
+                         <div style={{ display: 'flex', gap: '10px', opacity: myTurn ? 1 : 0, pointerEvents: myTurn ? 'auto' : 'none', transition: 'opacity 0.2s', transform: myTurn ? 'translateY(0)' : 'translateY(20px)' }}>
+                           <button className="btn-primary" onClick={() => handleAction('fold')} style={{ flex: 1, padding: '0.8rem 0.5rem', backgroundColor: 'var(--danger-color)' }}>Fold</button>
+                           <button className="btn-primary" onClick={() => handleAction('call')} style={{ flex: 1, padding: '0.8rem 0.5rem' }}>
                              {toCallUI > 0 ? `Call ${toCallUI}` : 'Check'}
                            </button>
-                           <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} style={{ backgroundColor: 'var(--accent-color)', padding: '1rem' }}>
+                           <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} style={{ flex: 1, padding: '0.8rem 0.5rem', backgroundColor: 'var(--accent-color)' }}>
                              {toCallUI > 0 ? 'Raise' : 'Bet'}
                            </button>
                          </div>

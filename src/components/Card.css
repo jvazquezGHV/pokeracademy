@@ -1,8 +1,16 @@
 .playing-card-container {
-  width: 140px;
-  height: 200px;
+  width: 70px;
+  height: 100px;
   cursor: pointer;
-  margin: 10px;
+  margin: 4px;
+}
+
+@media screen and (max-width: 768px) {
+  .playing-card-container {
+    width: 45px;
+    height: 65px;
+    margin: 2px;
+  }
 }
 
 .playing-card-inner {
@@ -66,7 +74,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 8px;
+  padding: 4px;
 }
 
 .text-red { color: var(--danger-color); }
@@ -80,13 +88,22 @@
 }
 
 .card-corner .rank {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .card-corner .suit {
-  font-size: 1.25rem;
+  font-size: 0.9rem;
+}
+
+@media screen and (max-width: 768px) {
+  .card-corner .rank {
+    font-size: 0.8rem;
+  }
+  .card-corner .suit {
+    font-size: 0.6rem;
+  }
 }
 
 .top-left {
@@ -106,5 +123,11 @@
 }
 
 .main-suit {
-  font-size: 4.5rem;
+  font-size: 2.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .main-suit {
+    font-size: 1.5rem;
+  }
 }

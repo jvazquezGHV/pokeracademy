@@ -396,14 +396,14 @@ const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
                
                {/* Win Pct (Absolute above hero cards) */}
                {phase !== 'showdown' && (
-                 <div style={{ position: 'absolute', top: '-40px', left: '-80px', backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.5rem 1rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
-                   <p style={{ margin: 0, color: '#aaa', fontSize: '0.7rem', textTransform: 'uppercase' }}>Win Prob</p>
-                   <h2 style={{ margin: '0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1.2rem' }}>{winPct}%</h2>
+                 <div style={{ position: 'absolute', top: '-10px', right: '-60px', backgroundColor: 'rgba(0,0,0,0.9)', padding: '0.4rem 0.8rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', transform: 'scale(0.8)' }}>
+                   <p style={{ margin: 0, color: '#aaa', fontSize: '0.7rem', textTransform: 'uppercase' }}>Win</p>
+                   <h2 style={{ margin: '0', color: winPct > 50 ? '#4ade80' : 'white', fontSize: '1rem' }}>{winPct}%</h2>
                  </div>
                )}
 
                {heroBet > 0 && (
-                  <div style={{ marginBottom: '10px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308' }}>
+                  <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%) scale(0.8)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308', whiteSpace: 'nowrap' }}>
                      <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Bet: </span><span style={{ color: '#eab308', fontWeight: 'bold' }}>${heroBet}</span>
                   </div>
                )}
@@ -451,12 +451,12 @@ const isHeroTurn = turn === 'hero' && !isProcessing && phase !== 'showdown';
                         <button className="btn-secondary" onClick={() => setShowRaiseOptions(false)} style={{ marginTop: '5px' }}>Cancel</button>
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <button className="btn-primary" onClick={() => handleHeroAction('fold')} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--danger-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>Fold</button>
-                        <button className="btn-primary" onClick={() => handleHeroAction('call')} disabled={!isHeroTurn} style={{ opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
+                      <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', width: '100%', maxWidth: '400px', margin: '0 auto' }}>
+                        <button className="btn-primary" onClick={() => handleHeroAction('fold')} disabled={!isHeroTurn} style={{ flex: 1, padding: '0.8rem 0.5rem', backgroundColor: 'var(--danger-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>Fold</button>
+                        <button className="btn-primary" onClick={() => handleHeroAction('call')} disabled={!isHeroTurn} style={{ flex: 1, padding: '0.8rem 0.5rem', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
                           {toCallUI > 0 ? `Call ${toCallUI}` : 'Check'}
                         </button>
-                        <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} disabled={!isHeroTurn} style={{ backgroundColor: 'var(--accent-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
+                        <button className="btn-primary" onClick={() => setShowRaiseOptions(true)} disabled={!isHeroTurn} style={{ flex: 1, padding: '0.8rem 0.5rem', backgroundColor: 'var(--accent-color)', opacity: !isHeroTurn ? 0.3 : 1, transition: 'opacity 0.2s' }}>
                           {toCallUI > 0 ? 'Raise' : 'Bet'}
                         </button>
                       </div>
