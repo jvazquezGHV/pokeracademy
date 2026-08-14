@@ -702,16 +702,10 @@ const MultiplayerTable = ({ session }) => {
                     );
                   })}
 
-                  {gs.phase === 'waiting_for_players' && (
+                  {gs.phase === 'waiting_for_players' && gs.tournamentWinner && (
                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '1rem', border: '2px dashed var(--accent-color)', zIndex: 10, textAlign: 'center' }}>
-                      {gs.tournamentWinner ? (
-                         <>
-                           <h1 style={{ color: '#eab308', margin: '0 0 1rem 0', fontSize: '3rem', textShadow: '0 0 20px #eab308' }}>🏆 {gs.tournamentWinner} 🏆</h1>
-                           <h2 style={{ color: 'white', margin: 0 }}>Wins the Tournament!</h2>
-                         </>
-                      ) : (
-                         <h2 style={{ color: 'white', margin: 0 }}>Waiting for challengers...</h2>
-                      )}
+                      <h1 style={{ color: '#eab308', margin: '0 0 1rem 0', fontSize: '3rem', textShadow: '0 0 20px #eab308' }}>🏆 {gs.tournamentWinner} 🏆</h1>
+                      <h2 style={{ color: 'white', margin: 0 }}>Wins the Tournament!</h2>
                     </div>
                   )}
 
@@ -727,12 +721,9 @@ const MultiplayerTable = ({ session }) => {
                   </div>
 
                   <div className="table-center-area">
-                     <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem' }}>
                         <ChipStack amount={gs.pot} />
-                        <div>
-                          <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
-                          <h2 style={{ margin: 0, color: '#eab308', fontSize: '1.5rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${gs.pot}</h2>
-                        </div>
+                        <span style={{ color: '#eab308', fontWeight: 'bold', fontSize: '1.2rem' }}>${gs.pot}</span>
                      </div>
                      <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
                         {gs.board?.map((c, i) => (

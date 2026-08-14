@@ -47,7 +47,7 @@ const MultiplayerLobby = ({ session }) => {
         .insert([{
           room_id: room.id,
           user_id: session.user.id,
-          display_name: session.user.email.split('@')[0], // Simple fallback
+          display_name: session.user.email ? session.user.email.split('@')[0] : 'Guest',
           seat_index: 0,
           chips: parseInt(startingChips),
           is_host: true
@@ -106,7 +106,7 @@ const MultiplayerLobby = ({ session }) => {
           .insert([{
             room_id: room.id,
             user_id: session.user.id,
-            display_name: session.user.email.split('@')[0],
+            display_name: session.user.email ? session.user.email.split('@')[0] : `Guest_${Math.floor(Math.random() * 1000)}`,
             seat_index: existingPlayers.length,
             chips: room.game_state?.startingChips || 1000,
             is_host: false
