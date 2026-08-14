@@ -6,7 +6,7 @@ import ChipStack from './ChipStack';
 import { createDeck, getNextActivePlayer, checkRoundComplete } from '../utils/multiplayerLogic';
 import { Hand } from 'pokersolver';
 import { preloadAudio, playSound } from '../utils/audio';
-import { getAIFeedback } from '../api/getAIFeedback';
+
 
 const AVATARS = ['😎', '🤠', '👽', '🤖', '🦊', '🐷', '🦄', '🦁', '🐻', '🐼'];
 const getAvatar = (userId) => {
@@ -76,7 +76,6 @@ const MultiplayerTable = ({ session }) => {
   const [isLogOpen, setIsLogOpen] = useState(false);
   const logEndRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [isAiThinking, setIsAiThinking] = useState(false);
   const [winnerAnimation, setWinnerAnimation] = useState(null);
   const [animationPlayed, setAnimationPlayed] = useState(false);
 
@@ -209,20 +208,7 @@ const MultiplayerTable = ({ session }) => {
     };
   }, [code, navigate]);
 
-  const triggerAIDealer = async (history) => {
-    try {
-        setIsAiThinking(true);
-        const customPrompt = `You are a professional but witty high-stakes casino dealer. Summarize this poker hand in 1 sentence and add a clever, slightly roasting remark about the losing play. Do not use terms of endearment like "darling" or "sweetie". Keep it brief and sound like a real casino. Action history:\n${history}`;
-        const response = await getAIFeedback(history, customPrompt);
-        const state = { ...gs };
-        state.history += `\n🤖 Dealer: ${response}`;
-        await supabase.from('poker_rooms').update({ game_state: state }).eq('id', room.id);
-    } catch (err) {
-        console.error(err);
-    } finally {
-        setIsAiThinking(false);
-    }
-  };
+
 
   // Host Drop-In Injection
   useEffect(() => {
@@ -408,12 +394,7 @@ const MultiplayerTable = ({ session }) => {
           if (error) console.error("Round completion update error:", error);
       });
       
-      if (newState.phase === 'showdown') {
-        if (lastDealerTriggerRef.current !== newState.history) {
-           lastDealerTriggerRef.current = newState.history;
-           triggerAIDealer(newState.history);
-        }
-      }
+
       } catch (err) {
         console.error("Round Completion Error:", err);
       }
@@ -811,7 +792,7 @@ const MultiplayerTable = ({ session }) => {
              {/* Action Buttons */}
              <div className="action-bar-bottom">
                  {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
-                   amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2 || isAiThinking || winnerAnimation} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', opacity: (isAiThinking || winnerAnimation) ? 0.5 : 1 }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : (isAiThinking ? 'AI Dealer Typing...' : 'Play Next Hand')}</button>
+                   amIHost && <button className="btn-primary" onClick={startGame} disabled={dbPlayers.length < 2 || winnerAnimation} style={{ padding: '1rem 2rem', fontSize: '1.2rem', boxShadow: '0 0 20px var(--accent-color)', whiteSpace: 'nowrap', opacity: (winnerAnimation) ? 0.5 : 1 }}>{gs.phase === 'waiting_for_players' ? 'Start Hand' : 'Play Next Hand'}</button>
                  ) : (
                    myPlayerState?.status !== 'sitting_out' && (
                      <>
