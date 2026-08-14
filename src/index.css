@@ -601,7 +601,7 @@ p {
 
 @media (min-width: 1024px) {
   .poker-table-oval {
-    width: 900px !important;
+    width: 750px !important;
     max-width: 90%;
     border-width: 12px;
   }
@@ -610,11 +610,11 @@ p {
   }
   .bottom-cards-wrapper {
     transform: scale(1.1);
-    margin-bottom: -70px;
+    margin-bottom: -50px;
   }
   .top-cards-wrapper {
     transform: scale(1.1);
-    margin-top: -85px;
+    margin-top: -60px;
   }
   .sandbox-board-wrapper {
     transform: scale(1.5);
