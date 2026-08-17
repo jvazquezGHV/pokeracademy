@@ -93,12 +93,12 @@ const LessonView = ({ session }) => {
         border: '1px solid rgba(255,255,255,0.05)'
       }}>
         <h1 className="text-accent" style={{ marginBottom: '1.5rem', fontSize: '2.5rem' }}>{lesson.title}</h1>
-        <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'var(--text-primary)' }}>{lesson.content}</p>
+        <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>{lesson.content}</p>
 
         {lesson.id === 'l-royal-flush' && (
           <div style={{ marginTop: '3rem', textAlign: 'center' }}>
             <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Example:</p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', transform: 'scale(0.7)', transformOrigin: 'top center' }}>
               <Card suit="hearts" rank="A" isFaceUp={true} disableFlip={true} />
               <Card suit="hearts" rank="K" isFaceUp={true} disableFlip={true} />
               <Card suit="hearts" rank="Q" isFaceUp={true} disableFlip={true} />
@@ -111,7 +111,7 @@ const LessonView = ({ session }) => {
         {lesson.id === 'l-straight-flush' && (
           <div style={{ marginTop: '3rem', textAlign: 'center' }}>
             <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Example:</p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', transform: 'scale(0.7)', transformOrigin: 'top center' }}>
               <Card suit="clubs" rank="9" isFaceUp={true} disableFlip={true} />
               <Card suit="clubs" rank="8" isFaceUp={true} disableFlip={true} />
               <Card suit="clubs" rank="7" isFaceUp={true} disableFlip={true} />

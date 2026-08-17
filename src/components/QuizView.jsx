@@ -87,7 +87,7 @@ const QuizView = ({ session }) => {
         border: '1px solid rgba(255,255,255,0.05)',
         textAlign: 'center'
       }}>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem', transform: 'scale(0.7)', transformOrigin: 'top center' }}>
           {quiz.cards.map((card, i) => (
             <Card 
               key={`${currentIndex}-${i}`} // Force re-render on quiz change

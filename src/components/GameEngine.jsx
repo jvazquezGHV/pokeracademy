@@ -76,12 +76,12 @@ const GameEngine = () => {
     // eslint-disable-next-line
   }, []);
 
-  // Calculate Odds Live
+  // Calculate Odds Live (Against random opponent hand)
   useEffect(() => {
     if (heroCards.length === 2 && phase !== 'showdown') {
-      calculateOdds(heroCards, villainCards, board).then(pct => setWinPct(pct));
+      calculateOdds(heroCards, [], board).then(pct => setWinPct(pct));
     }
-  }, [heroCards, villainCards, board, phase]);
+  }, [heroCards, board, phase]);
 
   const addToHistory = (msg) => setHistory(prev => prev + msg);
 
@@ -159,7 +159,7 @@ const GameEngine = () => {
       let amount = 0;
       
       if (toCall > 0) {
-         if (Math.random() < 0.15) { // Fold less often to keep the game fun
+         if (Math.random() < 0.50) { // Fold much more often to play realistically
             action = 'fold';
          } else if (Math.random() < 0.25 && vs > toCall + (currentPot * 0.5)) {
             action = 'raise';
@@ -168,7 +168,7 @@ const GameEngine = () => {
             action = 'call';
          }
       } else {
-         if (Math.random() < 0.35) {
+         if (Math.random() < 0.20) { // Bet less often when checked to
             action = 'bet';
             amount = Math.floor(currentPot * 0.5);
          } else {
