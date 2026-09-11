@@ -19,7 +19,9 @@ export const gradeChallengeHand = async (handHistory, challengeRubric) => {
     
     Evaluate the Hero's play according ONLY to the rubric. You must output valid JSON with two fields:
     "passed": true if they met the rubric requirements, false otherwise.
-    "feedback": A 1-2 sentence explanation speaking directly to the user explaining why they passed or failed.`;
+    "feedback": A 1-2 sentence explanation speaking directly to the user explaining why they passed or failed.
+    
+    IMPORTANT: If the hand history is extremely short (e.g., someone folded pre-flop immediately), do not fail or complain. Just grade it based on the rubric (which often means they passed if they folded a bad hand).`;
     
     const result = await model.generateContent(prompt);
     const response = await result.response;

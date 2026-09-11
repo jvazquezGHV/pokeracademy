@@ -1,10 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from './Card';
+import ChipStack from './ChipStack';
 import { createDeck, calculateOdds, toSolverFormat } from '../utils/pokerLogic';
 import { getAIFeedback } from '../api/getAIFeedback';
 import { supabase } from '../lib/supabaseClient';
 import { Hand } from 'pokersolver';
+import { preloadAudio, playSound } from '../utils/audio';
+
+const FlyingChips = ({ seatClass, amount }) => {
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    requestAnimationFrame(() => setActive(true));
+  }, []);
+  
+  return (
+    <div className={`seat-container ${seatClass}`} style={{ zIndex: 1000, pointerEvents: 'none' }}>
+      <div style={{
+         transition: 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)',
+         transform: active ? 'translateY(0) scale(1)' : 'translateY(100px) scale(0)',
+         opacity: active ? 1 : 0,
+         display: 'flex',
+         flexDirection: 'column',
+         alignItems: 'center'
+      }}>
+         <ChipStack amount={amount} />
+         <div style={{ color: '#eab308', fontWeight: 'bold', textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontSize: '1.5rem', animation: 'floatUp 1s ease-out forwards' }}>+${amount}</div>
+      </div>
+    </div>
+  );
+};
 
 const GameEngine = () => {
   const navigate = useNavigate();
@@ -35,7 +60,19 @@ const GameEngine = () => {
   const [customBet, setCustomBet] = useState(20);
   const [isLogOpen, setIsLogOpen] = useState(false);
   
+  const [winnerAnimation, setWinnerAnimation] = useState(null);
+  const animationPlayed = useRef(false);
+
   const logEndRef = useRef(null);
+
+  useEffect(() => { preloadAudio(); }, []);
+
+  useEffect(() => {
+    if (phase !== 'showdown') {
+       animationPlayed.current = false;
+       setWinnerAnimation(null);
+    }
+  }, [phase]);
 
   // Synchronization Ref: Allows timeouts to access the freshest state without stale closures
   const stateRef = useRef({ deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn });
@@ -69,6 +106,7 @@ const GameEngine = () => {
     setAiFeedback(null);
     setHistory("--- NEW HAND ---\nBlinds posted (SB: 10, BB: 20).\n");
     setIsProcessing(false); // unlock for Hero
+    playSound('deal');
   };
 
   useEffect(() => {
@@ -101,6 +139,7 @@ const GameEngine = () => {
       setBoard([b1, b2, b3]);
       setPhase('flop');
       addToHistory("\n--- FLOP ---\n");
+      playSound('deal');
       villainAction();
     } else if (currentPhase === 'flop') {
       const b1 = currentDeck.pop();
@@ -108,6 +147,7 @@ const GameEngine = () => {
       setBoard(prev => [...prev, b1]);
       setPhase('turn');
       addToHistory("\n--- TURN ---\n");
+      playSound('deal');
       villainAction();
     } else if (currentPhase === 'turn') {
       const b1 = currentDeck.pop();
@@ -115,6 +155,7 @@ const GameEngine = () => {
       setBoard(prev => [...prev, b1]);
       setPhase('river');
       addToHistory("\n--- RIVER ---\n");
+      playSound('deal');
       villainAction();
     } else if (currentPhase === 'river') {
       setPhase('showdown');
@@ -130,16 +171,36 @@ const GameEngine = () => {
       
       let resultMsg = "";
       setPot(finalPot => {
-         if (winners.length === 2) {
+         const hWin = winners.length === 1 && winners[0] === heroHandObj;
+         const vWin = winners.length === 1 && winners[0] === villainHandObj;
+         const isSplit = winners.length === 2;
+
+         if (isSplit) {
+            const split = finalPot / 2;
             resultMsg = `Split Pot! Both have ${heroHandObj.name}.`;
-            setHeroStack(s => s + (finalPot / 2));
-            setVillainStack(s => s + (finalPot / 2));
-         } else if (winners[0] === heroHandObj) {
+            setHeroStack(s => s + split);
+            setVillainStack(s => s + split);
+            if (!animationPlayed.current) {
+               setWinnerAnimation([
+                  { seatClass: 'seat-bottom', amount: split },
+                  { seatClass: 'seat-top', amount: split }
+               ]);
+               animationPlayed.current = true;
+            }
+         } else if (hWin) {
             resultMsg = `You win $${finalPot} with ${heroHandObj.name}!`;
             setHeroStack(s => s + finalPot);
+            if (!animationPlayed.current) {
+               setWinnerAnimation([{ seatClass: 'seat-bottom', amount: finalPot }]);
+               animationPlayed.current = true;
+            }
          } else {
             resultMsg = `Computer wins $${finalPot} with ${villainHandObj.name}.`;
             setVillainStack(s => s + finalPot);
+            if (!animationPlayed.current) {
+               setWinnerAnimation([{ seatClass: 'seat-top', amount: finalPot }]);
+               animationPlayed.current = true;
+            }
          }
          addToHistory(`\n--- SHOWDOWN ---\n${resultMsg}\n`);
          analyzeHand(resultMsg);
@@ -178,9 +239,18 @@ const GameEngine = () => {
       
       if (action === 'fold') {
          addToHistory("Computer Folds.\n");
-         endHand("You win!");
+         playSound('fold');
+         const finalPot = currentPot;
+         setHeroStack(prev => prev + finalPot);
+         setPot(0);
+         endHand(`Computer Folds. You win $${finalPot}!`);
+         if (!animationPlayed.current) {
+            setWinnerAnimation([{ seatClass: 'seat-bottom', amount: finalPot }]);
+            animationPlayed.current = true;
+         }
       } else if (action === 'raise' || action === 'bet') {
          addToHistory(`Computer ${action === 'raise' ? 'Raises to' : 'Bets'} ${vb + amount}.\n`);
+         playSound('bet');
          setVillainStack(prev => prev - amount);
          setVillainBet(prev => prev + amount);
          setPot(prev => prev + amount);
@@ -188,6 +258,7 @@ const GameEngine = () => {
          setIsProcessing(false);
       } else if (action === 'call') {
          addToHistory(`Computer Calls ${toCall}.\n`);
+         playSound('bet');
          setVillainStack(prev => prev - toCall);
          setVillainBet(prev => prev + toCall);
          setPot(prev => prev + toCall);
@@ -195,6 +266,7 @@ const GameEngine = () => {
          nextPhase(currentDeck);
       } else if (action === 'check') {
          addToHistory("Computer Checks.\n");
+         playSound('bet'); // using bet sound for check for feedback
          if (currentPhase === 'preflop') {
             nextPhase(currentDeck);
          } else {
@@ -215,13 +287,23 @@ const GameEngine = () => {
     
     if (action === 'fold') {
       addToHistory("You Fold.\n");
-      endHand("Computer wins.");
+      playSound('fold');
+      const finalPot = pot;
+      setVillainStack(prev => prev + finalPot);
+      setPot(0);
+      endHand(`Computer wins $${finalPot}.`);
+      if (!animationPlayed.current) {
+        setWinnerAnimation([{ seatClass: 'seat-top', amount: finalPot }]);
+        animationPlayed.current = true;
+      }
     } else if (action === 'call') {
       if (toCall === 0) {
         addToHistory("You Check.\n");
+        playSound('bet');
         nextPhase(currentDeck); 
       } else {
         addToHistory(`You Call ${toCall}.\n`);
+        playSound('bet');
         setHeroStack(prev => prev - toCall);
         setHeroBet(prev => prev + toCall);
         setPot(prev => prev + toCall);
@@ -236,6 +318,7 @@ const GameEngine = () => {
     } else if (action === 'raise') {
       const totalCostToHero = toCall + raiseAmount;
       addToHistory(`You Raise to ${vb + raiseAmount}.\n`);
+      playSound('bet');
       setHeroStack(prev => prev - totalCostToHero);
       setHeroBet(prev => prev + totalCostToHero);
       setPot(prev => prev + totalCostToHero);
@@ -339,17 +422,20 @@ const GameEngine = () => {
                   <div style={{ position: 'absolute', top: '-30px', color: 'var(--accent-color)', fontWeight: 'bold', animation: 'pulse 1.5s infinite', backgroundColor: 'rgba(0,0,0,0.5)', padding: '0.2rem 1rem', borderRadius: '1rem', whiteSpace: 'nowrap' }}>Thinking...</div>
                )}
                {villainBet > 0 && (
-                  <div style={{ position: 'absolute', bottom: '-25px', left: '50%', transform: 'translateX(-50%) scale(0.8)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308', whiteSpace: 'nowrap' }}>
-                     <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Bet: </span><span style={{ color: '#eab308', fontWeight: 'bold' }}>${villainBet}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'absolute', bottom: '-25px', left: '50%', transform: 'translateX(-50%)' }}>
+                     <ChipStack amount={villainBet} />
+                     <span style={{ color: '#ccc', fontWeight: 'bold', fontSize: '0.9rem' }}>${villainBet}</span>
                   </div>
                )}
             </div>
 
             {/* Center / Board Area */}
             <div className="table-center-area">
-               <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '0.5rem 2rem', borderRadius: '2rem', border: '2px solid #eab308', marginBottom: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
-                  <p style={{ margin: 0, color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px' }}>Main Pot</p>
-                  <h2 style={{ margin: 0, color: '#eab308', fontSize: '1.5rem', textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>${pot}</h2>
+               <div className="pot-container">
+                  <div className="pot-chip-scale">
+                     <ChipStack amount={pot} />
+                  </div>
+                  <span style={{ color: '#eab308', fontWeight: 'bold', fontSize: '1.2rem' }}>${pot}</span>
                </div>
                <div className="sandbox-board-wrapper" style={{ display: 'flex', gap: '8px' }}>
                   {board.map((c, i) => (
@@ -372,8 +458,9 @@ const GameEngine = () => {
                )}
 
                {heroBet > 0 && (
-                  <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%) scale(0.8)', backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', border: '1px solid #eab308', whiteSpace: 'nowrap' }}>
-                     <span style={{ color: '#aaa', fontSize: '0.8rem' }}>Bet: </span><span style={{ color: '#eab308', fontWeight: 'bold' }}>${heroBet}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)' }}>
+                     <ChipStack amount={heroBet} />
+                     <span style={{ color: '#ccc', fontWeight: 'bold', fontSize: '0.9rem' }}>${heroBet}</span>
                   </div>
                )}
 
@@ -390,6 +477,11 @@ const GameEngine = () => {
                   <p style={{ margin: 0, color: '#eab308', fontWeight: 'bold' }}>${heroStack}</p>
                </div>
             </div>
+            
+            {/* Winning Chips Animations */}
+            {winnerAnimation && winnerAnimation.map((w, idx) => (
+               <FlyingChips key={idx} seatClass={w.seatClass} amount={w.amount} />
+            ))}
           </div>
         </div>
 

@@ -53,8 +53,15 @@ export const calculateOdds = async (heroHole, villainHole, boardCards) => {
         const runout = deck.slice(0, needed);
         
         const finalBoard = [...boardSolver, ...runout];
+        
+        let simVillainSolver = villainSolver;
+        if (villainSolver.length === 0) {
+           // Draw 2 random hole cards for the villain from the remaining deck
+           simVillainSolver = deck.slice(needed, needed + 2);
+        }
+        
         const heroHand = Hand.solve([...heroSolver, ...finalBoard]);
-        const villainHand = Hand.solve([...villainSolver, ...finalBoard]);
+        const villainHand = Hand.solve([...simVillainSolver, ...finalBoard]);
         
         const winners = Hand.winners([heroHand, villainHand]);
         if (winners.length === 2) ties++;
