@@ -689,11 +689,16 @@ const GameEngine = () => {
 
                   {/* Main Illuminated Pot */}
                   <div className="pot-display-hub">
-                    <div className="chip-icon-wrapper" style={{ transform: 'scale(0.65)', width: '32px', height: '26px' }}>
+                    <div className="chip-icon-wrapper" style={{ transform: 'scale(0.58)', width: '26px', height: '20px' }}>
                       <ChipStack amount={pot} />
                     </div>
                     <span className="pot-amount-text">${pot}</span>
                     <span className="pot-bb-text">({(pot / 20).toFixed(1)} BB)</span>
+                    {toCallUI > 0 && phase !== 'showdown' && (
+                      <span className="pot-odds-inline-tag">
+                        Odds: <strong>{potOddsPct}%</strong>
+                      </span>
+                    )}
                   </div>
 
                   {/* Community Board with Placeholders */}
@@ -713,15 +718,6 @@ const GameEngine = () => {
                       </div>
                     ))}
                   </div>
-
-                  {/* Live Pot Odds Pill on Felt */}
-                  {toCallUI > 0 && phase !== 'showdown' && (
-                    <div className="pot-odds-telemetry-pill">
-                      <span>Call ${toCallUI}</span>
-                      <span>•</span>
-                      <span>Pot Odds: <strong>{potOddsPct}%</strong></span>
-                    </div>
-                  )}
                 </div>
 
                 {/* ------------------------------------
