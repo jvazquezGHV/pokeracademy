@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import './Multiplayer.css';
 
 const MultiplayerLobby = ({ session }) => {
   const [joinCode, setJoinCode] = useState('');
@@ -125,113 +126,114 @@ const MultiplayerLobby = ({ session }) => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '600px', marginTop: '4rem', textAlign: 'center' }}>
-      {isAdmin && (
-        <button onClick={() => navigate('/')} style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2rem', display: 'flex' }}>
-            ← Back to Dashboard
-        </button>
-      )}
+    <div className="mp-lobby-wrapper">
+      <div className="mp-lobby-container">
+        {isAdmin && (
+          <button onClick={() => navigate('/')} className="mp-lobby-back-btn" title="Return to Dashboard">
+            <span>←</span> Back to Dashboard
+          </button>
+        )}
 
-      <h1 style={{ fontSize: '3rem', color: 'var(--accent-color)' }}>Multiplayer Lobby</h1>
-      <p style={{ fontSize: '1.2rem', marginBottom: '3rem' }}>Play Texas Hold'em with your friends in real-time.</p>
-
-      {error && (
-        <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '1rem', borderRadius: '0.5rem', marginBottom: '2rem' }}>
-          {error}
+        <div className="mp-lobby-header">
+          <h1>Multiplayer Poker Lounge</h1>
+          <p>Compete in real-time Texas Hold'em with your friends & crew.</p>
         </div>
-      )}
 
-      <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', gap: '3rem', border: '1px solid rgba(255,255,255,0.05)' }}>
-        
-        {/* Create Room */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
-          <h2 style={{ margin: 0, textAlign: 'center' }}>Host a Private Game</h2>
-          
-          <div>
-            <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Game Mode</label>
-            <select 
-              value={gameMode} 
-              onChange={(e) => setGameMode(e.target.value)}
-              style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
-            >
-              <option value="cash">Cash Game (Static Blinds, Rebuys Allowed)</option>
-              <option value="tournament">Tournament (Increasing Blinds, Elimination)</option>
-            </select>
+        {error && (
+          <div className="mp-lobby-error">
+            {error}
           </div>
+        )}
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Starting Chips</label>
+        <div className="mp-lobby-card">
+          {/* Host Private Game */}
+          <div className="mp-lobby-section">
+            <h2>👑 Host a Private Table</h2>
+            
+            <div className="mp-lobby-field">
+              <label className="mp-lobby-label">GAME MODE</label>
               <select 
-                value={startingChips} 
-                onChange={(e) => setStartingChips(e.target.value)}
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+                value={gameMode} 
+                onChange={(e) => setGameMode(e.target.value)}
+                className="mp-lobby-select"
               >
-                <option value="1000">1,000</option>
-                <option value="2000">2,000</option>
-                <option value="5000">5,000</option>
-                <option value="10000">10,000</option>
+                <option value="cash">Cash Game (Static $10/$20 Blinds)</option>
+                <option value="tournament">Tournament (Increasing Blinds, Elimination)</option>
               </select>
             </div>
 
-            {gameMode === 'tournament' && (
-              <div style={{ flex: 1 }}>
-                <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', display: 'block' }}>Blind Interval</label>
+            <div className="mp-lobby-row">
+              <div className="mp-lobby-field" style={{ flex: 1 }}>
+                <label className="mp-lobby-label">STARTING CHIPS</label>
                 <select 
-                  value={blindInterval} 
-                  onChange={(e) => setBlindInterval(e.target.value)}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+                  value={startingChips} 
+                  onChange={(e) => setStartingChips(e.target.value)}
+                  className="mp-lobby-select"
                 >
-                  <option value="3">3 Minutes</option>
-                  <option value="5">5 Minutes</option>
-                  <option value="10">10 Minutes</option>
+                  <option value="1000">$1,000 (50 bb)</option>
+                  <option value="2000">$2,000 (100 bb)</option>
+                  <option value="5000">$5,000 (250 bb)</option>
+                  <option value="10000">$10,000 (500 bb)</option>
                 </select>
               </div>
-            )}
+
+              {gameMode === 'tournament' && (
+                <div className="mp-lobby-field" style={{ flex: 1 }}>
+                  <label className="mp-lobby-label">BLIND INTERVAL</label>
+                  <select 
+                    value={blindInterval} 
+                    onChange={(e) => setBlindInterval(e.target.value)}
+                    className="mp-lobby-select"
+                  >
+                    <option value="3">3 Minutes</option>
+                    <option value="5">5 Minutes</option>
+                    <option value="10">10 Minutes</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <button 
+              className="mp-btn-lobby-host" 
+              onClick={handleCreateRoom}
+              disabled={loading}
+            >
+              {loading ? 'Creating Table...' : 'Create Private Table'}
+            </button>
           </div>
 
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%', fontSize: '1.2rem', padding: '1rem', marginTop: '1rem' }}
-            onClick={handleCreateRoom}
-            disabled={loading}
-          >
-            {loading ? 'Creating...' : 'Create New Room'}
-          </button>
+          {/* Divider */}
+          <div className="mp-lobby-divider">
+            <div className="mp-divider-line"></div>
+            <span>OR</span>
+            <div className="mp-divider-line"></div>
+          </div>
+
+          {/* Join Game */}
+          <form onSubmit={handleJoinRoom} className="mp-lobby-section">
+            <h2>🎟️ Join a Table</h2>
+            <div className="mp-lobby-field">
+              <label className="mp-lobby-label">4-DIGIT ROOM CODE</label>
+              <input 
+                type="text" 
+                placeholder="E.G. A7F2" 
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                className="mp-lobby-code-input"
+                maxLength={4}
+                disabled={loading}
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="mp-btn-lobby-join" 
+              disabled={loading || joinCode.length !== 4}
+            >
+              {loading ? 'Joining Table...' : 'Join Game'}
+            </button>
+          </form>
+
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
-          <span style={{ padding: '0 1rem' }}>OR</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
-        </div>
-
-        {/* Join Room */}
-        <form onSubmit={handleJoinRoom} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h2 style={{ margin: 0 }}>Join a Friend</h2>
-          <input 
-            type="text" 
-            placeholder="Enter 4-digit code (e.g. A7F2)" 
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value)}
-            style={{ 
-              padding: '1rem', fontSize: '1.5rem', textAlign: 'center', textTransform: 'uppercase', 
-              borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.2)', 
-              backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', letterSpacing: '2px'
-            }}
-            maxLength={4}
-            disabled={loading}
-          />
-          <button 
-            type="submit" 
-            className="btn-primary" 
-            style={{ width: '100%', fontSize: '1.2rem', padding: '1rem', backgroundColor: 'var(--surface-color-hover)' }}
-            disabled={loading || joinCode.length !== 4}
-          >
-            {loading ? 'Joining...' : 'Join Game'}
-          </button>
-        </form>
-
       </div>
     </div>
   );
