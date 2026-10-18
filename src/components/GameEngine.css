@@ -1,0 +1,1166 @@
+/* ========================================================
+   POKER ACADEMY - PRO SANDBOX TRAINER STYLESHEET
+   High-Roller Solver & GTO Training Aesthetic
+   ======================================================== */
+
+.sandbox-workstation {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 72px);
+  background: radial-gradient(circle at 50% 20%, #111827 0%, #070b12 70%, #030712 100%);
+  color: #f8fafc;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --------------------------------------------------------
+   TOP SESSION TELEMETRY & CONTROLS BAR
+   -------------------------------------------------------- */
+.sandbox-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 40;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sandbox-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-exit-sandbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-exit-sandbox:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sandbox-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sandbox-title-badge h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.pill-pro-tag {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #022c22;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Session Metrics Cluster */
+.sandbox-metrics-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-item:last-child {
+  border-right: none;
+}
+
+.metric-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.metric-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.metric-value.profit-pos {
+  color: #10b981;
+}
+
+.metric-value.profit-neg {
+  color: #ef4444;
+}
+
+.metric-value.profit-even {
+  color: #94a3b8;
+}
+
+/* Topbar right tools */
+.sandbox-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-pill-selector {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  padding: 0.15rem;
+  gap: 0.2rem;
+}
+
+.theme-pill-btn {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.theme-pill-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.btn-tool-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-tool-icon:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------
+   MAIN ARENA (2-COLUMN SPLIT WORKSTATION)
+   -------------------------------------------------------- */
+.sandbox-main-split {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Table Area (Left 68-70%) */
+.sandbox-table-arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 1.5rem 1rem 1rem 1rem;
+  overflow-y: auto;
+  user-select: none;
+}
+
+/* Pro Training Dock (Right 30-32%) */
+.sandbox-training-dock {
+  width: 380px;
+  background: rgba(13, 19, 33, 0.85);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sandbox-training-dock.collapsed {
+  display: none;
+}
+
+/* --------------------------------------------------------
+   THE POKER TABLE (AUTHENTIC STADIUM OVAL)
+   -------------------------------------------------------- */
+.table-stage-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  min-height: 480px;
+}
+
+/* Outer Leather Armrest Rail */
+.pro-poker-table {
+  width: 100%;
+  aspect-ratio: 2.1 / 1;
+  max-height: 440px;
+  position: relative;
+  border-radius: 200px;
+  background: #181c24; /* Outer armrest tone */
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.8),
+    0 0 100px rgba(0, 0, 0, 0.6),
+    inset 0 3px 6px rgba(255, 255, 255, 0.15),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.9);
+  padding: 18px; /* Rail width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Armrest Stitching Accent */
+.pro-poker-table::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 194px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+/* Inner Table Bevel Ring */
+.table-inner-felt {
+  width: 100%;
+  height: 100%;
+  border-radius: 180px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  border: 4px solid rgba(255, 215, 0, 0.15); /* Subtle brass bevel */
+  box-shadow: 
+    inset 0 0 80px rgba(0, 0, 0, 0.85),
+    inset 0 0 20px rgba(0, 0, 0, 0.9);
+  transition: background 0.4s ease;
+}
+
+/* Felt Themes */
+.pro-poker-table.theme-emerald .table-inner-felt {
+  background: radial-gradient(ellipse at 50% 50%, #15803d 0%, #166534 40%, #064e3b 80%, #022c22 100%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.15);
+}
+
+.pro-poker-table.theme-sapphire .table-inner-felt {
+  background: radial-gradient(ellipse at 50% 50%, #1d4ed8 0%, #1e40af 40%, #1e3a8a 80%, #0f172a 100%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.85), 0 0 30px rgba(59, 130, 246, 0.15);
+}
+
+.pro-poker-table.theme-obsidian .table-inner-felt {
+  background: radial-gradient(ellipse at 50% 50%, #334155 0%, #1e293b 40%, #0f172a 80%, #020617 100%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.95), 0 0 30px rgba(148, 163, 184, 0.1);
+}
+
+/* Felt Inner Betting Oval Line */
+.table-betting-line {
+  position: absolute;
+  width: 78%;
+  height: 65%;
+  border-radius: 120px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+/* Watermark Crest in Center */
+.table-center-watermark {
+  position: absolute;
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  transform: translateY(-50px);
+}
+
+/* --------------------------------------------------------
+   DEALER BUTTON & BLIND BADGES
+   -------------------------------------------------------- */
+.dealer-button-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid #0f172a;
+  font-weight: 900;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.blind-badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.blind-badge.sb {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.blind-badge.bb {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+/* --------------------------------------------------------
+   PLAYER PODS (VILLAIN & HERO)
+   -------------------------------------------------------- */
+.player-pod {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 25;
+  transition: all 0.3s ease;
+}
+
+.player-pod-villain {
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.player-pod-hero {
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Player Badge Card */
+.player-plate {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.player-plate.is-active-turn {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 8px 20px rgba(0, 0, 0, 0.7);
+  animation: turnPulse 2s infinite;
+}
+
+@keyframes turnPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4), 0 8px 20px rgba(0, 0, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.7), 0 8px 25px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.player-avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.player-avatar-circle.ai-bot {
+  background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+}
+
+.player-info-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.player-name-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.player-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.player-chips-val {
+  color: #fbbf24;
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.player-bb-val {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Player Cards Display */
+.player-cards-row {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0;
+  position: relative;
+}
+
+/* Made Hand Badge for Hero */
+.hero-made-hand-badge {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid #10b981;
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin-top: -4px;
+}
+
+/* Live Win Equity Badge */
+.hero-equity-badge {
+  position: absolute;
+  top: 10px;
+  right: -80px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.65rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-equity-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.hero-equity-num {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+}
+
+.hero-equity-num.high { color: #34d399; }
+.hero-equity-num.mid { color: #fbbf24; }
+.hero-equity-num.low { color: #f87171; }
+
+/* Status / Speech bubble */
+.player-action-bubble {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 0.25rem 0.65rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  top: -26px;
+  animation: floatSubtle 2s ease-in-out infinite;
+}
+
+@keyframes floatSubtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Current Bet Plaque (Chips in Front) */
+.bet-plaque-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  position: absolute;
+  z-index: 30;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.bet-plaque-villain {
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bet-plaque-hero {
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bet-plaque-amount {
+  color: #f1f5f9;
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+}
+
+/* --------------------------------------------------------
+   CENTER TABLE POT & COMMUNITY BOARD
+   -------------------------------------------------------- */
+.table-center-hub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 15;
+  gap: 0.5rem;
+}
+
+/* Street Indicator Ribbon */
+.street-stepper-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.street-step-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+}
+
+.street-step-pill.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.street-step-pill.completed {
+  color: #94a3b8;
+}
+
+/* Main Pot Display Box */
+.pot-display-hub {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 0.3rem 1.1rem;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.pot-amount-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fbbf24;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.pot-bb-text {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* Community Cards Container */
+.community-board-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.25rem;
+  min-height: 104px;
+}
+
+/* Card Slot Placeholders (when card not yet dealt) */
+.card-placeholder-slot {
+  width: 70px;
+  height: 100px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 1.5rem;
+}
+
+/* Live Pot Odds Pill on Felt */
+.pot-odds-telemetry-pill {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.65rem;
+  border-radius: 0.5rem;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pot-odds-telemetry-pill strong {
+  color: #38bdf8;
+  font-family: ui-monospace, monospace;
+}
+
+/* --------------------------------------------------------
+   ACTION COMMAND CENTER (BOTTOM CONTROLS)
+   -------------------------------------------------------- */
+.action-command-center {
+  width: 100%;
+  max-width: 720px;
+  margin-top: 0.75rem;
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Smart Bet Sizing Bar (Presets + Slider) */
+.smart-bet-sizing-panel {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: slideUpFade 0.25s ease-out;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sizing-preset-row {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.btn-preset-size {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  padding: 0.4rem 0.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-preset-size:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-preset-size.allin {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-preset-size.allin:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+}
+
+/* Slider with Step Buttons */
+.slider-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-stepper {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-stepper:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.pro-bet-slider {
+  flex: 1;
+  accent-color: #10b981;
+  cursor: pointer;
+  height: 6px;
+}
+
+.sizing-confirm-row {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.btn-confirm-raise {
+  flex: 2;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-confirm-raise:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+.btn-cancel-raise {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel-raise:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Primary Action Trio Buttons (Fold / Check-Call / Bet-Raise) */
+.primary-actions-grid {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.action-btn-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.action-btn-card:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.action-btn-card:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.action-hotkey-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.15rem;
+}
+
+.action-main-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.action-sub-hint {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+/* Action Button Variants */
+.action-btn-fold {
+  background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.action-btn-fold:not(:disabled):hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+}
+
+.action-btn-check {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
+}
+
+.action-btn-check:not(:disabled):hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+}
+
+.action-btn-call {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+.action-btn-call:not(:disabled):hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+.action-btn-raise {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+.action-btn-raise:not(:disabled):hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+}
+
+/* Play Next Hand Hero Button */
+.btn-next-hand-glowing {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem 2.5rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.5), 0 4px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all 0.2s ease;
+  animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(16, 185, 129, 0.5); }
+  50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(16, 185, 129, 0.8); }
+}
+
+/* --------------------------------------------------------
+   RIGHT SIDEBAR: PRO TRAINING DOCK
+   -------------------------------------------------------- */
+.dock-nav-header {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dock-tab-btn {
+  flex: 1;
+  padding: 0.85rem 0.5rem;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.dock-tab-btn.active {
+  color: #10b981;
+  border-bottom-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.dock-content-body {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* AI Coach Card */
+.coach-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+}
+
+.coach-status-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.coach-decision-badge {
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.coach-decision-badge.optimal {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.coach-decision-badge.leak {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.coach-decision-badge.marginal {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.coach-speech-text {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #e2e8f0;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.coach-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  gap: 0.75rem;
+}
+
+.coach-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+/* Telemetry & Math Tab */
+.telemetry-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.telemetry-stat-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetry-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.telemetry-stat-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  font-family: ui-monospace, monospace;
+}
+
+.telemetry-stat-sub {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+/* History Timeline Tab */
+.history-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-timeline-entry {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.4rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+}
+
+.history-timeline-entry.street-header {
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.history-timeline-entry.win-entry {
+  border-left-color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  color: #fde047;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------
+   MOBILE DOCK DRAWER TOGGLE
+   -------------------------------------------------------- */
+.mobile-dock-toggle {
+  display: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .sandbox-workstation {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sandbox-main-split {
+    flex-direction: column;
+  }
+
+  .sandbox-training-dock {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 350px;
+  }
+
+  .pro-poker-table {
+    aspect-ratio: 1.6 / 1;
+    max-height: 380px;
+  }
+
+  .hero-equity-badge {
+    position: static;
+    margin-top: 0.5rem;
+  }
+}
