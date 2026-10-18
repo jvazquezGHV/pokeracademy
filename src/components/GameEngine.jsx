@@ -61,7 +61,7 @@ const GameEngine = () => {
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
   const [customBet, setCustomBet] = useState(40);
   const [activeDockTab, setActiveDockTab] = useState('coach'); // 'coach' | 'math' | 'history'
-  const [isDockCollapsed, setIsDockCollapsed] = useState(false);
+  const [isDockCollapsed, setIsDockCollapsed] = useState(true);
   const [feltTheme, setFeltTheme] = useState('emerald'); // 'emerald' | 'sapphire' | 'obsidian'
   const [isMuted, setIsMuted] = useState(false);
   
@@ -596,11 +596,13 @@ const GameEngine = () => {
           </button>
 
           <button 
-            className="btn-tool-icon" 
+            className={`btn-coach-drawer-toggle ${!isDockCollapsed ? 'active' : ''}`}
             onClick={() => setIsDockCollapsed(!isDockCollapsed)} 
-            title={isDockCollapsed ? "Show Training Dock" : "Hide Training Dock"}
+            title="Toggle AI Strategy Coach & Telemetry Drawer"
           >
-            {isDockCollapsed ? '◀' : '▶'}
+            <span>🧠</span>
+            <span className="coach-toggle-label">AI Coach</span>
+            <span className="coach-toggle-state">{!isDockCollapsed ? '✕' : '▶'}</span>
           </button>
         </div>
       </header>
@@ -622,7 +624,7 @@ const GameEngine = () => {
                 <div className="table-center-watermark">POKER ACADEMY • HEADS UP GTO</div>
 
                 {/* ------------------------------------
-                    LANE 1: TOP SEAT: VILLAIN (AI Computer)
+                    TOP SEAT: VILLAIN (AI Computer)
                     ------------------------------------ */}
                 <div className="table-seat-villain">
                   {/* Status / Thinking Bubble */}
@@ -630,40 +632,42 @@ const GameEngine = () => {
                     <div className="player-action-bubble">Thinking GTO...</div>
                   )}
 
-                  {/* Hole Cards */}
-                  <div className="villain-cards-wrapper">
-                    {villainCards.map((c, i) => (
-                      <div key={i}>
-                        <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Player Badge */}
-                  <div className={`player-plate ${turn === 'villain' && phase !== 'showdown' ? 'is-active-turn' : ''}`}>
-                    <div className="player-avatar-circle ai-bot">AI</div>
-                    <div className="player-info-meta">
-                      <div className="player-name-row">
-                        <span className="player-name-text">GTO Bot</span>
-                        <span className="blind-badge bb">BB</span>
-                      </div>
-                      <div className="player-chips-row">
-                        <span className="player-chips-val">${villainStack}</span>
-                        <span className="player-bb-val">{Math.round(villainStack / 20)} BB</span>
+                  <div className="villain-pod-cluster">
+                    {/* Player Badge */}
+                    <div className={`player-plate ${turn === 'villain' && phase !== 'showdown' ? 'is-active-turn' : ''}`}>
+                      <div className="player-avatar-circle ai-bot">AI</div>
+                      <div className="player-info-meta">
+                        <div className="player-name-row">
+                          <span className="player-name-text">GTO Bot</span>
+                          <span className="blind-badge bb">BB</span>
+                        </div>
+                        <div className="player-chips-row">
+                          <span className="player-chips-val">${villainStack}</span>
+                          <span className="player-bb-val">{Math.round(villainStack / 20)} BB</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Showdown Hand Name */}
-                  {villainMadeHand && (
-                    <div className="villain-made-hand-badge">
-                      {villainMadeHand.descr}
+                    {/* Hole Cards Beside Plate */}
+                    <div className="villain-cards-wrapper">
+                      {villainCards.map((c, i) => (
+                        <div key={i}>
+                          <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
+                        </div>
+                      ))}
                     </div>
-                  )}
+
+                    {/* Showdown Hand Name */}
+                    {villainMadeHand && (
+                      <div className="villain-made-hand-badge">
+                        {villainMadeHand.descr}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* ------------------------------------
-                    LANE 2: VILLAIN COMMITTED BET
+                    VILLAIN COMMITTED BET (Side Felt Lane)
                     ------------------------------------ */}
                 {villainBet > 0 && (
                   <div className="table-bet-lane villain-bet-lane">
@@ -675,21 +679,13 @@ const GameEngine = () => {
                 )}
 
                 {/* ------------------------------------
-                    LANE 3: CENTER ARENA: POT & COMMUNITY BOARD
+                    CENTER ARENA: POT & COMMUNITY BOARD
                     ------------------------------------ */}
                 <div className="table-center-hub">
-                  
-                  {/* Street Stage Pills */}
-                  <div className="street-stepper-ribbon">
-                    <span className={`street-step-pill ${phase === 'preflop' ? 'active' : 'completed'}`}>Preflop</span>
-                    <span className={`street-step-pill ${phase === 'flop' ? 'active' : ['turn', 'river', 'showdown'].includes(phase) ? 'completed' : ''}`}>Flop</span>
-                    <span className={`street-step-pill ${phase === 'turn' ? 'active' : ['river', 'showdown'].includes(phase) ? 'completed' : ''}`}>Turn</span>
-                    <span className={`street-step-pill ${phase === 'river' ? 'active' : phase === 'showdown' ? 'completed' : ''}`}>River</span>
-                  </div>
-
-                  {/* Main Illuminated Pot */}
+                  {/* Main Illuminated Pot with Phase Tag & Odds */}
                   <div className="pot-display-hub">
-                    <div className="chip-icon-wrapper" style={{ transform: 'scale(0.58)', width: '26px', height: '20px' }}>
+                    <span className="pot-street-badge">{phase.toUpperCase()}</span>
+                    <div className="chip-icon-wrapper" style={{ transform: 'scale(0.55)', width: '24px', height: '18px' }}>
                       <ChipStack amount={pot} />
                     </div>
                     <span className="pot-amount-text">${pot}</span>
@@ -721,7 +717,7 @@ const GameEngine = () => {
                 </div>
 
                 {/* ------------------------------------
-                    LANE 4: HERO COMMITTED BET
+                    HERO COMMITTED BET (Side Felt Lane)
                     ------------------------------------ */}
                 {heroBet > 0 && (
                   <div className="table-bet-lane hero-bet-lane">
@@ -943,8 +939,20 @@ const GameEngine = () => {
             RIGHT SIDEBAR: PRO TRAINING DOCK
             -------------------------------------------------- */}
         {!isDockCollapsed && (
-          <aside className="sandbox-training-dock">
+          <aside className="sandbox-training-dock open">
             
+            {/* Drawer Top Header with Close Button */}
+            <div className="dock-drawer-top">
+              <span className="dock-drawer-title">AI Strategy Coach & HUD</span>
+              <button 
+                className="btn-dock-close"
+                onClick={() => setIsDockCollapsed(true)}
+                title="Close AI Coach Drawer"
+              >
+                ✕
+              </button>
+            </div>
+
             {/* Dock Tabs Header */}
             <div className="dock-nav-header">
               <button 
