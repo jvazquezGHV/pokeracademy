@@ -49,6 +49,9 @@ const GameEngine = () => {
   const [heroBet, setHeroBet] = useState(0);
   const [villainBet, setVillainBet] = useState(0);
   const [turn, setTurn] = useState('hero');
+  const [dealer, setDealer] = useState('hero'); // 'hero' | 'villain'
+  const dealerRef = useRef('hero');
+  const checksCountRef = useRef(0);
   
   const [winPct, setWinPct] = useState(50);
   const [history, setHistory] = useState("");
@@ -93,10 +96,10 @@ const GameEngine = () => {
   }, [phase]);
 
   // Fresh state reference for timeouts
-  const stateRef = useRef({ deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted });
+  const stateRef = useRef({ deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted, dealer });
   useEffect(() => {
-    stateRef.current = { deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted };
-  }, [deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted]);
+    stateRef.current = { deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted, dealer };
+  }, [deck, heroCards, villainCards, board, phase, pot, heroStack, villainStack, heroBet, villainBet, turn, isMuted, dealer]);
 
   // Auto-scroll action log
   useEffect(() => {
@@ -139,40 +142,72 @@ const GameEngine = () => {
   const spr = pot > 0 ? (effectiveStack / pot).toFixed(1) : '∞';
 
   // Initialize Hand
-  const startHand = () => {
+  const startHand = (forcedDealer) => {
+    const nextDealer = forcedDealer || (dealerRef.current === 'hero' ? 'villain' : 'hero');
+    dealerRef.current = nextDealer;
+    setDealer(nextDealer);
+    checksCountRef.current = 0;
+
     setShowRaiseOptions(false);
-    setIsProcessing(true);
     const newDeck = createDeck();
-    setHeroCards([newDeck.pop(), newDeck.pop()]);
-    setVillainCards([newDeck.pop(), newDeck.pop()]);
+    const hc = [newDeck.pop(), newDeck.pop()];
+    const vc = [newDeck.pop(), newDeck.pop()];
+    setHeroCards(hc);
+    setVillainCards(vc);
     setDeck(newDeck);
     setBoard([]);
     setPhase('preflop');
     
-    // Post blinds with stack continuity or reload if below 40
-    setHeroStack(prev => {
-      const base = prev > 40 ? prev : 1000;
-      return base - 10;
-    });
-    setVillainStack(prev => {
-      const base = prev > 40 ? prev : 1000;
-      return base - 20;
-    });
-    
-    setHeroBet(10);
-    setVillainBet(20);
+    // Calculate continuing stacks (reloading to $1000 if busted/below $40)
+    const currentHeroBase = (stateRef.current?.heroStack > 40) ? stateRef.current.heroStack : 1000;
+    const currentVillainBase = (stateRef.current?.villainStack > 40) ? stateRef.current.villainStack : 1000;
+
+    const initialHeroStack = nextDealer === 'hero' ? currentHeroBase - 10 : currentHeroBase - 20;
+    const initialVillainStack = nextDealer === 'hero' ? currentVillainBase - 20 : currentVillainBase - 10;
+    const initialHeroBet = nextDealer === 'hero' ? 10 : 20;
+    const initialVillainBet = nextDealer === 'hero' ? 20 : 10;
+    const initialTurn = nextDealer === 'hero' ? 'hero' : 'villain';
+
+    setHeroStack(initialHeroStack);
+    setVillainStack(initialVillainStack);
+    setHeroBet(initialHeroBet);
+    setVillainBet(initialVillainBet);
     setPot(30);
-    setTurn('hero');
+    setTurn(initialTurn);
     setAiFeedback(null);
     setCoachGrade(null);
     setCustomBet(40);
-    setHistory("--- NEW HAND ---\nBlinds posted (Hero SB: $10, Villain BB: $20).\n");
-    setIsProcessing(false);
+    setIsProcessing(nextDealer === 'villain');
+
+    const blindsHistory = nextDealer === 'hero'
+      ? "--- NEW HAND ---\nBlinds posted (Hero SB: $10, Villain BB: $20).\n"
+      : "--- NEW HAND ---\nBlinds posted (Villain SB: $10, Hero BB: $20).\n";
+    setHistory(blindsHistory);
     triggerSound('deal');
+
+    stateRef.current = {
+      ...stateRef.current,
+      deck: newDeck,
+      heroCards: hc,
+      villainCards: vc,
+      board: [],
+      phase: 'preflop',
+      pot: 30,
+      heroStack: initialHeroStack,
+      villainStack: initialVillainStack,
+      heroBet: initialHeroBet,
+      villainBet: initialVillainBet,
+      dealer: nextDealer,
+      turn: initialTurn,
+    };
+
+    if (nextDealer === 'villain') {
+      villainAction();
+    }
   };
 
   useEffect(() => {
-    startHand();
+    startHand('hero');
     // eslint-disable-next-line
   }, []);
 
@@ -216,10 +251,16 @@ const GameEngine = () => {
   // --- STATE MACHINE LOGIC --- //
   
   const nextPhase = (currentDeck) => {
-    const { phase: currentPhase } = stateRef.current;
+    const { phase: currentPhase, dealer: currentDealer } = stateRef.current;
     setHeroBet(0);
     setVillainBet(0);
-    setTurn('villain'); 
+    checksCountRef.current = 0;
+
+    // In Heads-Up, postflop the Big Blind acts FIRST!
+    // If Hero is dealer (Hero is SB/Button), Villain is BB -> Villain acts first.
+    // If Villain is dealer (Villain is SB/Button), Hero is BB -> Hero acts first.
+    const postflopFirstActor = currentDealer === 'hero' ? 'villain' : 'hero';
+    setTurn(postflopFirstActor);
     
     if (currentPhase === 'preflop') {
       const b1 = currentDeck.pop();
@@ -230,7 +271,11 @@ const GameEngine = () => {
       setPhase('flop');
       addToHistory(`\n--- FLOP: [${b1.rank} of ${b1.suit}, ${b2.rank} of ${b2.suit}, ${b3.rank} of ${b3.suit}] ---\n`);
       triggerSound('deal');
-      villainAction();
+      if (postflopFirstActor === 'villain') {
+        villainAction();
+      } else {
+        setIsProcessing(false);
+      }
     } else if (currentPhase === 'flop') {
       const b1 = currentDeck.pop();
       setDeck([...currentDeck]);
@@ -238,7 +283,11 @@ const GameEngine = () => {
       setPhase('turn');
       addToHistory(`\n--- TURN: [${b1.rank} of ${b1.suit}] ---\n`);
       triggerSound('deal');
-      villainAction();
+      if (postflopFirstActor === 'villain') {
+        villainAction();
+      } else {
+        setIsProcessing(false);
+      }
     } else if (currentPhase === 'turn') {
       const b1 = currentDeck.pop();
       setDeck([...currentDeck]);
@@ -246,7 +295,11 @@ const GameEngine = () => {
       setPhase('river');
       addToHistory(`\n--- RIVER: [${b1.rank} of ${b1.suit}] ---\n`);
       triggerSound('deal');
-      villainAction();
+      if (postflopFirstActor === 'villain') {
+        villainAction();
+      } else {
+        setIsProcessing(false);
+      }
     } else if (currentPhase === 'river') {
       setPhase('showdown');
       
@@ -328,7 +381,18 @@ const GameEngine = () => {
       let amount = 0;
       
       if (toCall > 0) {
-         if (Math.random() < 0.45) { // Fold realistic frequency
+         if (currentPhase === 'preflop' && vb === 10 && hb === 20) {
+            // Villain is on the Button/SB opening preflop
+            const rand = Math.random();
+            if (rand < 0.15) {
+               action = 'fold';
+            } else if (rand < 0.65 && vs > 40) {
+               action = 'raise';
+               amount = 30; // Raise to $40
+            } else {
+               action = 'call'; // Limp $10 to $20
+            }
+         } else if (Math.random() < 0.45) { // Fold realistic frequency facing bets
             action = 'fold';
          } else if (Math.random() < 0.25 && vs > toCall + (currentPot * 0.5)) {
             action = 'raise';
@@ -339,7 +403,7 @@ const GameEngine = () => {
       } else {
          if (Math.random() < 0.25) { // Bet frequency
             action = 'bet';
-            amount = Math.floor(currentPot * 0.5);
+            amount = Math.max(20, Math.floor(currentPot * 0.5));
          } else {
             action = 'check';
          }
@@ -355,7 +419,7 @@ const GameEngine = () => {
            ...prev,
            handsPlayed: prev.handsPlayed + 1,
            handsWon: prev.handsWon + 1,
-           netProfit: prev.netProfit + vb
+           netProfit: prev.netProfit + Math.max(0, finalPot - hb)
          }));
          setCoachGrade({ type: 'optimal', label: 'OPPONENT FOLDED' });
          endHand(`Computer Folds. You scoop $${finalPot}!`);
@@ -369,6 +433,7 @@ const GameEngine = () => {
          setVillainStack(prev => prev - amount);
          setVillainBet(prev => prev + amount);
          setPot(prev => prev + amount);
+         checksCountRef.current = 0;
          setTurn('hero');
          setIsProcessing(false);
       } else if (action === 'call') {
@@ -377,15 +442,30 @@ const GameEngine = () => {
          setVillainStack(prev => prev - toCall);
          setVillainBet(prev => prev + toCall);
          setPot(prev => prev + toCall);
-         nextPhase(currentDeck);
+         
+         if (currentPhase === 'preflop' && vb === 10 && hb === 20) {
+            // Villain limped preflop -> Hero (BB) has their option!
+            setTurn('hero');
+            setIsProcessing(false);
+         } else {
+            nextPhase(currentDeck);
+         }
       } else if (action === 'check') {
          addToHistory("Computer Checks.\n");
          triggerSound('bet');
          if (currentPhase === 'preflop') {
             nextPhase(currentDeck);
          } else {
-            setTurn('hero');
-            setIsProcessing(false);
+            if (checksCountRef.current === 0) {
+               // First check on this street -> action passes to Hero
+               checksCountRef.current = 1;
+               setTurn('hero');
+               setIsProcessing(false);
+            } else {
+               // Hero already checked -> both checked, advance to next street
+               checksCountRef.current = 2;
+               nextPhase(currentDeck);
+            }
          }
       }
     }, 1200);
@@ -420,7 +500,21 @@ const GameEngine = () => {
       if (toCall === 0) {
         addToHistory("You Check.\n");
         triggerSound('bet');
-        nextPhase(currentDeck); 
+        if (currentPhase === 'preflop') {
+          // Hero was BB and checked their preflop option -> advance to flop
+          nextPhase(currentDeck);
+        } else {
+          if (checksCountRef.current === 0) {
+            // First check on this street -> action passes to Villain
+            checksCountRef.current = 1;
+            setTurn('villain');
+            villainAction();
+          } else {
+            // Villain already checked -> both checked, advance to next street
+            checksCountRef.current = 2;
+            nextPhase(currentDeck);
+          }
+        }
       } else {
         addToHistory(`You Call $${toCall}.\n`);
         triggerSound('bet');
@@ -429,6 +523,7 @@ const GameEngine = () => {
         setPot(prev => prev + toCall);
         
         if (currentPhase === 'preflop' && hb === 10 && vb === 20) {
+           // Hero was SB and called $10 (limp) -> Villain (BB) has their option!
            setTurn('villain');
            villainAction();
         } else {
@@ -437,11 +532,13 @@ const GameEngine = () => {
       }
     } else if (action === 'raise') {
       const totalCostToHero = toCall + raiseAmount;
-      addToHistory(`You Raise to $${vb + raiseAmount}.\n`);
+      const isFirstBet = vb === 0;
+      addToHistory(isFirstBet ? `You Bet $${raiseAmount}.\n` : `You Raise to $${vb + raiseAmount}.\n`);
       triggerSound('bet');
       setHeroStack(prev => prev - totalCostToHero);
       setHeroBet(prev => prev + totalCostToHero);
       setPot(prev => prev + totalCostToHero);
+      checksCountRef.current = 0;
       setTurn('villain');
       villainAction();
     }
@@ -587,7 +684,7 @@ const GameEngine = () => {
               if (window.confirm("Reset stacks to $1,000 each?")) {
                 setHeroStack(1000);
                 setVillainStack(1000);
-                startHand();
+                startHand('hero');
               }
             }} 
             title="Reset Chip Stacks to $1,000"
@@ -639,11 +736,18 @@ const GameEngine = () => {
                       <div className="player-info-meta">
                         <div className="player-name-row">
                           <span className="player-name-text">GTO Bot</span>
-                          <span className="blind-badge bb">BB</span>
+                          {dealer === 'villain' ? (
+                            <>
+                              <span className="blind-badge sb">SB</span>
+                              <span className="dealer-button-badge" title="Dealer Button">D</span>
+                            </>
+                          ) : (
+                            <span className="blind-badge bb">BB</span>
+                          )}
                         </div>
                         <div className="player-chips-row">
                           <span className="player-chips-val">${villainStack}</span>
-                          <span className="player-bb-val">{Math.round(villainStack / 20)} BB</span>
+                          <span className="player-bb-val">({Math.round(villainStack / 20)} bb)</span>
                         </div>
                       </div>
                     </div>
@@ -689,7 +793,7 @@ const GameEngine = () => {
                       <ChipStack amount={pot} />
                     </div>
                     <span className="pot-amount-text">${pot}</span>
-                    <span className="pot-bb-text">({(pot / 20).toFixed(1)} BB)</span>
+                    <span className="pot-bb-text">({(pot / 20).toFixed(1)} bb)</span>
                     {toCallUI > 0 && phase !== 'showdown' && (
                       <span className="pot-odds-inline-tag">
                         Odds: <strong>{potOddsPct}%</strong>
@@ -768,12 +872,18 @@ const GameEngine = () => {
                     <div className="player-info-meta">
                       <div className="player-name-row">
                         <span className="player-name-text">Hero (You)</span>
-                        <span className="blind-badge sb">SB</span>
-                        <span className="dealer-button-badge" title="Dealer Button">D</span>
+                        {dealer === 'hero' ? (
+                          <>
+                            <span className="blind-badge sb">SB</span>
+                            <span className="dealer-button-badge" title="Dealer Button">D</span>
+                          </>
+                        ) : (
+                          <span className="blind-badge bb">BB</span>
+                        )}
                       </div>
                       <div className="player-chips-row">
                         <span className="player-chips-val">${heroStack}</span>
-                        <span className="player-bb-val">{Math.round(heroStack / 20)} BB</span>
+                        <span className="player-bb-val">({Math.round(heroStack / 20)} bb)</span>
                       </div>
                     </div>
                   </div>
@@ -847,7 +957,7 @@ const GameEngine = () => {
                           ${customBet}
                         </span>
                         <span style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'block' }}>
-                          ({(customBet / 20).toFixed(1)} BB)
+                          ({(customBet / 20).toFixed(1)} bb)
                         </span>
                       </div>
                     </div>
