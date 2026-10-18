@@ -622,16 +622,16 @@ const GameEngine = () => {
                 <div className="table-center-watermark">POKER ACADEMY • HEADS UP GTO</div>
 
                 {/* ------------------------------------
-                    TOP SEAT: VILLAIN (AI Computer)
+                    LANE 1: TOP SEAT: VILLAIN (AI Computer)
                     ------------------------------------ */}
-                <div className="player-pod player-pod-villain">
+                <div className="table-seat-villain">
                   {/* Status / Thinking Bubble */}
                   {turn === 'villain' && phase !== 'showdown' && (
                     <div className="player-action-bubble">Thinking GTO...</div>
                   )}
 
                   {/* Hole Cards */}
-                  <div className="player-cards-row">
+                  <div className="villain-cards-wrapper">
                     {villainCards.map((c, i) => (
                       <div key={i}>
                         <Card suit={c.suit} rank={c.rank} isFaceUp={phase === 'showdown'} disableFlip={true} />
@@ -656,22 +656,26 @@ const GameEngine = () => {
 
                   {/* Showdown Hand Name */}
                   {villainMadeHand && (
-                    <div className="hero-made-hand-badge" style={{ borderColor: '#a855f7', color: '#c084fc', marginTop: '4px' }}>
+                    <div className="villain-made-hand-badge">
                       {villainMadeHand.descr}
-                    </div>
-                  )}
-
-                  {/* Bet Plaque */}
-                  {villainBet > 0 && (
-                    <div className="bet-plaque-container bet-plaque-villain">
-                      <ChipStack amount={villainBet} />
-                      <span className="bet-plaque-amount">${villainBet}</span>
                     </div>
                   )}
                 </div>
 
                 {/* ------------------------------------
-                    CENTER ARENA: POT & COMMUNITY BOARD
+                    LANE 2: VILLAIN COMMITTED BET
+                    ------------------------------------ */}
+                {villainBet > 0 && (
+                  <div className="table-bet-lane villain-bet-lane">
+                    <div className="chip-icon-wrapper">
+                      <ChipStack amount={villainBet} />
+                    </div>
+                    <span className="bet-amount-tag">${villainBet}</span>
+                  </div>
+                )}
+
+                {/* ------------------------------------
+                    LANE 3: CENTER ARENA: POT & COMMUNITY BOARD
                     ------------------------------------ */}
                 <div className="table-center-hub">
                   
@@ -685,7 +689,7 @@ const GameEngine = () => {
 
                   {/* Main Illuminated Pot */}
                   <div className="pot-display-hub">
-                    <div style={{ transform: 'scale(0.7)', transformOrigin: 'center left', marginRight: '-6px' }}>
+                    <div className="chip-icon-wrapper" style={{ transform: 'scale(0.65)', width: '32px', height: '26px' }}>
                       <ChipStack amount={pot} />
                     </div>
                     <span className="pot-amount-text">${pot}</span>
@@ -721,27 +725,41 @@ const GameEngine = () => {
                 </div>
 
                 {/* ------------------------------------
-                    BOTTOM SEAT: HERO (Player)
+                    LANE 4: HERO COMMITTED BET
                     ------------------------------------ */}
-                <div className="player-pod player-pod-hero">
-                  
-                  {/* Bet Plaque */}
-                  {heroBet > 0 && (
-                    <div className="bet-plaque-container bet-plaque-hero">
+                {heroBet > 0 && (
+                  <div className="table-bet-lane hero-bet-lane">
+                    <div className="chip-icon-wrapper">
                       <ChipStack amount={heroBet} />
-                      <span className="bet-plaque-amount">${heroBet}</span>
                     </div>
-                  )}
+                    <span className="bet-amount-tag">${heroBet}</span>
+                  </div>
+                )}
 
-                  {/* Hole Cards */}
-                  <div className="player-cards-row">
-                    {heroCards.map((c, i) => (
-                      <div key={i}>
-                        <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                {/* ------------------------------------
+                    LANE 5: BOTTOM SEAT: HERO (Player)
+                    ------------------------------------ */}
+                <div className="table-seat-hero">
+                  
+                  {/* Hero Hand Cluster (Cards + Flanking Badges) */}
+                  <div className="hero-hand-cluster">
+                    {/* Live Hand Rank Readout on Left */}
+                    {heroMadeHand && (
+                      <div className="hero-made-hand-badge">
+                        {heroMadeHand.descr}
                       </div>
-                    ))}
+                    )}
+
+                    {/* Hole Cards */}
+                    <div className="hero-cards-wrapper">
+                      {heroCards.map((c, i) => (
+                        <div key={i}>
+                          <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                        </div>
+                      ))}
+                    </div>
                     
-                    {/* Live Win Equity Badge */}
+                    {/* Live Win Equity Badge on Right */}
                     {phase !== 'showdown' && (
                       <div className="hero-equity-badge">
                         <span className="hero-equity-label">Equity</span>
@@ -751,13 +769,6 @@ const GameEngine = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Live Hand Rank Readout (PokerSolver) */}
-                  {heroMadeHand && (
-                    <div className="hero-made-hand-badge">
-                      {heroMadeHand.descr}
-                    </div>
-                  )}
 
                   {/* Player Badge */}
                   <div className={`player-plate ${isHeroTurn ? 'is-active-turn' : ''}`}>
