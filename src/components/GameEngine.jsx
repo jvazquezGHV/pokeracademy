@@ -228,7 +228,7 @@ const GameEngine = () => {
       setDeck([...currentDeck]);
       setBoard([b1, b2, b3]);
       setPhase('flop');
-      addToHistory("\n--- FLOP ---\n");
+      addToHistory(`\n--- FLOP: [${b1.rank} of ${b1.suit}, ${b2.rank} of ${b2.suit}, ${b3.rank} of ${b3.suit}] ---\n`);
       triggerSound('deal');
       villainAction();
     } else if (currentPhase === 'flop') {
@@ -236,7 +236,7 @@ const GameEngine = () => {
       setDeck([...currentDeck]);
       setBoard(prev => [...prev, b1]);
       setPhase('turn');
-      addToHistory("\n--- TURN ---\n");
+      addToHistory(`\n--- TURN: [${b1.rank} of ${b1.suit}] ---\n`);
       triggerSound('deal');
       villainAction();
     } else if (currentPhase === 'turn') {
@@ -244,7 +244,7 @@ const GameEngine = () => {
       setDeck([...currentDeck]);
       setBoard(prev => [...prev, b1]);
       setPhase('river');
-      addToHistory("\n--- RIVER ---\n");
+      addToHistory(`\n--- RIVER: [${b1.rank} of ${b1.suit}] ---\n`);
       triggerSound('deal');
       villainAction();
     } else if (currentPhase === 'river') {
