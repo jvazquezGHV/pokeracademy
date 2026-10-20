@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { supabase } from './lib/supabaseClient';
 import Dashboard from './components/Dashboard';
 import LessonView from './components/LessonView';
@@ -17,6 +17,8 @@ import MathTrainer from './components/MathTrainer';
 import PostFlopTrainer from './components/PostFlopTrainer';
 import Analytics from './components/Analytics';
 import Auth from './components/Auth';
+import ResetPassword from './components/ResetPassword';
+import UserManagement from './components/UserManagement';
 import './index.css';
 
 const ADMIN_EMAIL = 'jvazquez.sd@outlook.com';
@@ -60,17 +62,56 @@ function App() {
   return (
     <Router>
       {session && (
-        <nav style={{ padding: '1rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end' }}>
-          <button 
-            onClick={() => supabase.auth.signOut()}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
-          >
-            Sign Out
-          </button>
+        <nav style={{ padding: '0.85rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface-color)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <Link to="/" style={{ textDecoration: 'none', fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>♠️</span> Poker Academy
+            </Link>
+            {session.user?.email === ADMIN_EMAIL && (
+              <Link 
+                to="/admin/users" 
+                style={{
+                  fontSize: '0.85rem',
+                  color: '#60a5fa',
+                  textDecoration: 'none',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '0.4rem',
+                  backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                  border: '1px solid rgba(59, 130, 246, 0.28)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontWeight: 500
+                }}
+              >
+                👥 User Control
+              </Link>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              {session.user?.email}
+            </span>
+            <button 
+              onClick={() => supabase.auth.signOut()}
+              style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}
+            >
+              Sign Out
+            </button>
+          </div>
         </nav>
       )}
       <Routes>
         <Route path="/login" element={session ? <Navigate to="/" replace /> : <Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route 
+          path="/admin/users" 
+          element={
+            <ProtectedRoute session={session} adminOnly={true}>
+              <UserManagement session={session} />
+            </ProtectedRoute>
+          } 
+        />
         <Route 
           path="/" 
           element={

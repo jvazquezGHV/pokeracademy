@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import curriculum from '../data/curriculum.json';
 import challenges from '../data/challenges.json';
+import UserManagement from './UserManagement';
 import './Dashboard.css';
+
+const ADMIN_EMAIL = 'jvazquez.sd@outlook.com';
 
 // Flatten lessons to find global index for routing
 const buildGlobalLessonMap = () => {
@@ -231,6 +234,22 @@ const Dashboard = ({ session }) => {
               </div>
             ))}
           </div>
+
+          {session?.user?.email === ADMIN_EMAIL && (
+            <div className="nav-section">
+              <h3 className="nav-section-title">Administration</h3>
+              <div 
+                className={`nav-item ${activeSection === 'users' ? 'active' : ''}`}
+                onClick={() => {
+                   setActiveSection('users');
+                   setIsMobileMenuOpen(false);
+                }}
+              >
+                <span className="nav-icon">👥</span>
+                <span>User Control</span>
+              </div>
+            </div>
+          )}
         </nav>
       </aside>
 
@@ -238,6 +257,8 @@ const Dashboard = ({ session }) => {
       <main className="dashboard-main">
         <div className="dashboard-main-content">
           
+          {activeSection === 'users' && <UserManagement session={session} />}
+
           {activeSection.startsWith('track-') && renderTrack(activeSection.replace('track-', ''))}
 
           {activeSection === 'challenges' && (
