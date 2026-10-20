@@ -987,11 +987,11 @@ const MultiplayerTable = ({ session }) => {
           <button 
             className={`mp-btn-log-toggle ${isLogOpen ? 'active' : ''}`}
             onClick={() => setIsLogOpen(!isLogOpen)}
-            title="Toggle Action Log Drawer"
+            title={isLogOpen ? "Collapse Action Log & Expand Table" : "Open Action Log"}
           >
             <span>📜</span>
-            <span>Action Log</span>
-            <span>{isLogOpen ? '✕' : '▶'}</span>
+            <span>{isLogOpen ? 'Collapse Log' : 'Action Log'}</span>
+            <span>{isLogOpen ? '⇥' : '◀'}</span>
           </button>
         </div>
       </header>
@@ -1488,16 +1488,36 @@ const MultiplayerTable = ({ session }) => {
           {/* --------------------------------------------------
               SLIDE-OVER ACTION LOG DRAWER
               -------------------------------------------------- */}
+          {/* Backdrop overlay: click to collapse drawer and expand table */}
+          {isLogOpen && (
+            <div 
+              className="mp-drawer-backdrop" 
+              onClick={() => setIsLogOpen(false)} 
+              title="Click anywhere to collapse window and expand table"
+            />
+          )}
+
           <aside className={`mp-log-drawer ${isLogOpen ? 'open' : ''}`}>
             <div className="mp-drawer-header">
-              <h3>📜 Hand Action History</h3>
-              <button 
-                className="mp-btn-drawer-close" 
-                onClick={() => setIsLogOpen(false)} 
-                title="Close Drawer"
-              >
-                ✕
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h3>📜 Hand Action History</h3>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button 
+                  className="mp-btn-drawer-collapse" 
+                  onClick={() => setIsLogOpen(false)} 
+                  title="Collapse window and expand table"
+                >
+                  <span>⇥ Collapse</span>
+                </button>
+                <button 
+                  className="mp-btn-drawer-close" 
+                  onClick={() => setIsLogOpen(false)} 
+                  title="Close Drawer"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             <div className="mp-drawer-body">
