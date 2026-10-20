@@ -71,10 +71,51 @@ const Dashboard = ({ session }) => {
     const track = curriculum.tracks.find(t => t.id === trackId);
     if (!track) return null;
 
+    // Calculate total track progress
+    let totalTrackLessons = 0;
+    let completedTrackLessons = 0;
+    track.modules.forEach(m => {
+      totalTrackLessons += m.lessons.length;
+      completedTrackLessons += m.lessons.filter(l => completedLessons.includes(l.id)).length;
+    });
+    const trackOverallProgress = totalTrackLessons === 0 ? 0 : Math.round((completedTrackLessons / totalTrackLessons) * 100);
+
     return (
       <div className="track-section">
-        <h2 className="track-title">{track.title}</h2>
-        <p className="track-desc">{track.description}</p>
+        {/* Quick Volume Switcher Tabs */}
+        <div className="volume-selector-tabs">
+          {curriculum.tracks.map((t) => {
+            let tTotal = 0;
+            let tDone = 0;
+            t.modules.forEach(m => {
+              tTotal += m.lessons.length;
+              tDone += m.lessons.filter(l => completedLessons.includes(l.id)).length;
+            });
+            const tProg = tTotal === 0 ? 0 : Math.round((tDone / tTotal) * 100);
+            const isActive = activeSection === 'track-' + t.id;
+
+            return (
+              <button
+                key={t.id}
+                className={`volume-tab ${isActive ? 'active' : ''}`}
+                onClick={() => setActiveSection('track-' + t.id)}
+              >
+                <span>Vol {t.volume}: {t.title.split(':')[0]}</span>
+                <span className="volume-tab-badge">{tProg}%</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
+          <div>
+            <h2 className="track-title">{track.volumeTitle || track.title}</h2>
+            <p className="track-desc" style={{ marginBottom: '0.5rem' }}>{track.description}</p>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.85rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            Volume Progress: <strong style={{ color: '#34d399' }}>{completedTrackLessons}/{totalTrackLessons}</strong> Chapters ({trackOverallProgress}%)
+          </div>
+        </div>
         
         <div className="modules-grid">
           {track.modules.length === 0 ? (
@@ -88,6 +129,9 @@ const Dashboard = ({ session }) => {
               return (
                 <div key={mod.id} className="module-card">
                   <h3 className="module-title">{mod.title}</h3>
+                  {mod.description && (
+                    <p className="module-card-desc">{mod.description}</p>
+                  )}
                   
                   <div className="progress-container">
                     <div className="progress-bar-bg">
@@ -107,9 +151,31 @@ const Dashboard = ({ session }) => {
                             onClick={() => navigate(lesson.type === 'quiz' ? `/quiz/${lessonIndexMap[lesson.id]}` : `/learn/${lessonIndexMap[lesson.id]}`)}
                           >
                             <span className="lesson-icon">{isCompleted ? '✅' : (lesson.type === 'quiz' ? '🧠' : '📄')}</span>
-                            <span style={{ textDecoration: isCompleted ? 'line-through' : 'none', opacity: isCompleted ? 0.7 : 1 }}>
+                            <span style={{ 
+                              textDecoration: isCompleted ? 'line-through' : 'none', 
+                              opacity: isCompleted ? 0.7 : 1,
+                              flex: 1,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}>
                               {lesson.title}
                             </span>
+
+                            {lesson.visualSpot && (
+                              <span className="lesson-feature-tag" title="Visual Hand Spotlight">♠️ Spot</span>
+                            )}
+                            {lesson.mathTool && (
+                              <span className="lesson-feature-tag" title="Interactive Math Lab" style={{ color: '#38bdf8' }}>🧮 Lab</span>
+                            )}
+                            {lesson.decisionChallenge && (
+                              <span className="lesson-feature-tag" title="Decision Challenge" style={{ color: '#a78bfa' }}>⚡ Challenge</span>
+                            )}
+                            {lesson.estimatedMinutes && (
+                              <span className="lesson-feature-tag" title={`Estimated read time: ${lesson.estimatedMinutes} min`}>
+                                {lesson.estimatedMinutes}m
+                              </span>
+                            )}
                           </li>
                         );
                       })}
@@ -218,7 +284,7 @@ const Dashboard = ({ session }) => {
           </div>
           
           <div className="nav-section">
-            <h3 className="nav-section-title">Curriculum</h3>
+            <h3 className="nav-section-title">Playbook Volumes</h3>
             
             {curriculum.tracks.map(track => (
               <div 
@@ -230,7 +296,7 @@ const Dashboard = ({ session }) => {
                 }}
               >
                 <span className="nav-icon">📚</span>
-                <span>{track.title.split(':')[0]}</span>
+                <span>Vol {track.volume}: {track.title.split(':')[0]}</span>
               </div>
             ))}
           </div>

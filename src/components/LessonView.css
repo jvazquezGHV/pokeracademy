@@ -1,0 +1,863 @@
+/* ==========================================================================
+   Poker Academy - Interactive Book & Lesson View Styles
+   ========================================================================== */
+
+.lesson-page-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem 1rem;
+}
+
+/* --- Top Navigation Bar --- */
+.lesson-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lesson-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lesson-back-btn,
+.lesson-toc-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.lesson-back-btn:hover,
+.lesson-toc-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.lesson-meta-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.lesson-read-time-pill {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-color);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.lesson-volume-pill {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* --- Progress Bar --- */
+.lesson-progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.lesson-progress-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.lesson-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.lesson-progress-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* --- Main Book Article Card --- */
+.lesson-card-wrapper {
+  background: var(--surface-color);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  padding: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .lesson-card-wrapper {
+    padding: 1.5rem 1.25rem;
+    border-radius: 1rem;
+  }
+}
+
+.lesson-breadcrumbs {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.lesson-main-title {
+  font-size: 2.2rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+  .lesson-main-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* Core Concept Box */
+.lesson-core-concept-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.06) 100%);
+  border-left: 4px solid var(--accent-color);
+  border-radius: 0 0.75rem 0.75rem 0;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
+  border-right: 1px solid rgba(16, 185, 129, 0.15);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.lesson-core-concept-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 0.4rem;
+}
+
+.lesson-core-concept-text {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #f1f5f9;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Lesson Prose Content */
+.lesson-body-prose {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  margin-bottom: 2.5rem;
+  font-family: inherit;
+}
+
+.lesson-body-prose strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* --- Visual Poker Spot Table --- */
+.lesson-spot-container {
+  background: radial-gradient(circle at center, #14532d 0%, #052e16 100%);
+  border: 4px solid #332014;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  margin: 2.5rem 0;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8), 0 10px 25px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.lesson-spot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lesson-spot-tag {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.lesson-spot-pot-badge {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.lesson-spot-table-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.lesson-spot-board-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lesson-spot-section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.lesson-spot-cards-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  transform: scale(0.9);
+  transform-origin: center center;
+}
+
+@media (max-width: 600px) {
+  .lesson-spot-cards-row {
+    transform: scale(0.75);
+    margin: -10px 0;
+  }
+}
+
+.lesson-spot-hands-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.lesson-spot-player-box {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 160px;
+}
+
+.lesson-spot-desc-banner {
+  margin-top: 1.25rem;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: 100%;
+}
+
+/* --- Interactive Pot Odds Slider Tool --- */
+.lesson-pot-odds-tool {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  margin: 2.5rem 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.pot-odds-tool-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #60a5fa;
+  margin-bottom: 0.5rem;
+}
+
+.pot-odds-tool-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.pot-odds-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .pot-odds-controls-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pot-odds-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pot-odds-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.pot-odds-val-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.pot-odds-slider {
+  width: 100%;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.pot-odds-results-dashboard {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.pot-odds-metric-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pot-odds-metric-name {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.pot-odds-metric-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.pot-odds-metric-val.highlight-green {
+  color: #34d399;
+}
+
+.pot-odds-metric-val.highlight-blue {
+  color: #38bdf8;
+}
+
+/* Equity Visual Gauge */
+.equity-gauge-container {
+  margin-top: 1rem;
+}
+
+.equity-gauge-bar-wrapper {
+  position: relative;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: visible;
+  margin-bottom: 0.75rem;
+}
+
+.equity-gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+  border-radius: 9999px;
+  transition: width 0.2s ease;
+}
+
+.equity-gauge-marker {
+  position: absolute;
+  top: -8px;
+  width: 3px;
+  height: 30px;
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff;
+  transform: translateX(-50%);
+  transition: left 0.2s ease;
+}
+
+.equity-benchmarks-list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.equity-benchmark-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.equity-benchmark-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* --- Inline Decision Challenge --- */
+.lesson-decision-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  margin: 2.5rem 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.decision-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.decision-question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.decision-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.decision-option-btn {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.85rem 1.15rem;
+  border-radius: 0.75rem;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.decision-option-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(4px);
+}
+
+.decision-option-btn.selected-correct {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: #10b981 !important;
+  color: #6ee7b7 !important;
+}
+
+.decision-option-btn.selected-incorrect {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
+
+.decision-feedback-banner {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.decision-feedback-banner.success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.decision-feedback-banner.warning {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.decision-feedback-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.decision-feedback-title.success {
+  color: #34d399;
+}
+
+.decision-feedback-title.warning {
+  color: #f87171;
+}
+
+.decision-feedback-explanation {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* --- Pro Coach Callouts Grid --- */
+.lesson-callouts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.callout-box {
+  padding: 1.15rem 1.35rem;
+  border-radius: 0.75rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.callout-box-protip {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-left: 4px solid var(--accent-color);
+}
+
+.callout-box-mistake {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-left: 4px solid #ef4444;
+}
+
+.callout-box-goldenrule {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-left: 4px solid #f59e0b;
+}
+
+.callout-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.callout-content {
+  flex: 1;
+}
+
+.callout-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.callout-box-protip .callout-title {
+  color: #34d399;
+}
+
+.callout-box-mistake .callout-title {
+  color: #f87171;
+}
+
+.callout-box-goldenrule .callout-title {
+  color: #fbbf24;
+}
+
+.callout-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* --- Bottom Actions Footer --- */
+.lesson-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.lesson-footer-btn-prev,
+.lesson-footer-btn-next {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lesson-footer-btn-prev {
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lesson-footer-btn-prev:hover:not(:disabled) {
+  background: var(--surface-color-hover);
+  color: var(--text-primary);
+}
+
+.lesson-footer-btn-prev:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lesson-footer-btn-next {
+  background: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.lesson-footer-btn-next:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* --- Table of Contents Drawer --- */
+.lesson-toc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.lesson-toc-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 360px;
+  max-width: 85vw;
+  background: #0f172a;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  animation: slideInLeft 0.25s ease;
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lesson-toc-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lesson-toc-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.lesson-toc-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.lesson-toc-close-btn:hover {
+  color: #ffffff;
+}
+
+.lesson-toc-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.toc-volume-group {
+  margin-bottom: 1.5rem;
+}
+
+.toc-volume-heading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  font-weight: 700;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.75rem;
+}
+
+.toc-module-block {
+  margin-bottom: 0.75rem;
+}
+
+.toc-module-name {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  padding-left: 0.25rem;
+}
+
+.toc-lessons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.toc-lesson-item {
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.toc-lesson-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.toc-lesson-item.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  font-weight: 600;
+  border-left: 3px solid var(--accent-color);
+}
+
+.toc-lesson-item.completed {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.toc-item-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

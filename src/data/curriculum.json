@@ -2,38 +2,77 @@
   "tracks": [
     {
       "id": "beginner",
-      "title": "Beginner: The Fundamentals",
-      "description": "Learn the rules, hand rankings, table positions, and basic gameplay mechanics.",
+      "volume": 1,
+      "volumeTitle": "Volume 1: The Foundations & Rules of the Felt",
+      "title": "Beginner: Foundations of the Game",
+      "description": "Master poker rules, hand rankings, table positions, betting rounds, and essential etiquette.",
+      "color": "#10b981",
       "modules": [
         {
           "id": "b-m1",
-          "title": "Hand Rankings",
+          "title": "Hand Rankings & Board Textures",
+          "description": "Understand the official hierarchy of poker hands and how board cards change hand strength.",
           "lessons": [
             {
               "id": "l-royal-flush",
-              "title": "The Royal Flush",
-              "content": "Welcome to the absolute pinnacle of poker: The Royal Flush.\n\nThis is the highest possible hand in Texas Hold'em, and hitting it is incredibly rare. Statistically, you have a 1 in 30,939 chance of flopping a Royal Flush when you hold two suited Broadway cards, and an overall 1 in 649,739 chance of making it by the river. \n\nIt consists of an Ace, King, Queen, Jack, and 10, all of the exact same suit. Because it is the highest straight flush possible, it is mathematically unbeatable. When you hold a Royal Flush, your only goal is to figure out how to extract every single chip from your opponents without scaring them away. Do not fold this hand under any circumstances!"
-            },
-            {
-              "id": "l-straight-flush",
-              "title": "Straight Flush",
-              "content": "Just below the Royal Flush sits the incredibly powerful Straight Flush.\n\nA Straight Flush consists of any five cards of sequential rank, all sharing the same suit. For example, holding the 5, 6, 7, 8, and 9 of Clubs gives you a 9-high Straight Flush.\n\nIn the rare event that two players both hold a straight flush, the winner is determined by the highest card in the sequence. For instance, a Jack-high straight flush beats a 9-high straight flush. This is a monster hand that you should be thrilled to play for all your chips."
+              "title": "The Royal Flush & Straight Flushes",
+              "estimatedMinutes": 3,
+              "coreConcept": "A Royal Flush is the mathematically unbeatable peak of Texas Hold'em (Ace through Ten of the same suit).",
+              "content": "Welcome to the absolute pinnacle of poker: The Royal Flush.\n\nThis is the highest possible hand in Texas Hold'em, and hitting it is incredibly rare. Statistically, you have a 1 in 30,939 chance of flopping a Royal Flush when holding two suited Broadway cards, and an overall 1 in 649,739 chance of making it by the river.\n\nIt consists of an Ace, King, Queen, Jack, and 10 of the exact same suit. Because it is the highest straight flush possible, it is mathematically unbeatable. When you hold a Royal Flush, your only objective is extracting maximum chips without scaring your opponents into folding.\n\nJust below it sits the Straight Flush: any five consecutive cards of identical suit (e.g., 5-6-7-8-9 of clubs). If two players both make a straight flush, the player with the higher top card takes the pot.",
+              "proTip": "Never slow-play a Royal Flush to the point of checking the river. Make a reasonable value bet to give opponents holding flushes or full houses an excuse to pay you off.",
+              "commonMistake": "Panicking and shoving all-in instantly when hitting the nuts on the flop, causing everyone else to fold immediately.",
+              "goldenRule": "The Royal Flush cannot be beaten—focus 100% of your energy on building the pot.",
+              "visualSpot": {
+                "heroCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "hearts", "rank": "K" }],
+                "boardCards": [{ "suit": "hearts", "rank": "Q" }, { "suit": "hearts", "rank": "J" }, { "suit": "hearts", "rank": "10" }, { "suit": "clubs", "rank": "2" }, { "suit": "diamonds", "rank": "7" }],
+                "pot": 180,
+                "heroPosition": "BTN",
+                "handDescription": "Nut Royal Flush (Unbeatable)"
+              },
+              "decisionChallenge": {
+                "question": "You flop a Royal Flush in position on a Qh-Jh-10h flop. The opponent bets $20 into a $40 pot. What is the optimal play?",
+                "options": [
+                  "Shove all-in immediately to protect your hand",
+                  "Call smoothly to keep the opponent's bluffs and lower flushes in the pot",
+                  "Fold because the board is too wet"
+                ],
+                "correctIndex": 1,
+                "explanation": "Calling smoothly conceals your monster strength and allows your opponent to keep betting their bluffs, straight draws, or smaller flushes on the turn and river."
+              }
             },
             {
               "id": "l-four-kind",
-              "title": "Four of a Kind & Full House",
-              "content": "Moving down the hierarchy, we find two massive hands that will win you the vast majority of pots: Four of a Kind (Quads) and the Full House (a 'Boat').\n\nFour of a Kind consists of four cards of the exact same rank, such as four Aces or four 7s. If two players have quads (usually because there are four of a kind on the community board), the player with the highest 'kicker' (the fifth card) wins.\n\nA Full House consists of three cards of one rank and two cards of another rank. For example, holding three Kings and two 8s gives you 'Kings full of 8s'. When two players have a Full House, the player with the highest three-of-a-kind wins the pot."
+              "title": "Quads, Full Houses & The Kicker Problem",
+              "estimatedMinutes": 4,
+              "coreConcept": "Four of a Kind (Quads) and Full Houses (Boats) win the vast majority of showdowns, but kicker rank breaks ties.",
+              "content": "Four of a Kind (Quads) occurs when you hold all four cards of the same rank (e.g., four Queens). If the board contains four of a kind, the player with the highest fifth card ('kicker') wins.\n\nA Full House consists of three cards of one rank and two of another (e.g., Kings full of 8s: K-K-K-8-8). When two players have a Full House, the higher three-of-a-kind always wins. For example, 9-9-9-2-2 beats 8-8-8-A-A.\n\nThe 'Kicker Problem': In Hold'em, every final hand uses exactly 5 cards. When you and your opponent both make one pair (such as a Pair of Aces), the player whose second card is higher wins the entire pot. Holding A-K is vastly more profitable than holding A-4 because your King kicker dominates weaker Aces.",
+              "proTip": "Be wary when holding weak Aces like A-2 or A-5. Even when you hit an Ace on the flop, you are frequently 'dominated' by opponents with better kickers.",
+              "commonMistake": "Overvaluing a low full house when the board is paired high (e.g., holding 2-2 on a K-K-K-8-2 board—almost any higher pocket pair beats you).",
+              "goldenRule": "Kickers decide close pots: play cards with high kickers to avoid being dominated.",
+              "visualSpot": {
+                "heroCards": [{ "suit": "spades", "rank": "A" }, { "suit": "clubs", "rank": "K" }],
+                "villainCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "diamonds", "rank": "8" }],
+                "boardCards": [{ "suit": "diamonds", "rank": "A" }, { "suit": "clubs", "rank": "J" }, { "suit": "hearts", "rank": "4" }, { "suit": "spades", "rank": "2" }, { "suit": "clubs", "rank": "9" }],
+                "pot": 120,
+                "heroPosition": "CO",
+                "handDescription": "Pair of Aces with King Kicker beats Pair of Aces with 8 Kicker"
+              }
             },
             {
-              "id": "l-flush-straight",
-              "title": "Flush & Straight",
-              "content": "These are the bread-and-butter strong hands in Texas Hold'em.\n\nA Flush is any five cards of the same suit, regardless of their numerical sequence. If multiple players have a flush, the player holding the highest single card in that suit wins. Always be aware of the 'Nut Flush', which is the highest possible flush given the board texture (usually an Ace-high flush).\n\nA Straight consists of five cards of sequential rank, but in at least two different suits (e.g., 5-6-7-8-9 of mixed suits). If two players have a straight, the one with the higher top card wins. Interestingly, the Ace can be used as the highest card (10-J-Q-K-A) or the lowest card (A-2-3-4-5) in a straight."
+              "id": "l-board-textures",
+              "title": "Board Textures: Dry vs. Wet Boards",
+              "estimatedMinutes": 4,
+              "coreConcept": "The flop texture dictates whether top pair is a fortress or a fragile liability.",
+              "content": "Every flop falls somewhere on a spectrum between 'Bone Dry' and 'Soaking Wet'.\n\nA **Dry Board** (e.g., K♠ 7♦ 2♣) features disconnected ranks and mixed suits. There are virtually no flush draws and no open-ended straight draws. On dry boards, Top Pair is strong, and opponents rarely have huge hands. You can bet small to protect your hand and extract value.\n\nA **Wet Board** (e.g., J♥ 10♥ 9♣) features coordinated ranks and multiple cards of the same suit. Straight draws and flush draws are everywhere. Top pair on a wet board is vulnerable, and large bets are necessary to charge drawing hands if you intend to continue.\n\nA **Monotone Board** (e.g., K♠ 8♠ 3♠) has three cards of the exact same suit. Anyone holding a single spade has a flush draw, and players without a spade must proceed with caution.",
+              "proTip": "On dry rainbow boards, bet small (25% to 33% pot). On wet connected boards, bet larger (66% to 75% pot) to deny opponents cheap odds to chase draws.",
+              "commonMistake": "Slow-playing two pair on a wet board with two flush cards, giving opponents free cards to hit their straights and flushes.",
+              "goldenRule": "Wet boards demand defense and larger sizing; dry boards favor small, frequent bets."
             },
             {
               "id": "q-hand-rankings-1",
               "type": "quiz",
-              "title": "Quiz: Identify the Hand",
-              "question": "What hand is currently face down on the table? Click the cards to flip them and find out!",
+              "title": "Quiz: Hand Hierarchy & Board Texture",
+              "question": "What hand is face down on the table? Click the cards to flip them and test your knowledge!",
               "cards": [
                 { "suit": "spades", "rank": "10" },
                 { "suit": "spades", "rank": "J" },
@@ -53,70 +92,107 @@
         },
         {
           "id": "b-m2",
-          "title": "Table Positions",
+          "title": "Table Geography & Positional Power",
+          "description": "Learn why position is the single greatest competitive edge in Texas Hold'em.",
           "lessons": [
             {
               "id": "l-the-button",
-              "title": "The Button (Dealer)",
-              "content": "In poker, information is power, and the Button (or Dealer) holds all the cards—literally and figuratively.\n\nThe Button is universally considered the most advantageous position at the poker table. Why? Because after the initial pre-flop betting round, the Button is the absolute last person to act on every subsequent street (Flop, Turn, and River).\n\nActing last means you get to see what every other player decides to do before you have to make your own decision. If everyone checks, you can bluff. If someone bets huge, you can safely fold without investing more chips. You should play your widest range of hands from the Button."
-            },
-            {
-              "id": "l-the-blinds",
-              "title": "The Blinds (SB & BB)",
-              "content": "The Small Blind (SB) and Big Blind (BB) are the two players seated immediately to the left of the Button.\n\nThese players are forced to put 'blind' bets into the pot before any cards are dealt. This mechanism exists to ensure there is always money in the pot worth fighting for. Without blinds, players could simply fold every single hand until they get Pocket Aces without any penalty.\n\nPlaying from the blinds is notoriously difficult. Not only are you forced to put money in with random cards, but you will also be 'Out of Position' (acting first) for the rest of the hand against everyone except the Button."
+              "title": "The Button (BTN): The King of the Table",
+              "estimatedMinutes": 4,
+              "coreConcept": "Acting last on the Flop, Turn, and River gives you complete information before making your move.",
+              "content": "In poker, information is currency. The Button (Dealer position) is universally acknowledged as the most profitable seat at any table.\n\nWhy? Because after pre-flop action, the Button acts last on every subsequent street: Flop, Turn, and River. You observe whether your opponents check in weakness, bet small, or show aggression before committing a single chip.\n\nWhen opponents check to you on the Button, you can take down the pot with a simple bluff. When they bet huge, you can fold without losing chips. This structural informational edge allows you to play the widest, most profitable range of hands in the game (around 40% to 50% of all starting hands).",
+              "proTip": "Attack the blinds relentlessly from the Button. If players before you fold, raise with broadways, suited connectors, and pairs to steal the blinds.",
+              "commonMistake": "Playing too tight on the Button. Folding hands like K-8s or 9-7s from the Button gives away free money in the long run.",
+              "goldenRule": "Position is power: Play more hands in position, fewer hands out of position."
             },
             {
               "id": "l-early-position",
-              "title": "Early Position (UTG)",
-              "content": "Welcome to the danger zone. 'Under the Gun' (UTG) is the player sitting immediately to the left of the Big Blind.\n\nThis player is forced to act first before the flop, with zero information about what the 6 to 8 players behind them are going to do. Because so many players are still waiting to act, there is a very high probability that someone behind you will wake up with a monster hand.\n\nAs a result, you must play extremely tight from Early Position. You should only be raising premium hands like big pocket pairs (AA, KK, QQ, JJ) and strong Aces (AK, AQ) from this seat."
+              "title": "Under the Gun (UTG) & Early Position Discipline",
+              "estimatedMinutes": 3,
+              "coreConcept": "Acting first with 5 to 8 players behind you requires strict hand selection to avoid traps.",
+              "content": "The seat immediately to the left of the Big Blind is called 'Under the Gun' (UTG). It is named after the feeling of having a pistol pointed at you—because you have zero information about what everyone else holds.\n\nWhen you open from UTG, there are multiple opponents left to act. The statistical likelihood that at least one of them wakes up with an Ace, King, or high pair is very high. Furthermore, you will be out of position for the entire hand.\n\nBecause of this, your UTG opening range must be disciplined and tight (around 12% to 15% of starting hands). Stick to pocket pairs (77+), strong suited broadways (AK, AQ, AJ, KQ suited), and premium offsuit Aces (AKo, AQo).",
+              "proTip": "If you are unsure whether to raise a marginal hand like K-10 offsuit from UTG, fold it. Folding marginal hands from early position saves hundreds of big blinds over time.",
+              "commonMistake": "Open-limping or raising weak hands like K-J offsuit or A-6 offsuit from UTG, only to face 3-bets from players in position.",
+              "goldenRule": "Early position demands discipline: fold marginal cards and build a tight fortress."
+            },
+            {
+              "id": "l-the-blinds",
+              "title": "The Blinds (SB & BB): Defending the Tax Seats",
+              "estimatedMinutes": 4,
+              "coreConcept": "You are forced to pay blinds every orbit; defending requires balancing pot odds against positional disadvantage.",
+              "content": "The Small Blind (SB) and Big Blind (BB) are forced bets posted before cards are dealt. Without blinds, players would simply fold until dealt Pocket Aces with zero consequence.\n\nThe Blinds are the biggest financial leak for most players. You are forced to invest money with random cards, and you are guaranteed to act first (out of position) on every post-flop street against late-position raisers.\n\nIn the Big Blind, you get a 'discount' to call because your 1 BB is already in the pot. If a player opens for 2.2 BB, you only need to call 1.2 BB to see a flop. However, do not defend with trash cards (like 9-3 offsuit) because playing out of position postflop will cost you even more chips.",
+              "proTip": "From the Small Blind, prefer 3-betting (re-raising) or folding over calling. Flat-calling from the SB invites the Big Blind to squeeze or see a cheap flop while keeping you out of position.",
+              "commonMistake": "Defending every single hand in the Big Blind because 'I already have money in the pot'.",
+              "goldenRule": "Blinds are an unavoidable cost—minimize losses with disciplined defense and timely 3-bets."
             },
             {
               "id": "q-positions-1",
               "type": "quiz",
-              "title": "Quiz: Best Position",
-              "question": "Based on what you just learned, what is considered the best position at the poker table?",
+              "title": "Quiz: The Positional Advantage",
+              "question": "Which position has the greatest strategic advantage across all post-flop betting rounds?",
               "cards": [
                 { "suit": "hearts", "rank": "A" },
                 { "suit": "diamonds", "rank": "A" }
               ],
               "options": [
                 "Under the Gun (UTG)",
-                "Small Blind",
-                "The Button",
-                "Big Blind"
+                "Small Blind (SB)",
+                "The Button (BTN)",
+                "Big Blind (BB)"
               ],
-              "correctAnswer": "The Button"
+              "correctAnswer": "The Button (BTN)"
             }
           ]
         },
         {
           "id": "b-m3",
-          "title": "Betting Rounds",
+          "title": "The 4 Streets of Combat",
+          "description": "Learn the chronological anatomy of a Texas Hold'em hand from Pre-Flop to Showdown.",
           "lessons": [
             {
               "id": "l-pre-flop",
-              "title": "Pre-Flop: The Beginning",
-              "content": "The Pre-Flop betting round sets the stage for the entire hand.\n\nEvery player receives two private 'hole cards' that only they can see. The action starts with the player 'Under the Gun' (left of the Big Blind) and moves clockwise around the table.\n\nPlayers have three options:\n1. **Fold**: Throw their cards away and exit the hand.\n2. **Call**: Match the size of the current bet (which is at least the size of the Big Blind).\n3. **Raise**: Increase the size of the bet, forcing everyone else to match the new amount if they want to stay in the hand."
+              "title": "Pre-Flop: The Initial Setup",
+              "estimatedMinutes": 3,
+              "coreConcept": "Each player receives two private cards; betting establishes who holds initiative going into the flop.",
+              "content": "A hand begins with each player receiving two private 'hole cards'. The player to the left of the Big Blind (UTG) starts the action.\n\nEvery player has three fundamental choices:\n1. **Fold**: Relinquish cards and forfeit any blinds posted.\n2. **Call**: Match the highest bet placed so far (at minimum, 1 Big Blind).\n3. **Raise**: Increase the bet, forcing opponents to match the higher amount to continue.\n\nPre-flop action determines who holds the 'Initiative'. The last aggressive raiser is known as the preflop aggressor and generally has the mathematical right to continue betting on the flop.",
+              "proTip": "Never open a pot with a limp (flat calling 1 BB). Always come in with a raise (usually 2.2x to 3x the Big Blind) to seize initiative and thin the field.",
+              "commonMistake": "Calling raises with weak offsuit hands from out of position.",
+              "goldenRule": "Pre-flop sets the foundation: enter pots with a raise to command the hand."
             },
             {
               "id": "l-the-flop",
-              "title": "The Flop: The Big Reveal",
-              "content": "Once the pre-flop betting is complete, the dealer 'burns' one card face down and then deals three community cards face up in the center of the table. This is called The Flop.\n\nThis is a critical moment in the hand, as you now know 5 of the 7 total cards you will use to make your best 5-card hand. A second betting round occurs, but this time, the action starts with the Small Blind (or the first active player to the left of the Button).\n\nIf nobody has bet yet, players have the option to 'Check', which means passing the action to the next player without putting any money in the pot."
+              "title": "The Flop: The 71% Commitment Point",
+              "estimatedMinutes": 4,
+              "coreConcept": "Three community cards are dealt face up. You now know 5 of the 7 cards you will ever see.",
+              "content": "Once pre-flop betting concludes, the dealer burns a card and deals three community cards face up in the middle of the table: The Flop.\n\nThe Flop is the most pivotal street in Texas Hold'em. By the flop, you have seen 5 out of 7 total cards (71% of your final holding). You now know whether you hit top pair, flopped a monster set, made a straight draw, or missed entirely.\n\nAction on the flop begins with the first active player seated to the left of the button. If no one has bet yet, players can 'Check' (pass action without investing chips).",
+              "proTip": "Check to the pre-flop raiser if you called out of position. Give them the burden of deciding whether to continue betting.",
+              "commonMistake": "Donk-betting (leading out with a small bet into the pre-flop raiser), which turns your hand face up and prevents them from bluffing.",
+              "goldenRule": "71% of your hand is known on the flop—evaluate whether your equity justifies further investment."
             },
             {
               "id": "l-the-turn",
-              "title": "The Turn: Increasing the Pressure",
-              "content": "After the flop betting round, the dealer burns another card and deals a fourth community card face up. This card is known as The Turn (or 'Fourth Street').\n\nThe Turn often brings draws to life or dashes hopes completely. A third betting round ensues. In Limit poker games, the minimum bet size doubles on the turn, but in No-Limit games, players can still bet any amount they wish up to their entire stack."
+              "title": "The Turn: Escalating Stakes",
+              "estimatedMinutes": 3,
+              "coreConcept": "A fourth card is dealt. Pot sizes swell exponentially, making turn errors costly.",
+              "content": "The dealer burns a card and deals the fourth community card face up: The Turn (also called 'Fourth Street').\n\nPots on the turn are significantly larger than on the flop. A standard bet on the turn often equals 50% to 75% of the pot, meaning a single call commits a serious portion of your chip stack.\n\nThe Turn is where draws mature or miss. If an opponent called your flop bet on a flush draw and a brick turn card falls, their drawing odds drop from ~36% down to ~18%.",
+              "proTip": "If you hold a strong value hand, fire a second bet ('double barrel') on the turn to charge opponents holding drawing hands.",
+              "commonMistake": "Calling large turn bets with gutshot straight draws (only 4 outs = ~8% equity) when pot odds require 25%+.",
+              "goldenRule": "Turn bets are expensive: ensure your hand strength or drawing equity justifies the rising price."
             },
             {
               "id": "l-the-river",
-              "title": "The River & Showdown",
-              "content": "The dealer burns one final card and deals the fifth and final community card face up. This is The River ('Fifth Street').\n\nThe final betting round takes place. This is where the biggest bluffs and the thinnest value bets happen, because there are no more cards to come. What you have is what you have.\n\nIf more than one player remains after all betting is completed, the hand proceeds to a 'Showdown'. Players reveal their private hole cards, and the dealer determines the best 5-card hand. The winner takes the entire pot!"
+              "title": "The River & Showdown: Absolute Finality",
+              "estimatedMinutes": 4,
+              "coreConcept": "The fifth card completes the board. There are no more cards to come—it is pure value or pure bluff.",
+              "content": "The fifth and final community card is revealed: The River ('Fifth Street').\n\nThere are no more cards to come. Draws have either made their hand or busted into air. This dynamic changes river strategy completely:\n- If you bet, you are either **Value Betting** (hoping a worse hand calls you) or **Bluffing** (hoping a better hand folds).\n- Betting a medium-strength hand that only better hands will call is a classic beginner mistake known as 'betting for information'.\n\nIf two or more players remain after river betting, the hand goes to Showdown. Players table their hole cards, and the best 5-card combination claims the pot.",
+              "proTip": "On the river, ask yourself: 'If I bet, will a worse hand call me?' If the answer is no, check and showdown your hand for free.",
+              "commonMistake": "Betting second pair on the river, getting raised, and having to fold when checking would have reached showdown.",
+              "goldenRule": "On the river, polarized clarity rules: bet for value or bet as a bluff; check marginal hands."
             },
             {
               "id": "q-betting-1",
               "type": "quiz",
-              "title": "Quiz: Community Cards",
+              "title": "Quiz: Street Flow & Action Order",
               "question": "How many community cards are dealt face-up during 'The Flop'?",
               "cards": [
                 { "suit": "clubs", "rank": "2" },
@@ -124,100 +200,39 @@
                 { "suit": "spades", "rank": "J" }
               ],
               "options": [
-                "1",
-                "2",
-                "3",
-                "5"
+                "1 card",
+                "2 cards",
+                "3 cards",
+                "5 cards"
               ],
-              "correctAnswer": "3"
+              "correctAnswer": "3 cards"
             }
           ]
         },
         {
           "id": "b-m4",
-          "title": "Basic Poker Math",
+          "title": "Table Mechanics, Formats & Culture",
+          "description": "Understand game formats, live vs online play, and psychological discipline.",
           "lessons": [
             {
-              "id": "l-chip-counting",
-              "title": "Counting Chips & Pot Sizing",
-              "content": "Poker is not just a game of cards; it's a game of economics. The single most important habit a beginner can build is constantly keeping track of the size of the pot.\n\nWhy does the pot size matter? Because the strength and meaning of a bet are entirely relative to the pot. If a player bets $10, is that a big bet? It depends! If the pot is $20, a $10 bet is a 'Half-Pot' bet, which is a standard, strong bet. But if the pot is $200, a $10 bet is practically meaningless—it's a tiny 'feeler' bet that offers incredible odds to call.\n\nGet in the habit of converting bet sizes into fractions of the pot (e.g., quarter-pot, half-pot, pot-sized bet)."
+              "id": "l-formats",
+              "title": "Cash Games vs. Multi-Table Tournaments (MTTs)",
+              "estimatedMinutes": 4,
+              "coreConcept": "Cash chips represent real currency with continuous re-buys; tournament chips represent survival.",
+              "content": "Texas Hold'em is played in two distinct formats with completely different strategic rules:\n\n**Cash Games (Ring Games):**\n- Chips have direct cash value ($1 chip = $1 cash).\n- Blinds remain static forever (e.g., $1/$2 blinds never increase).\n- If you lose your chips, you can instantly reach into your wallet and reload to max stack.\n- Strategy focuses purely on maximum Expected Value (+EV) per hand without survival fear.\n\n**Tournaments (MTTs & Sit & Gos):**\n- Players pay a buy-in to receive a fixed starting chip stack.\n- Blinds increase on a countdown timer (e.g., every 10 or 15 minutes).\n- When you lose your chips, you are eliminated from the tournament.\n- Strategy is governed by the Independent Chip Model (ICM): preserving your tournament life is paramount.",
+              "proTip": "Never play tournament hands like cash hands. In tournaments, risk aversion increases near the money bubble because survival guarantees a cash payout.",
+              "commonMistake": "Gambling on marginal 50/50 coin-flips early in a tournament when you have a deep stack.",
+              "goldenRule": "In cash games, maximize expected value; in tournaments, balance value with tournament survival."
             },
             {
-              "id": "q-pot-math-1",
-              "type": "quiz",
-              "title": "Quiz: Pot Sizing",
-              "question": "If the pot is $50 and you bet $25, what fraction of the pot did you bet?",
-              "cards": [],
-              "options": [
-                "A quarter-pot",
-                "A half-pot",
-                "A full-pot",
-                "An over-bet"
-              ],
-              "correctAnswer": "A half-pot"
-            }
-          ]
-        },
-        {
-          "id": "b-m5",
-          "title": "Table Etiquette & Tells",
-          "lessons": [
-            {
-              "id": "l-basic-etiquette",
-              "title": "Basic Table Etiquette",
-              "content": "Whether you are playing online or in a live casino, maintaining good etiquette keeps the game fair and enjoyable for everyone.\n\nThe golden rule: Always act in turn. Do not prematurely fold your cards or announce your actions before it is your turn, as this gives an unfair advantage to players acting before you.\n\nAdditionally, never discuss the hand while it is still in progress, especially if you have already folded. Saying 'Wow, I folded a flush!' while two other players are still battling it out can completely ruin the hand for someone holding a straight."
-            },
-            {
-              "id": "l-physical-tells",
-              "title": "Physical & Timing Tells",
-              "content": "A 'tell' is a conscious or subconscious clue a player gives regarding the strength of their hand.\n\nIn live poker, physical tells include shaking hands (which ironically often indicates immense strength and adrenaline, not fear), heavy breathing, or abruptly stopping a conversation. \n\nIn online poker, 'timing tells' are your best friend. If a player takes 20 seconds to act and then merely calls, they are often on a draw and were debating the math. If a player insta-calls a huge bet on the river, they usually have a monster hand that they don't even need to think about."
-            }
-          ]
-        },
-        {
-          "id": "b-m6",
-          "title": "Poker Formats",
-          "lessons": [
-            {
-              "id": "l-texas-holdem",
-              "title": "Texas Hold'em vs Omaha",
-              "content": "Texas Hold'em is the 'Cadillac of Poker'. It is the most popular variant in the world, where you receive exactly two hole cards and share five community cards.\n\nHowever, you will often hear about Pot Limit Omaha (PLO). In PLO, players receive FOUR hole cards instead of two. The catch? You MUST use exactly two of your hole cards and exactly three community cards to make your hand. PLO is an incredibly volatile game with massive swings, as players hit huge hands much more frequently."
-            },
-            {
-              "id": "l-limit-vs-nolimit",
-              "title": "Limit vs. No-Limit",
-              "content": "The betting structure completely changes the psychology of the game.\n\nIn No-Limit games (like No-Limit Hold'em), a player can bet any amount up to their entire stack at any given time. This makes bluffs incredibly potent and allows players to put immense pressure on their opponents.\n\nIn Limit games (like Limit Hold'em), all bet sizes are rigidly fixed. For example, in a $2/$4 game, you can only bet exactly $2 pre-flop and on the flop, and exactly $4 on the turn and river. Limit poker is highly mathematical, focusing heavily on grinding out small edges rather than making massive psychological bluffs."
-            }
-          ]
-        },
-        {
-          "id": "b-m7",
-          "title": "Poker Terminology & Slang",
-          "lessons": [
-            {
-              "id": "l-common-terms",
-              "title": "The Language of Poker",
-              "content": "Poker players use a specific dialect that can be confusing at first.\n\n- **The Nuts:** The absolute best possible hand at any given time. If you have the nuts, you literally cannot lose.\n- **Bad Beat:** When a statistically dominant hand loses to a vastly inferior hand due to incredible luck on the turn or river.\n- **Cooler:** When two players both have massive hands, and one inevitably loses to the other (e.g., Kings running into Aces). Neither player played badly; it's just a 'cooler'.\n- **ITM (In the Money):** Surviving long enough in a tournament to reach the payout structure."
-            },
-            {
-              "id": "l-board-textures",
-              "title": "Board Textures: Dry vs Wet",
-              "content": "The community cards define the 'Texture' of the board.\n\nA 'Dry' board (like 2-7-K rainbow) has very few draw possibilities. Nobody is chasing a flush, and straights are unlikely. On dry boards, top pair is often the winning hand.\n\nA 'Wet' board (like 8-9-10 with two hearts) is incredibly dangerous. There are numerous straight and flush draws available. On a wet board, your one-pair hand is highly vulnerable, and you should proceed with extreme caution."
-            },
-            {
-              "id": "l-player-types",
-              "title": "Identifying Player Types: Fish vs Sharks",
-              "content": "Understanding who you are playing against is half the battle.\n\nA **'Fish'** is a derogatory but common term for a weak, inexperienced player. They play too many hands, chase bad draws, and call large bets with weak pairs. Your goal is to patiently wait for good hands and value bet heavily against them.\n\nA **'Shark'** is a highly skilled, predatory professional. They play aggressively, balance their bluffs, and actively target the fish at the table to extract maximum value."
-            },
-            {
-              "id": "l-tilt",
-              "title": "The Danger of 'Tilt'",
-              "content": "'Tilt' is a poker player's worst enemy. It is a state of emotional frustration, anger, or confusion, almost always triggered by suffering a bad beat or making a huge mistake.\n\nWhen a player goes 'on tilt', they abandon their logical strategy. They start playing far too many hands, bluffing recklessly, and chasing losses in an attempt to get their money back quickly. Recognizing when you are tilting and having the discipline to walk away from the table is a vital skill."
-            },
-            {
-              "id": "l-limping",
-              "title": "Limping: The Beginner's Trap",
-              "content": "'Limping' refers to simply calling the Big Blind pre-flop instead of raising. \n\nLimping is widely considered a weak, passive play. By limping, you invite multiple opponents into the pot behind you, significantly reducing the chances of your hand holding up. Furthermore, you fail to take the initiative in the hand.\n\nAs a general rule: If a hand is good enough to play, it is good enough to raise. Avoid limping!"
+              "id": "l-etiquette-tilt",
+              "title": "Table Etiquette & The Psychology of Tilt",
+              "estimatedMinutes": 3,
+              "coreConcept": "Emotional control ('tilt prevention') separates long-term winners from gamblers who blow their bankrolls.",
+              "content": "'Tilt' is a psychological state of emotional frustration, anger, or despair triggered by bad beats or mistakes.\n\nWhen on tilt, players abandon logic. They start calling large bets with trash, bluffing recklessly into calling stations, and trying to 'win their money back' on the very next hand. Tilt is the #1 reason talented players go broke.\n\nTable Etiquette:\n- Always act in turn. Do not fold or declare action before previous players have acted.\n- Never reveal your folded cards while a hand is actively contested by other players.\n- Respect the clock and avoid slow-rolling (intentionally taking 30 seconds to reveal the winning nuts).",
+              "proTip": "Establish a strict 'Stop-Loss' rule: If you lose 3 full buy-ins in a single session, immediately step away from the table for the day.",
+              "commonMistake": "Continuing to play while angry after a bad beat, telling yourself 'my luck has to change on the next deal'.",
+              "goldenRule": "Master your emotions: a disciplined mind outlasts luck every single time."
             }
           ]
         }
@@ -225,116 +240,393 @@
     },
     {
       "id": "intermediate",
-      "title": "Intermediate: Strategy & Odds",
-      "description": "Master pot odds, starting hand selection, and betting strategies.",
+      "volume": 2,
+      "volumeTitle": "Volume 2: Tactical Fundamentals & The Poker Engine",
+      "title": "Intermediate: Tactical Fundamentals & Odds",
+      "description": "Master pot odds math, outs counting, starting hand selection, bet sizing, and bankroll management.",
+      "color": "#3b82f6",
       "modules": [
         {
           "id": "i-m1",
-          "title": "Poker Math & Pot Odds Masterclass",
+          "title": "Poker Math, Pot Odds & Equity Masterclass",
+          "description": "The exact mathematical framework that professional poker players use to make profitable calls and bets.",
           "lessons": [
             {
               "id": "l-pot-odds-formula",
-              "title": "The Pot Odds Formula",
-              "content": "Welcome to the mathematical heart of poker. 'Pot Odds' are the mathematical ratio that tells you whether calling a bet is profitable in the long run.\n\nThe formula is simple: **Risk / (Risk + Reward)**.\n\nYour 'Risk' is the exact amount you have to call. Your 'Reward' is the total pot AFTER you call (Original Pot + Villain Bet + Your Call). \n\nFor example, if the pot is $100 and Villain bets $50, your risk is $50. The total reward (pot after you call) will be $200. Thus, $50 / $200 = 0.25 (25%). This means your hand needs to win more than 25% of the time to make this call mathematically profitable."
+              "title": "The Pot Odds Formula: Risk vs. Reward",
+              "estimatedMinutes": 4,
+              "coreConcept": "Pot odds tell you the exact percentage of the time your hand must win to break even on a call.",
+              "content": "Welcome to the mathematical engine of poker. Every time an opponent bets and action is on you, you are offered a financial price to call.\n\nThe Pot Odds Formula is:\n**Pot Odds % = Amount to Call / (Total Pot After You Call)**\n\nExample Scenario:\n- The pot has $100.\n- Villain bets $50.\n- The total pot is now $150, and it costs you $50 to call.\n- Total Pot After Call = $100 (original pot) + $50 (villain bet) + $50 (your call) = $200.\n- Pot Odds % = $50 / $200 = 0.25 (25%).\n\nThis means if your hand has more than 25% Equity (chance of winning), calling is mathematically profitable in the long run. If your equity is less than 25%, calling is a mathematical leak that burns money.",
+              "proTip": "Memorize the common bet sizes: Facing a half-pot bet = 25% required equity; facing a pot-sized bet = 33% required equity; facing a 2x pot overbet = 40% required equity.",
+              "commonMistake": "Calling bets based on 'intuition' or 'a feeling' instead of calculating whether pot odds justify the price.",
+              "goldenRule": "If your winning equity exceeds the required pot odds percentage, calling is mathematically mandatory.",
+              "mathTool": "pot_odds_slider",
+              "decisionChallenge": {
+                "question": "The pot is $80. Villain bets $40. How much equity do you need to justify calling?",
+                "options": [
+                  "20%",
+                  "25%",
+                  "33%",
+                  "50%"
+                ],
+                "correctIndex": 1,
+                "explanation": "Cost to call = $40. Total pot after calling = $80 + $40 + $40 = $160. $40 / $160 = 25% required equity."
+              }
             },
             {
               "id": "l-calculating-outs",
-              "title": "Calculating Outs",
-              "content": "To figure out if you will win 25% of the time, you first need to count your 'outs'. An out is any unseen card left in the deck that will improve your hand to a winner.\n\nImagine you hold the Ace and King of Hearts, and the flop comes 2-7-10 with two Hearts. You currently have Ace-high, but you are drawing to the Nut Flush. Since there are 13 Hearts in a deck, and you can see 4 of them (2 in your hand, 2 on the board), there are exactly 9 Hearts left in the deck. You have 9 outs to hit your flush."
-            },
-            {
-              "id": "l-rule-of-4-and-2",
-              "title": "The Rule of 4 and 2",
-              "content": "Counting outs is great, but how do you convert '9 outs' into a percentage? Enter the famous Rule of 4 and 2.\n\nWhen you are on the Flop (meaning there are two community cards left to be dealt), you multiply your outs by 4 to get your approximate equity. So, 9 outs * 4 = ~36% chance to hit your flush by the river.\n\nWhen you are on the Turn (meaning there is only one card left to be dealt), you multiply your outs by 2. So, 9 outs * 2 = ~18% chance to hit your flush on the river.\n\nYou then compare this percentage to the Pot Odds we calculated earlier. If your Equity is higher than the Pot Odds required, you MUST call! It prints money in the long run."
+              "title": "Counting Outs & The Rule of 2 and 4",
+              "estimatedMinutes": 4,
+              "coreConcept": "An 'out' is any card in the deck that improves your hand to the winner. Multiply outs by 4 on the flop or by 2 on the turn.",
+              "content": "To compare your chances against Pot Odds, you must convert your drawing cards into an Equity Percentage.\n\n**Step 1: Count Your Outs**\n- Four to a Flush: There are 13 cards of each suit. You hold 2, board has 2. 13 - 4 = **9 outs**.\n- Open-Ended Straight Draw (e.g., holding 8-9 on 6-7-K board): Any 5 or 10 makes a straight. 4 fives + 4 tens = **8 outs**.\n- Gutshot Straight Draw (e.g., holding 8-9 on 6-10-K board): Only a 7 makes a straight = **4 outs**.\n- Overcards (e.g., holding A-K on a 2-5-8 board): 3 remaining Aces + 3 remaining Kings = **6 outs**.\n\n**Step 2: Apply the Rule of 2 and 4**\n- **On the Flop (2 cards to come):** Multiply outs by **4**.\n  * Flush draw: 9 outs * 4 ≈ **36% Equity**.\n  * Open-ended straight draw: 8 outs * 4 ≈ **32% Equity**.\n- **On the Turn (1 card to come):** Multiply outs by **2**.\n  * Flush draw: 9 outs * 2 ≈ **18% Equity**.\n  * Open-ended straight draw: 8 outs * 2 ≈ **16% Equity**.\n\nNow compare: If facing a half-pot bet on the turn (requires 25%), calling with an open-ended straight draw (16%) is negative EV unless you have strong implied odds!",
+              "proTip": "Discount dirty outs! If you are chasing a straight, but hitting your card also puts a flush on the board, subtract 1 or 2 outs because your straight may lose to a flush.",
+              "commonMistake": "Chasing gutshot straight draws on the turn (4 outs * 2 = 8%) against large bets.",
+              "goldenRule": "Count outs cleanly, multiply by 4 on the flop or 2 on the turn, and compare directly against pot odds."
             },
             {
               "id": "l-implied-odds",
-              "title": "Implied Odds",
-              "content": "Sometimes the direct Pot Odds don't justify a call, but you should still call anyway. Why? Because of 'Implied Odds'.\n\nImplied odds factor in the *future* money you expect to win on later streets if you hit your hand. If you are drawing to a highly disguised straight, and you know your opponent is aggressive and will likely bet heavily into you on the river if you hit it, you can justify making a mathematically 'incorrect' call on the turn because the future reward is so massive."
+              "title": "Implied Odds vs. Reverse Implied Odds",
+              "estimatedMinutes": 4,
+              "coreConcept": "Implied odds account for future chips you will win on later streets when you hit your hidden monster.",
+              "content": "Sometimes direct pot odds say you should fold, but calling is actually profitable because of **Implied Odds**.\n\nImplied Odds factor in the future bets you expect to extract from your opponent on later streets if your draw hits. If an opponent is aggressive, deep-stacked, and loves their hand, you can call slightly unprofitable flop bets with suited connectors or pocket pairs because hitting your hidden set or straight will win their entire stack.\n\n**Reverse Implied Odds (The Danger Zone):**\nReverse implied odds occur when hitting your card will still leave you second-best and cause you to lose a massive pot. For example, chasing a flush with 8♥ 4♥ when someone else holds A♥ K♥. Even if you hit your flush, you are drawing dead and will pay off a bigger flush.",
+              "proTip": "High implied odds require: 1) Deep effective chip stacks, 2) A disguised hand (like a set or low straight), and 3) An opponent willing to pay off.",
+              "commonMistake": "Calling huge bets with weak draws relying on implied odds against short-stacked opponents who have no chips left to pay you off on the river.",
+              "goldenRule": "Implied odds make small investments profitable—ensure the potential payoff justifies the risk."
             },
             {
               "id": "q-pot-math-exam",
               "type": "quiz",
-              "title": "Quiz: The Math Exam",
-              "question": "You are on the Turn (one card left). You have 8 outs to hit an open-ended straight. Using the Rule of 4 and 2, what is your approximate Equity?",
+              "title": "Quiz: Pot Odds & Equity Calculation",
+              "question": "You are on the Turn with a 9-out flush draw. Villain bets $30 into a $60 pot. Using the Rule of 2 and 4, do you have enough equity to call?",
               "cards": [],
               "options": [
-                "16%",
-                "32%",
-                "8%",
-                "24%"
+                "No: You have ~18% equity and need 25%",
+                "Yes: You have ~36% equity and need 25%",
+                "Yes: You have ~50% equity and need 33%",
+                "No: You have ~8% equity and need 15%"
               ],
-              "correctAnswer": "16%"
+              "correctAnswer": "No: You have ~18% equity and need 25%"
             }
           ]
         },
         {
           "id": "i-m2",
-          "title": "Starting Hand Selection",
+          "title": "Starting Hand Selection & Preflop Range Engineering",
+          "description": "Construct solid preflop opening ranges and balance VPIP and PFR.",
           "lessons": [
             {
-              "id": "l-premium-hands",
-              "title": "Premium Hands",
-              "content": "Not all starting hands are created equal. Premium hands are the top 5% of starting hands in Hold'em. These include big pocket pairs (Aces, Kings, Queens, Jacks) and strong suited connectors like Ace-King suited.\n\nWhen you are dealt a premium hand, your primary goal is to build a massive pot. You should almost always be raising aggressively pre-flop. Do not slow-play (trap) with these hands unless you have a specific read on a hyper-aggressive opponent. You want to extract maximum value while thinning the field, as Pocket Aces lose their power rapidly in a pot with 4 or 5 players."
+              "id": "l-premium-vs-speculative",
+              "title": "Premium Hands vs. Speculative Hands",
+              "estimatedMinutes": 4,
+              "coreConcept": "Premium hands make top pairs and high kickers; speculative hands make sets, straights, and flushes.",
+              "content": "In No-Limit Hold'em, starting hands fall into three strategic tiers:\n\n**Tier 1: Premium Holdings (Top 5%)**\n- Pocket Aces (AA), Kings (KK), Queens (QQ), Jacks (JJ), and Ace-King (AK).\n- Strategy: Aggressively build the pot preflop with raises and 3-bets. Do not slowplay. You want to charge drawing hands and get maximum money in with preflop equity advantage.\n\n**Tier 2: Speculative Hands (High Implied Odds)**\n- Small pocket pairs (22 through 66) and suited connectors (89s, 9Ts, JTs).\n- Strategy: In position, play these hands cheaply to flop a set (1 in 8 chance) or combination draw. When you hit a set with 44 on a K-9-4 board, your hand is disguised and opponents holding top pair will pay you off.\n\n**Tier 3: Trap Hands (Negative Expected Value)**\n- Offsuit broadways like K-10o, Q-Jo, A-8o, K-9o.\n- Strategy: These look pretty but cause major reverse implied odds. When you hit top pair with a weak kicker, you win a small pot or lose a huge one.",
+              "proTip": "Never limp speculative hands. If the pot is unopened, enter with a raise or fold. Raising gives you two ways to win: hitting your hand or winning the pot immediately preflop.",
+              "commonMistake": "Cold-calling raises with offsuit Aces like A-7 offsuit, flopping an Ace, and losing three streets of bets to A-K.",
+              "goldenRule": "Play premium hands for direct value; play speculative hands in position for implied odds."
             },
             {
-              "id": "l-speculative-hands",
-              "title": "Speculative Hands",
-              "content": "Speculative hands are hands that look weak pre-flop but have massive potential to hit disguised monster hands post-flop. These include small pocket pairs (like 4-4) aiming to hit a three-of-a-kind (a Set), or suited connectors (like 8-9 suited) aiming for straights and flushes.\n\nThe key to playing speculative hands is ensuring you have high Implied Odds. You want to play these hands as cheaply as possible pre-flop, preferably in late position, in multi-way pots where there is a lot of money to be won if you strike gold."
-            },
-            {
-              "id": "q-starting-hands-1",
-              "type": "quiz",
-              "title": "Quiz: Premium vs Speculative",
-              "question": "Which of the following is considered a 'Premium' starting hand that you should raise aggressively pre-flop?",
-              "cards": [
-                { "suit": "spades", "rank": "A" },
-                { "suit": "clubs", "rank": "K" }
-              ],
-              "options": [
-                "A♠ K♣ (Ace-King offsuit)",
-                "7♥ 8♥ (7-8 suited)",
-                "2♠ 2♣ (Pocket Twos)",
-                "J♠ 10♠ (Jack-Ten suited)"
-              ],
-              "correctAnswer": "A♠ K♣ (Ace-King offsuit)"
+              "id": "l-vpip-pfr-masterclass",
+              "title": "VPIP & PFR: The Sacred Aggression Ratio",
+              "estimatedMinutes": 4,
+              "coreConcept": "VPIP measures voluntary pot entry; PFR measures preflop raising. The narrower the gap, the stronger the player.",
+              "content": "In online poker analytics, two numbers define a player's fundamental skill level:\n\n**VPIP (Voluntarily Put in Pot %):**\n- The percentage of hands you voluntarily choose to play (calling or raising).\n- A solid 6-max player maintains a VPIP between **22% and 26%**.\n- If your VPIP is 40%+, you are playing loose and bleeding money.\n- If your VPIP is 12%, you are playing too tight ('nit') and opponents will fold whenever you bet.\n\n**PFR (Preflop Raise %):**\n- The percentage of hands where you enter the pot with a raise.\n- Solid players maintain a PFR between **18% and 22%**.\n\n**The Golden Ratio (VPIP/PFR Gap):**\n- If your VPIP is 24% and your PFR is 20%, you are a strong, aggressive player.\n- If your VPIP is 38% and your PFR is 8%, you are a passive calling station ('fish'). You call frequently, rarely take initiative, and can be relentlessly bluffed.",
+              "proTip": "Keep your VPIP/PFR gap under 5%. If a hand is good enough to call with preflop, it is almost always good enough to raise.",
+              "commonMistake": "Limping preflop to 'see a cheap flop', allowing the big blind to see free flops with random cards that can outdraw you.",
+              "goldenRule": "Close the gap between VPIP and PFR: entering pots with aggression commands respect and prints equity."
             }
           ]
         },
         {
           "id": "i-m3",
-          "title": "Bet Sizing & Bluffing",
+          "title": "Bet Sizing & Strategic Bluffing",
+          "description": "Learn the mechanics of value extraction, semi-bluffs, and geometric bet sizing.",
           "lessons": [
             {
-              "id": "l-value-betting",
-              "title": "The Art of Value Betting",
-              "content": "A 'Value Bet' is exactly what it sounds like: you believe you have the best hand, and you are betting to extract value from a worse hand that might call you.\n\nThe secret to elite value betting is sizing your bet perfectly. If you bet too small, you leave money on the table. If you bet too big, you scare your opponent away and win nothing extra. You must analyze your opponent's tendencies and the board texture to determine the absolute maximum amount they are willing to pay you."
+              "id": "l-value-betting-sizing",
+              "title": "The Art of Value Sizing",
+              "estimatedMinutes": 4,
+              "coreConcept": "Target the exact hands your opponent can call with, and price your bet to extract maximum value.",
+              "content": "A **Value Bet** is placed when you believe you have the best hand and want a worse hand to call.\n\nThe key to elite value betting is sizing:\n- If you bet too small ($10 into a $100 pot), your opponent calls easily, but you leave massive amounts of money on the table.\n- If you bet too large ($100 into a $100 pot), your opponent folds everything except hands that beat you.\n\nTo pick the perfect size, ask yourself:\n*What is the weakest hand in my opponent's range that will call me?*\n- Against loose calling stations: Bet larger (66% to 80% pot) with your strong hands because they hate folding pairs.\n- Against tight, disciplined opponents: Bet smaller (33% to 50% pot) to induce calls from third pair or weak bluff-catchers.",
+              "proTip": "Geometric Bet Sizing: If you plan to bet all three streets, size your bets proportionally on Flop, Turn, and River so your stack moves into the pot smoothly without needing an awkward 3x pot river jam.",
+              "commonMistake": "Checking the river with top pair out of fear, missing out on a clear street of value against weaker pairs.",
+              "goldenRule": "Size your value bets to the maximum price your opponent's second-best hands are willing to pay."
             },
             {
-              "id": "l-bluffing",
-              "title": "Effective Bluffing",
-              "content": "Bluffing is betting with a hand you know is currently losing, with the sole intention of forcing a better hand to fold.\n\nAmateurs bluff because they are bored or frustrated. Professionals bluff because the board texture and their previous actions tell a believable story. For a bluff to work, you must represent a specific hand, and your bet sizing must reflect what you would actually do if you held that hand. Furthermore, you must only bluff opponents who are actually capable of folding!"
+              "id": "l-semi-bluffing",
+              "title": "Semi-Bluffing: The Dual-Path Strategy",
+              "estimatedMinutes": 4,
+              "coreConcept": "A semi-bluff gives you two independent ways to win: fold equity right now, or hitting the winning card on the next street.",
+              "content": "A **Pure Bluff** has zero chance of improving if called. A **Semi-Bluff** is a bet made with a drawing hand (like a flush draw or open-ended straight draw) that is currently not the best hand, but has high potential to become the best hand.\n\nWhy Semi-Bluffing is the engine of modern aggression:\n1. **Fold Equity**: The opponent folds, and you win the pot immediately with no showdown.\n2. **Showdown Equity**: If the opponent calls, you still have outs to hit a monster on the turn or river.\n3. **Deception**: When you hit your draw on the turn after betting the flop, your hand is disguised, and you win a huge pot.\n\nIdeal Semi-Bluffing Hands: Combo draws (flush draw + gutshot = 12 outs), flush draws with an overcard, open-ended straight draws with backdoors.",
+              "proTip": "Check-raising the flop as a semi-bluff with a combo draw is one of the highest-EV plays in poker. You put tremendous pressure on the preflop raiser.",
+              "commonMistake": "Firing pure bluffs with zero outs on coordinated boards against calling stations.",
+              "goldenRule": "Semi-bluff with equity: give yourself two ways to win every pot you contest."
+            }
+          ]
+        },
+        {
+          "id": "i-m5",
+          "title": "Bankroll Management & Tilt Control",
+          "description": "Essential financial and psychological armor required to survive poker variance.",
+          "lessons": [
+            {
+              "id": "l-bankroll-rules",
+              "title": "The 30-to-100 Buy-in Rule",
+              "estimatedMinutes": 4,
+              "coreConcept": "Variance is mathematical reality. Without proper bankroll depth, even a winning player will go broke.",
+              "content": "Even the best poker players in the world experience losing streaks that last weeks or months. This is called **Variance**.\n\nTo survive natural downswings, you must treat your bankroll as business capital separate from your living expenses:\n\n**Cash Game Requirements:**\n- Maintain a minimum of **30 to 40 Buy-Ins** for your chosen stake.\n- If you play $1/$2 with a $200 max buy-in, your bankroll should be at least **$6,000 to $8,000**.\n- If your bankroll drops below 25 buy-ins, move down in stakes immediately to rebuild.\n\n**Tournament (MTT) Requirements:**\n- Tournaments have significantly higher variance than cash games.\n- Maintain at least **100 Buy-Ins** for the average tournament buy-in level.\n\nMoving up in stakes should only occur when you have crushed your current stake over a large sample (20,000+ hands) and have 40+ buy-ins for the next level.",
+              "proTip": "Never play with money you cannot afford to lose. The psychological fear of losing 'rent money' causes scared, passive play that destroys your edge.",
+              "commonMistake": "Jumping up in stakes after a winning weekend, getting stacked, and losing the entire bankroll.",
+              "goldenRule": "Bankroll management guarantees survival: play within your bankroll to let math work in your favor."
             },
             {
-              "id": "l-overbetting",
-              "title": "The Overbet",
-              "content": "An overbet is a bet that is physically larger than the current size of the pot. (e.g., Betting $150 into a $100 pot).\n\nOverbets are highly polarized moves. When a good player overbets, they are screaming that they either have the absolute, undisputed nuts, or they have absolutely nothing. Overbets are designed to put maximum psychological and mathematical pressure on an opponent holding a medium-strength hand, forcing them into a brutal decision."
+              "id": "l-tilt-mastery",
+              "title": "Emotional Armor & The Stop-Loss Protocol",
+              "estimatedMinutes": 4,
+              "coreConcept": "Recognizing cognitive distortion and enforcing session stop-loss limits protects your bankroll from destruction.",
+              "content": "Tilt takes many forms:\n1. **Running-Bad Tilt**: Feeling victimized by luck after multiple bad beats.\n2. **Injustice Tilt**: Believing the poker gods are out to get you.\n3. **Entitlement Tilt**: Believing you 'deserve' to win a pot because you are the better player.\n4. **Revenge Tilt**: Singling out a specific player who stacked you and aggressively targeting them out of spite.\n\n**The Professional Stop-Loss Protocol:**\n- Set a rigid session stop-loss of **3 Buy-Ins**.\n- If you lose 3 buy-ins in a single session, close the tables immediately, regardless of how good the game looks.\n- Take a 24-hour break, review hand histories when calm, and return with a clear mind.",
+              "proTip": "When you feel your heart rate accelerating or feel the urge to shove all-in with any two cards to 'get even', you are in red-zone tilt. Step away from the computer immediately.",
+              "commonMistake": "Chasing losses by depositing more money immediately after a bad beat.",
+              "goldenRule": "Your discipline when losing defines your winrate far more than your play when winning."
+            },
+            {
+              "id": "q-bankroll-exam",
+              "type": "quiz",
+              "title": "Quiz: Bankroll Management Protocol",
+              "question": "If your cash game bankroll is $3,000, what is the maximum buy-in stake you should safely play using the 30-buyin rule?",
+              "cards": [],
+              "options": [
+                "$300 buy-in ($1/$3)",
+                "$100 buy-in ($0.50/$1)",
+                "$500 buy-in ($2/$5)",
+                "$1,000 buy-in ($5/$10)"
+              ],
+              "correctAnswer": "$100 buy-in ($0.50/$1)"
             }
           ]
         },
         {
           "id": "i-m8",
           "title": "The Preflop Masterclass",
+          "description": "Construct rock-solid preflop opening and defense ranges from every position.",
           "lessons": [
             {
-              "id": "l-vpip-explained",
-              "title": "VPIP (Voluntarily Put in Pot)",
-              "content": "VPIP is the most important statistic used in online poker tracking software. It measures the percentage of time you voluntarily choose to put money into the pot preflop (calling or raising).\n\nA mathematically sound, Game Theory Optimal (GTO) player typically maintains a VPIP between 20% and 25%. \n\nIf your VPIP is soaring around 40%, you are bleeding chips by playing far too many weak, unprofitable hands. Conversely, if your VPIP is 10%, you are a 'nit'—you are playing too tight, missing highly profitable opportunities, and becoming completely predictable to observant opponents."
+              "id": "l-rfi-explained",
+              "title": "Raise First In (RFI) by Position",
+              "estimatedMinutes": 4,
+              "coreConcept": "Your opening range should expand smoothly as you move from Under the Gun to the Button.",
+              "content": "RFI ('Raise First In') occurs when everyone folds to you and you are the first player to enter the pot with a raise.\n\nProfessional 6-Max RFI Frequencies by Position:\n- **UTG (Under the Gun): ~14% to 16%** (Pairs 66+, ATo+, A2s+, broadways)\n- **MP (Middle Position / Hijack): ~18% to 22%** (Pairs 44+, suited connectors 78s+)\n- **CO (Cutoff): ~26% to 30%** (Pairs 22+, suited gappers 86s+, suited broadways)\n- **BTN (Button): ~42% to 48%** (Any pair, almost any suited card, strong offsuits)\n- **SB (Small Blind): ~36% to 42%** (Steal attempt against the Big Blind)\n\nNotice the progression: As fewer players remain behind you, you can profitably raise more than triple the number of hands on the Button compared to Under the Gun.",
+              "proTip": "Use a standard raise size of 2.5x the big blind from late position, and 2.5x to 3x from early position.",
+              "commonMistake": "Opening the exact same hands from UTG as you do on the Button.",
+              "goldenRule": "Expand your opening range progressively as position improves toward the button."
             },
             {
-              "id": "l-pfr-explained",
-              "title": "PFR (Preflop Raise) & The Problem with Limping",
-              "content": "PFR measures how often you raise preflop. \n\nA cornerstone of modern poker strategy is that if a hand is good enough to play, it is good enough to raise. When you enter a pot, you should almost always be coming in for a raise rather than a limp (just calling the big blind).\n\nRaising gives you the 'betting initiative'. It thins the field, builds a pot when you likely have the best hand, and gives you the opportunity to win the pot immediately if everyone folds. Your PFR should be very close to your VPIP (e.g., if you play 22% of hands, you should be raising 18% of them)."
+              "id": "l-3bet-ranges",
+              "title": "The 3-Bet: Taking Preflop Control",
+              "estimatedMinutes": 4,
+              "coreConcept": "A 3-bet is a re-raise over an initial open. It asserts range dominance and isolates weaker opponents.",
+              "content": "Terminology:\n- Blinds = 1st bet.\n- Initial Open = 2nd bet.\n- Re-Raise = **3-Bet**.\n\nA well-constructed 3-betting range is not just Aces and Kings. Modern strategy uses a **Linear or Polarized 3-Bet Range**:\n\n**Value 3-Bets:** Hands that are thrilled to get called or 4-bet (AA, KK, QQ, AKs, AKo).\n**Bluff / Semi-Bluff 3-Bets:** Hands with great playability and blockers that don't want to flat-call (A5s, A4s, KJs, QTs, 87s).\n\nWhy 3-Betting A-5 Suited is brilliant:\n1. Card Removal: You hold an Ace, cutting the probability that your opponent holds Pocket Aces in half.\n2. Playability: If called, you can flop the nut flush, a wheel straight (A-2-3-4-5), or top pair with backdoor equity.",
+              "proTip": "3-Bet larger out of position! If an opponent opens to $6, 3-bet to $18 in position (3x), but 3-bet to $24 out of position (4x) to compensate for acting first postflop.",
+              "commonMistake": "Only 3-betting Pocket Aces and Kings, making your strategy completely transparent to observant opponents.",
+              "goldenRule": "Mix value and playable blockers into your 3-betting range to keep opponents guessing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "volume": 3,
+      "volumeTitle": "Volume 3: Modern GTO & Advanced Strategic Concepts",
+      "title": "Advanced: Game Theory Optimal (GTO) & Exploitation",
+      "description": "Unlock modern solver concepts: Minimum Defense Frequency, Range Advantage, Blockers, and Tournament ICM.",
+      "color": "#8b5cf6",
+      "modules": [
+        {
+          "id": "a-m1",
+          "title": "The Solver Revolution & GTO Foundations",
+          "description": "Understand Nash Equilibrium and mathematically unexploitable poker play.",
+          "lessons": [
+            {
+              "id": "l-gto-basics",
+              "title": "What is Game Theory Optimal (GTO)?",
+              "estimatedMinutes": 4,
+              "coreConcept": "GTO is a defensive mathematical equilibrium. If you play GTO, no opponent can exploit you in the long run.",
+              "content": "Game Theory Optimal (GTO) is derived from John Nash's Nobel Prize-winning concept of Nash Equilibrium.\n\nIn poker, a GTO strategy is an unexploitable strategy. It means your ranges, bet sizes, checking frequencies, and bluffing percentages are so mathematically balanced that even if your opponent knew your exact strategy chart in advance, they could not profit against you.\n\nGTO serves as your home base. You do not play GTO to crush bad players; you play GTO to understand the mathematical baseline of correct poker. Once you know what optimal play looks like, you can spot where opponents deviate and exploit them.",
+              "proTip": "Do not treat GTO as a rigid script. GTO is a diagnostic framework: learn what equilibrium requires so you know when to deviate profitably.",
+              "commonMistake": "Trying to play pure GTO against weak recreational players who call everything—against them, pure exploitative value betting is far more profitable.",
+              "goldenRule": "Master GTO as your baseline; deviate with exploitative plays to punish amateur mistakes."
+            },
+            {
+              "id": "l-mdf-formula",
+              "title": "Minimum Defense Frequency (MDF)",
+              "estimatedMinutes": 4,
+              "coreConcept": "MDF is the minimum percentage of your range you must defend with to prevent opponent bluffs from auto-profiting.",
+              "content": "When an opponent bets, how often must you call or raise to keep them honest?\n\n**The MDF Formula:**\n**MDF = Pot Size / (Pot Size + Bet Size)**\n\nExample:\n- Pot is $100. Villain bets $50.\n- MDF = $100 / ($100 + $50) = $100 / $150 = **66.7%**.\n- This means you must continue (call or raise) with at least 66.7% of the hands in your range. If you fold more than 33.3%, villain can blindly bluff with any two random cards and print automatic profit.\n\nExample Facing an Overbet:\n- Pot is $100. Villain bets $150 (overbet).\n- MDF = $100 / ($100 + $150) = $100 / $250 = **40%**.\n- Against large overbets, you are mathematically permitted to fold 60% of your range!",
+              "proTip": "Use MDF as a defense benchmark on the river. If folding would mean folding your top 40% of hands, you must make the call.",
+              "commonMistake": "Over-folding to small 1/3 pot c-bets where the required defense frequency is over 75%.",
+              "goldenRule": "MDF guards your bankroll: defend often enough that opponents cannot profitably bluff with air."
+            }
+          ]
+        },
+        {
+          "id": "a-m2",
+          "title": "Range Advantage & C-Bet Strategy",
+          "description": "Analyze board textures through the lens of range advantage and nut advantage.",
+          "lessons": [
+            {
+              "id": "l-range-vs-nut",
+              "title": "Range Advantage vs. Nut Advantage",
+              "estimatedMinutes": 4,
+              "coreConcept": "Range advantage dictates who can bet frequently; nut advantage dictates who can bet huge.",
+              "content": "Not all advantages on the flop are created equal:\n\n**Range Advantage (Overall Equity):**\n- Who has the higher average equity across their entire range of cards?\n- If you raised preflop from UTG and the Big Blind called, on an **A-K-7 rainbow flop**, you hold a massive range advantage. You hold all the AA, KK, AK, and AQ, while the Big Blind rarely has these hands.\n- Strategy with Range Advantage: Bet small (25% to 33% pot) with a very high frequency (70%+ of your range).\n\n**Nut Advantage (The Top Tier Hands):**\n- Who holds the super-monsters (Sets, Two Pairs, Straights)?\n- On an **8♠ 7♠ 6♦ flop**, the Big Blind holds nut advantage because their defending range contains 87s, 76s, 65s, 88, 77, 66, and 9T offsuit—hands UTG folded preflop.\n- Strategy with Nut Advantage: Check-raise and bet large (75%+ pot) to pressure overpairs.",
+              "proTip": "Never blindly c-bet flops that heavily favor the caller's range (like 6-7-8 wet boards). Check back to protect your range.",
+              "commonMistake": "C-betting 100% of flops as preflop raiser regardless of whether the board favors you or the caller.",
+              "goldenRule": "Bet small and often with range advantage; bet large and aggressive with nut advantage."
+            },
+            {
+              "id": "l-cbetting-textures",
+              "title": "Continuation Bet (C-Bet) Frequencies",
+              "estimatedMinutes": 4,
+              "coreConcept": "Flop texture determines whether modern solvers choose a high-frequency small bet or a polar check.",
+              "content": "A **Continuation Bet (C-Bet)** is a flop bet placed by the preflop aggressor.\n\nModern C-Betting Strategy by Texture:\n1. **High, Dry Boards (e.g., A♦ 8♠ 2♣, K♠ 7♦ 3♣):**\n   - Range Bet: Bet **33% pot with 80% to 100% of your range**.\n   - Reason: You hold massive range advantage. Small bets force opponents to fold missed cards while offering you a cheap price to win the pot.\n2. **Dynamic, Coordinated Boards (e.g., Q♥ J♥ 8♣, 9♦ 8♦ 6♠):**\n   - Polarized Strategy: Bet **66% to 75% pot with 40% of your range**, and check the remaining 60%.\n   - Reason: The caller's range hits these boards hard. You must bet strong hands for protection and check marginal hands to keep the pot small.",
+              "proTip": "Check back top pair with weak kicker on wet boards to control the pot size and catch river bluffs.",
+              "commonMistake": "Betting 75% pot on an Ace-high dry board when a 25% bet accomplishes the exact same result for one-third the risk.",
+              "goldenRule": "Size down on dry boards with range edge; size up on wet boards to deny opponent equity."
+            }
+          ]
+        },
+        {
+          "id": "a-m3",
+          "title": "Advanced Range Construction & Blockers",
+          "description": "Construct polarized and merged ranges, and harness card removal in bluff-catching.",
+          "lessons": [
+            {
+              "id": "l-polarized-vs-merged",
+              "title": "Polarized vs. Condensed / Merged Ranges",
+              "estimatedMinutes": 4,
+              "coreConcept": "Polarized ranges bet nuts and bluffs; merged ranges bet strong to medium value hands.",
+              "content": "Understanding range polarization is the dividing line between advanced players and intermediate players:\n\n**A Polarized Range:**\n- Consists of two extremes: **The Absolute Nuts** + **Pure Air Bluffs**.\n- There are no medium-strength hands in a polarized bet.\n- Optimal Sizing: Large bets (75% to 150% pot) or overbets.\n- Example: On the river, you bet 1.5x pot holding either a Nut Flush or a completely busted straight draw.\n\n**A Condensed / Merged Range:**\n- Consists primarily of **Medium to Strong hands** (Top Pair good kicker, second pair, two pair).\n- There are few pure bluffs and few absolute nuts.\n- Optimal Sizing: Small to medium bets (33% to 50% pot).\n- Purpose: Thin value betting and blocking bets to reach a cheap showdown.",
+              "proTip": "When you bet large, your range must be polarized. If you bet 125% pot with a medium hand, you isolate yourself against hands that beat you.",
+              "commonMistake": "Overbetting the river with middle pair, turning a showdown-value hand into a bluff.",
+              "goldenRule": "Polarize large bets with nuts and bluffs; condense small bets around value and pot control."
+            },
+            {
+              "id": "l-blockers",
+              "title": "Blockers & Card Removal in Bluff-Catching",
+              "estimatedMinutes": 4,
+              "coreConcept": "Holding key cards reduces the mathematical probability that your opponent holds a monster.",
+              "content": "A **Blocker** (Card Removal effect) occurs when a card in your private hand makes it statistically less likely for your opponent to hold specific combinations.\n\nClassic Examples of Blockers in Action:\n1. **The Ace of the Flush Suit (The Nut Blocker):**\n   - Board has 3 hearts: K♥ 8♥ 2♥.\n   - You hold **A♥ 4♠**.\n   - Even though you do not have a flush yet, you hold the A♥. It is mathematically IMPOSSIBLE for your opponent to have the Nut Flush! You can use this blocker to fire a devastating bluff.\n2. **Bluff-Catching on the River:**\n   - The river brings a potential straight (e.g., board has 7-8-9-J).\n   - You hold a Pair of Tens. Holding a Ten blocks your opponent from having the Q-10 or 10-6 straight. Your Ten blocker makes it vastly safer to call a river bet.",
+              "proTip": "When deciding which missed draws to turn into river bluffs, prioritize hands with good blockers (blocking villain's calling hands) and unblockers (unblocking villain's folding hands).",
+              "commonMistake": "Bluff-catching while holding the exact cards your opponent would have missed a draw with.",
+              "goldenRule": "Use blockers to deduce what opponents cannot hold: card removal unlocks razor-thin calls and bluffs."
+            }
+          ]
+        },
+        {
+          "id": "a-m7",
+          "title": "Exploitative Play & Player Archetypes",
+          "description": "Deviate from GTO to systematically destroy recreational player leaks.",
+          "lessons": [
+            {
+              "id": "l-exploitative-deviations",
+              "title": "GTO vs. Exploitative Counter-Strategies",
+              "estimatedMinutes": 4,
+              "coreConcept": "GTO is defensive equilibrium; Exploitative play maximizes profit by directly attacking opponent leaks.",
+              "content": "While GTO guarantees you cannot lose, **Exploitative Play** maximizes your dollar-per-hour winrate by identifying what your opponent does wrong and counter-punching:\n\n**Archetype 1: The Calling Station (Passive Fish)**\n- Leak: Calls far too often with weak pairs; never folds draws; rarely raises without the nuts.\n- Counter-Exploit: **NEVER bluff them**. Expand your value-betting range dramatically. Bet third pair for value and size up your monsters to 80%+ pot.\n\n**Archetype 2: The 'Nit' (Rock / Ultra-Tight)**\n- Leak: Plays only premium cards; folds everything else; raises only with monsters.\n- Counter-Exploit: **Steal their blinds relentlessly**. Fold instantly whenever they raise you, even if you hold Top Pair Top Kicker—a Nit's raise is always two pair or better.\n\n**Archetype 3: The Aggressive Maniac**\n- Leak: Over-bluffs every street; cannot stand checking; bets every river.\n- Counter-Exploit: **Induce bluffs**. Check your strong hands to let them hang themselves with air.",
+              "proTip": "When an opponent shows a clear extreme leak, abandon GTO balance immediately. Maximum exploitation generates 3x to 5x higher winrates in low-to-mid stakes games.",
+              "commonMistake": "Trying to run complex triple-barrel bluffs against calling stations who 'just want to see your cards'.",
+              "goldenRule": "Identify the leak and counter-attack: value-bet the stations, bluff the nits, and trap the maniacs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "playbook",
+      "volume": 4,
+      "volumeTitle": "Volume 4: The Pro Playbook (Iconic Plays & Scenarios)",
+      "title": "The Pro Playbook: Signature Plays",
+      "description": "Step-by-step tactical breakdowns of iconic high-level poker plays used by tournament champions and high-stakes pros.",
+      "color": "#ec4899",
+      "modules": [
+        {
+          "id": "p-m1",
+          "title": "Preflop Combat Plays",
+          "description": "Aggressive preflop weapons to capture dead money and dominate position.",
+          "lessons": [
+            {
+              "id": "l-play-the-squeeze",
+              "title": "Play #1: The Squeeze Play",
+              "estimatedMinutes": 4,
+              "coreConcept": "Punish an initial raiser and weak callers by executing a massive 3-bet to scoop dead money.",
+              "content": "The **Squeeze Play** is one of the most profitable preflop plays in poker.\n\n**The Setup:**\n1. A player in middle position opens with a standard raise.\n2. One or two loose players flat-call behind them.\n3. You are in the Cutoff, Button, or Big Blind with a playable holding.\n\n**The Execution:**\n- Because the initial raiser faced callers, their range is wide. Because the callers flat-called instead of 3-betting, their ranges are capped and weak.\n- There is now a massive amount of 'dead money' sitting in the pot.\n- You fire a large **Squeeze 3-Bet** (usually 4.5x to 5.5x the original open).\n\n**The Outcome:**\n- The initial raiser is trapped between you and the callers, forcing them to fold marginal hands.\n- The callers, having already demonstrated weakness, fold. You rake in a massive pot without even having to see a flop!",
+              "proTip": "Ideal squeeze hands: Suited Aces (A5s, A4s) because they hold Ace card removal, or big broadways (A-Q, K-Q).",
+              "commonMistake": "Squeezing too small (e.g. 3x open), offering callers irresistible pot odds to call and draw against you multi-way.",
+              "goldenRule": "Size your squeeze aggressively to punish capped flat-callers and claim dead money."
+            },
+            {
+              "id": "l-play-blind-steal",
+              "title": "Play #2: The Button Blind Steal & Re-Steal",
+              "estimatedMinutes": 4,
+              "coreConcept": "Systematically extract profit from tight blinds, and counter late-position steals with 3-bet re-steals.",
+              "content": "In modern poker, the blinds are where winrates are won or lost.\n\n**The Steal (From Button or Cutoff):**\n- When action folds to you on the Button, open-raise 45% to 50% of your starting cards to 2.2x to 2.5x the big blind.\n- If the Small Blind and Big Blind fold more than 62% of the time combined, your raise prints instant profit before postflop play even begins.\n\n**The Re-Steal (From Small Blind or Big Blind):**\n- When an active Button attempts to steal your blind, do not passively flat-call.\n- Fire a **3-Bet Re-Steal** (to 9x to 10x the big blind) with suited broadways, suited connectors, or playable Aces.\n- You turn the tables on the steal attempt and force the button to fold their bottom 70% of cards.",
+              "proTip": "Target tight players in the blinds. If the big blind has a VPIP under 15%, steal with almost any two cards.",
+              "commonMistake": "Flat-calling from the Small Blind against a button raise, entering the flop out of position with a multi-way trap.",
+              "goldenRule": "Steal relentlessly from the button; punish habitual stealers with aggressive 3-bet re-steals."
+            }
+          ]
+        },
+        {
+          "id": "p-m2",
+          "title": "Postflop Tactical Weapons",
+          "description": "Master check-raises, delayed c-bets, and multi-street pressure.",
+          "lessons": [
+            {
+              "id": "l-play-check-raise-semi",
+              "title": "Play #3: The Check-Raise Semi-Bluff",
+              "estimatedMinutes": 4,
+              "coreConcept": "Overcome positional disadvantage by check-raising the flop with combination draws.",
+              "content": "Being out of position is a handicap—unless you know how to wield the **Check-Raise**.\n\n**The Scenario:**\n- You defend the Big Blind with **7♠ 8♠** against a Cutoff open.\n- Flop comes: **6♠ 9♦ 2♠** (Monster Combo Draw: Open-Ended Straight Draw + Flush Draw = 15 outs!).\n\n**The Execution:**\n1. You check to the preflop raiser.\n2. Villain fires a standard 1/3 pot c-bet ($20 into $60).\n3. Instead of passively calling, you **Check-Raise to $70** (3.5x their bet).\n\n**Why This Play Is Brutal:**\n- Villain must fold all their missed broadways, overcards, and weak pairs.\n- If Villain calls, you have 15 outs (54% equity) to make a straight or flush by the river. You are actually the statistical favorite to win the hand!",
+              "proTip": "Balance your check-raise semi-bluffs with nut value check-raises (like flopped Sets with 6-6 or 2-2) so opponents can never tell whether you hold quads or a combo draw.",
+              "commonMistake": "Check-calling flop draws passively and folding the turn when you miss, throwing away chips with zero fold equity.",
+              "goldenRule": "Seize the offensive from out of position: check-raise combo draws to maximize fold and showdown equity."
+            },
+            {
+              "id": "l-play-delayed-cbet",
+              "title": "Play #4: The Delayed Continuation Bet",
+              "estimatedMinutes": 4,
+              "coreConcept": "Checking the flop in position to attack the turn with a delayed continuation bet.",
+              "content": "Most amateurs believe that if you raise preflop, you must bet the flop. Enter the **Delayed C-Bet**.\n\n**How It Works:**\n1. You raise preflop on the Button and the Big Blind calls.\n2. On the flop, the Big Blind checks. Instead of betting, you **Check Back**.\n3. On the turn, the Big Blind checks to you a second time.\n4. You now fire a **Delayed C-Bet** (50% to 66% pot).\n\n**Why This Play Prints Money:**\n- When the Big Blind checks the turn a second time, they are screaming that they have a weak, marginal hand.\n- Your flop check under-represented your strength, inducing bluffs or allowing you to steal the pot cheaply on the turn.\n- It provides perfect pot control with medium hands like Second Pair Top Kicker.",
+              "proTip": "Delayed c-betting works best on draw-heavy flops that turn into brick turn cards.",
+              "commonMistake": "C-betting 100% of flops and then giving up on the turn when called.",
+              "goldenRule": "Use the delayed c-bet to control pot sizes and exploit opponents who check twice in weakness."
+            }
+          ]
+        },
+        {
+          "id": "p-m3",
+          "title": "River Warfare & Climax Plays",
+          "description": "Execute triple-barrel bluffs and extract razor-thin river value.",
+          "lessons": [
+            {
+              "id": "l-play-triple-barrel",
+              "title": "Play #5: The Triple Barrel Bluff",
+              "estimatedMinutes": 4,
+              "coreConcept": "Telling a consistent, terrifying story across all three streets to fold out top pairs on the river.",
+              "content": "The **Triple Barrel Bluff** (betting Flop, Turn, and River as a bluff) is the highest-level psychological play in poker.\n\n**When to Execute a Triple Barrel:**\n1. **Board Runout:** The turn and river bring scare cards (like an Ace, King, or four-to-a-flush) that heavily favor YOUR preflop range and crush your opponent's capped calling range.\n2. **Opponent Profile:** Target 'Fit-or-Fold' or tight players who hate risking tournament life or full stacks with one pair.\n3. **Blockers:** You hold key blockers to the winning hands (e.g., holding the A♣ on a 4-club board).\n\nWhen you fire 75% pot on the river after betting flop and turn, your bet screams: 'I have the nuts, and you must call for your tournament life with top pair.' Discipline wins out, and opponents fold winning hands.",
+              "proTip": "Never triple-barrel into calling stations who brag about calling down with bottom pair. Only bluff players with the mental discipline to fold.",
+              "commonMistake": "Triple barreling on river runouts that improve your opponent's calling range (like a card that pairs the board).",
+              "goldenRule": "A credible triple barrel requires scare card runouts and an opponent capable of laying down top pair."
+            },
+            {
+              "id": "l-play-thin-value",
+              "title": "Play #6: The Thin Value River Bet",
+              "estimatedMinutes": 4,
+              "coreConcept": "Extracting the final 10 to 15 big blinds on the river with second-best pairs against recreational callers.",
+              "content": "Amateurs only bet the river with the nuts. High-stakes crushers make their fortune with **Thin Value Bets**.\n\nA Thin Value Bet is a bet made with a marginal hand (like Second Pair Top Kicker, or weak Top Pair) where you anticipate being called by worse hands **just over 50% of the time**.\n\n**How to Price a Thin Value Bet:**\n- When your hand is marginal, a large 75% pot bet will only be called by better hands.\n- But a small **20% to 33% pot bet** gives your opponent irresistible 5:1 or 6:1 pot odds. They feel priced in to call with third pair, ace-high, or pocket pairs below the board.\n- Over 1,000 hands, extracting 15 extra big blinds from thin value adds 5 to 8 BB/100 to your overall winrate!",
+              "proTip": "If raised on a thin value bet, fold immediately! You bet for thin value, not to contest a raise. An opponent raising a river bet almost always holds the nuts.",
+              "commonMistake": "Checking back the river in fear of being raised, forfeiting free chips that recreational players would happily pay.",
+              "goldenRule": "Size thin value bets small to entice calls from worse hands, and fold without hesitation if raised."
             }
           ]
         }

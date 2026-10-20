@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import curriculum from '../data/curriculum.json';
@@ -11,7 +11,8 @@ curriculum.tracks.forEach(track => {
       allLessons.push({
         ...lesson,
         moduleTitle: mod.title,
-        trackTitle: track.title
+        trackTitle: track.title,
+        volumeTitle: track.volumeTitle || `Volume ${track.volume}: ${track.title}`
       });
     });
   });
@@ -29,16 +30,38 @@ const QuizView = ({ session }) => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [flippedCards, setFlippedCards] = useState(0);
 
+  // Reset state on quiz navigation
+  useEffect(() => {
+    setSelectedAnswer(null);
+    setHasSubmitted(false);
+    setFlippedCards(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentIndex]);
+
   if (!quiz || quiz.type !== 'quiz') {
-    return <div className="container" style={{ textAlign: 'center', marginTop: '4rem' }}><h2>Quiz not found.</h2></div>;
+    return (
+      <div className="container" style={{ textAlign: 'center', marginTop: '4rem' }}>
+        <h2>Quiz not found.</h2>
+        <button className="btn-primary" onClick={() => navigate('/')} style={{ marginTop: '1rem' }}>
+          Back to Dashboard
+        </button>
+      </div>
+    );
   }
 
+  const hasCards = quiz.cards && quiz.cards.length > 0;
+  const cardsRevealed = !hasCards || flippedCards >= quiz.cards.length;
   const isCorrect = selectedAnswer === quiz.correctAnswer;
 
   const handleSubmit = () => {
     if (selectedAnswer) {
       setHasSubmitted(true);
     }
+  };
+
+  const handleRetry = () => {
+    setSelectedAnswer(null);
+    setHasSubmitted(false);
   };
 
   const handleNext = async () => {
@@ -60,7 +83,7 @@ const QuizView = ({ session }) => {
           }
         }
       } catch (err) {
-        console.error("Error saving quiz progress", err);
+        console.error('Error saving quiz progress', err);
       }
     }
     
@@ -73,56 +96,158 @@ const QuizView = ({ session }) => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '800px', marginTop: '2rem' }}>
+    <div className="container" style={{ maxWidth: '800px', marginTop: '2rem', paddingBottom: '4rem' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <button 
+          onClick={() => navigate('/')} 
+          style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold' }}
+        >
+          ← Back to Dashboard
+        </button>
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          {quiz.volumeTitle} • {quiz.moduleTitle}
+        </span>
+      </div>
+
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h1 className="text-accent">{quiz.title}</h1>
-        <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>{quiz.question}</p>
+        <span style={{ 
+          background: 'rgba(139, 92, 246, 0.15)', 
+          color: '#a78bfa', 
+          border: '1px solid rgba(139, 92, 246, 0.3)',
+          padding: '0.25rem 0.75rem', 
+          borderRadius: '9999px', 
+          fontSize: '0.8rem', 
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          display: 'inline-block',
+          marginBottom: '0.75rem'
+        }}>
+          🧠 Knowledge Checkpoint
+        </span>
+        <h1 className="text-accent" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{quiz.title}</h1>
+        <p style={{ fontSize: '1.15rem', color: 'var(--text-primary)', maxWidth: '650px', margin: '0 auto' }}>
+          {quiz.question}
+        </p>
       </div>
 
       <div style={{ 
         backgroundColor: 'var(--surface-color)', 
-        padding: '3rem', 
-        borderRadius: '1rem', 
+        padding: '2.5rem', 
+        borderRadius: '1.25rem', 
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)',
-        border: '1px solid rgba(255,255,255,0.05)',
+        border: '1px solid rgba(255,255,255,0.08)',
         textAlign: 'center'
       }}>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem', transform: 'scale(0.7)', transformOrigin: 'top center' }}>
-          {quiz.cards.map((card, i) => (
-            <Card 
-              key={`${currentIndex}-${i}`} // Force re-render on quiz change
-              suit={card.suit} 
-              rank={card.rank} 
-              isFaceUp={false} 
-              disableFlip={hasSubmitted} // Stop flipping after submit
-              onClick={(isFlipped) => setFlippedCards(prev => isFlipped ? prev + 1 : prev - 1)} 
-            />
-          ))}
-        </div>
-
-        {flippedCards === quiz.cards.length && (
-          <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Select the correct hand:</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px', margin: '0 auto' }}>
-              {quiz.options.map((opt, i) => (
-                <button
-                  key={i}
-                  onClick={() => !hasSubmitted && setSelectedAnswer(opt)}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    backgroundColor: selectedAnswer === opt ? 'var(--accent-color)' : 'var(--bg-color)',
-                    color: selectedAnswer === opt ? 'white' : 'var(--text-primary)',
-                    border: '1px solid',
-                    borderColor: selectedAnswer === opt ? 'var(--accent-color)' : 'var(--surface-color-hover)',
-                    cursor: hasSubmitted ? 'default' : 'pointer',
-                    fontWeight: 'bold',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {opt}
-                </button>
+        {/* Render Cards if Quiz has cards */}
+        {hasCards && (
+          <div style={{ marginBottom: '2.5rem' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              {cardsRevealed ? 'All cards revealed:' : 'Click the cards to flip them face-up:'}
+            </p>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', transform: 'scale(0.85)', transformOrigin: 'top center' }}>
+              {quiz.cards.map((card, i) => (
+                <Card 
+                  key={`${currentIndex}-${i}`}
+                  suit={card.suit} 
+                  rank={card.rank} 
+                  isFaceUp={false} 
+                  disableFlip={hasSubmitted}
+                  onClick={(isFlipped) => setFlippedCards(prev => isFlipped ? prev + 1 : prev - 1)} 
+                />
               ))}
+            </div>
+
+            {!cardsRevealed && (
+              <button 
+                onClick={() => setFlippedCards(quiz.cards.length)}
+                style={{ 
+                  marginTop: '1rem', 
+                  background: 'rgba(255,255,255,0.06)', 
+                  color: 'var(--text-secondary)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  padding: '0.35rem 0.75rem', 
+                  borderRadius: '0.4rem', 
+                  fontSize: '0.75rem', 
+                  cursor: 'pointer' 
+                }}
+              >
+                Reveal All Cards 🃏
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Options Area (Visible once cards are revealed, or immediately if no cards) */}
+        {cardsRevealed && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <h3 style={{ marginBottom: '1.25rem', color: '#ffffff', fontSize: '1rem', fontWeight: '600' }}>
+              Select your answer:
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '480px', margin: '0 auto' }}>
+              {quiz.options.map((opt, i) => {
+                const isSelected = selectedAnswer === opt;
+                let bgColor = 'var(--bg-color)';
+                let borderColor = 'rgba(255,255,255,0.1)';
+                let textColor = 'var(--text-primary)';
+
+                if (isSelected && !hasSubmitted) {
+                  bgColor = 'rgba(59, 130, 246, 0.2)';
+                  borderColor = '#3b82f6';
+                  textColor = '#93c5fd';
+                }
+
+                if (hasSubmitted) {
+                  if (opt === quiz.correctAnswer) {
+                    bgColor = 'rgba(16, 185, 129, 0.25)';
+                    borderColor = '#10b981';
+                    textColor = '#6ee7b7';
+                  } else if (isSelected && !isCorrect) {
+                    bgColor = 'rgba(239, 68, 68, 0.25)';
+                    borderColor = '#ef4444';
+                    textColor = '#fca5a5';
+                  }
+                }
+
+                return (
+                  <button
+                    key={i}
+                    onClick={() => !hasSubmitted && setSelectedAnswer(opt)}
+                    style={{
+                      padding: '0.9rem 1.25rem',
+                      borderRadius: '0.65rem',
+                      backgroundColor: bgColor,
+                      color: textColor,
+                      border: `1px solid ${borderColor}`,
+                      cursor: hasSubmitted ? 'default' : 'pointer',
+                      fontWeight: '600',
+                      fontSize: '0.95rem',
+                      textAlign: 'left',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <span style={{ 
+                      width: '24px', 
+                      height: '24px', 
+                      borderRadius: '50%', 
+                      background: 'rgba(255,255,255,0.08)', 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      fontSize: '0.8rem',
+                      flexShrink: 0
+                    }}>
+                      {String.fromCharCode(65 + i)}
+                    </span>
+                    <span>{opt}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {!hasSubmitted && (
@@ -130,20 +255,56 @@ const QuizView = ({ session }) => {
                 className="btn-primary" 
                 onClick={handleSubmit}
                 disabled={!selectedAnswer}
-                style={{ marginTop: '2rem', opacity: !selectedAnswer ? 0.5 : 1 }}
+                style={{ 
+                  marginTop: '2rem', 
+                  opacity: !selectedAnswer ? 0.5 : 1, 
+                  cursor: !selectedAnswer ? 'not-allowed' : 'pointer',
+                  padding: '0.75rem 2rem',
+                  fontSize: '0.95rem'
+                }}
               >
                 Submit Answer
               </button>
             )}
 
             {hasSubmitted && (
-              <div style={{ marginTop: '2rem', padding: '1rem', borderRadius: '0.5rem', backgroundColor: isCorrect ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
-                <h3 style={{ color: isCorrect ? 'var(--accent-color)' : 'var(--danger-color)' }}>
-                  {isCorrect ? 'Correct! Well done.' : `Incorrect. The correct answer was ${quiz.correctAnswer}.`}
+              <div style={{ 
+                marginTop: '2rem', 
+                padding: '1.25rem', 
+                borderRadius: '0.75rem', 
+                backgroundColor: isCorrect ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                border: `1px solid ${isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+              }}>
+                <h3 style={{ color: isCorrect ? '#34d399' : '#f87171', marginBottom: '0.5rem', fontSize: '1.1rem' }}>
+                  {isCorrect ? '🎉 Correct! Mastery Demonstrated.' : `❌ Incorrect. The correct answer was "${quiz.correctAnswer}".`}
                 </h3>
-                <button className="btn-primary" onClick={handleNext} style={{ marginTop: '1rem' }}>
-                  {isCorrect ? 'Continue' : 'Back to Dashboard'}
-                </button>
+
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.25rem' }}>
+                  {!isCorrect && (
+                    <button 
+                      onClick={handleRetry}
+                      style={{
+                        background: 'rgba(255,255,255,0.1)',
+                        color: '#ffffff',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        padding: '0.65rem 1.25rem',
+                        borderRadius: '0.5rem',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      Try Again ↺
+                    </button>
+                  )}
+                  <button 
+                    className="btn-primary" 
+                    onClick={handleNext}
+                    style={{ padding: '0.65rem 1.5rem', fontSize: '0.9rem' }}
+                  >
+                    {isLast ? 'Complete Playbook 🏆' : 'Continue to Next Chapter →'}
+                  </button>
+                </div>
               </div>
             )}
           </div>
