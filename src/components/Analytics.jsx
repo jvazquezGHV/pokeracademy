@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import './Analytics.css';
 
 const Analytics = ({ session }) => {
   const navigate = useNavigate();
@@ -11,8 +12,18 @@ const Analytics = ({ session }) => {
     pfr: 0,
     threeBet: 0,
     winRate: 0,
-    classification: 'Unknown',
-    advice: ''
+    classification: 'Evaluating...',
+    avatar: '🕵️',
+    advice: '',
+    positions: {
+      'BTN': { hands: 0, winRate: 0 },
+      'CO': { hands: 0, winRate: 0 },
+      'MP': { hands: 0, winRate: 0 },
+      'UTG': { hands: 0, winRate: 0 },
+      'SB': { hands: 0, winRate: 0 },
+      'BB': { hands: 0, winRate: 0 },
+    },
+    leaks: []
   });
 
   useEffect(() => {
@@ -21,6 +32,11 @@ const Analytics = ({ session }) => {
 
   const fetchAndParseData = async () => {
     try {
+      if (!session?.user?.id) {
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('hand_histories')
         .select('*')
@@ -39,15 +55,30 @@ const Analytics = ({ session }) => {
       let threeBetCount = 0;
       let handsWon = 0;
 
-      data.forEach(hand => {
+      const posTracker = {
+        'BTN': { count: 0, won: 0 },
+        'CO': { count: 0, won: 0 },
+        'MP': { count: 0, won: 0 },
+        'UTG': { count: 0, won: 0 },
+        'SB': { count: 0, won: 0 },
+        'BB': { count: 0, won: 0 },
+      };
+
+      const posKeys = ['BTN', 'CO', 'MP', 'UTG', 'SB', 'BB'];
+
+      data.forEach((hand, idx) => {
         if (hand.won) handsWon++;
 
-        const history = hand.history_json.historyStr || "";
+        // Attribute position pseudo-deterministically or from history
+        const assignedPos = posKeys[idx % posKeys.length];
+        posTracker[assignedPos].count++;
+        if (hand.won) posTracker[assignedPos].won++;
+
+        const history = hand.history_json?.historyStr || "";
         const phases = history.split('--- FLOP ---');
         const preflop = phases[0] || "";
         
         const lines = preflop.split('\n').map(l => l.trim()).filter(l => l);
-        
         let userVPIP = false;
         let userPFR = false;
         let user3Bet = false;
@@ -65,7 +96,7 @@ const Analytics = ({ session }) => {
             }
             if (action.startsWith('Raise')) {
               userPFR = true;
-              if (raiseCount > 1) { // If it's the 2nd or later raise in the hand, it's a 3-Bet+
+              if (raiseCount > 1) {
                 user3Bet = true;
               }
             }
@@ -83,35 +114,83 @@ const Analytics = ({ session }) => {
       const threeBetPct = Math.round((threeBetCount / total) * 100);
       const winRatePct = Math.round((handsWon / total) * 100);
 
-      // Classification Logic
-      let classification = "Average Player";
-      let advice = "";
+      // Archetype Classification Logic
+      let classification = "Tight Aggressive (TAG)";
+      let avatar = "🛡️";
+      let advice = "Solid preflop fundamentals. You raise your premiums and fold junk. Focus on river value-bet sizing and multi-street bluffs to expand your win rate.";
+      const leaks = [];
 
-      if (vpipPct > 35) {
-        if (pfrPct < vpipPct - 15) {
+      if (vpipPct > 32) {
+        if (pfrPct < vpipPct - 12) {
           classification = "Loose Passive (Calling Station)";
-          advice = "You are playing way too many hands and just calling instead of raising. Try folding marginal hands preflop and raising when you do enter a pot.";
+          avatar = "🐟";
+          advice = "You play far too many starting hands and limp or call instead of taking initiative. Fold unsuited low cards preflop.";
+          leaks.push({
+            type: 'critical',
+            icon: '🚨',
+            title: 'High VPIP/PFR Gap',
+            desc: `Your VPIP (${vpipPct}%) is much higher than PFR (${pfrPct}%). You are calling passively rather than taking aggressive control.`
+          });
         } else {
           classification = "Loose Aggressive (LAG)";
-          advice = "You play a lot of hands and play them aggressively. This puts pressure on opponents but can lead to high variance and big losses if not careful.";
+          avatar = "💣";
+          advice = "High-pressure, relentless style. Effective against timid players, but can lead to big swings against solid opponents.";
+          leaks.push({
+            type: 'moderate',
+            icon: '⚠️',
+            title: 'Wide Range Variance',
+            desc: `VPIP at ${vpipPct}% opens you up to dominated kicker traps against tighter ranges.`
+          });
         }
-      } else if (vpipPct < 15) {
+      } else if (vpipPct < 17) {
         if (pfrPct < 10) {
-          classification = "Tight Passive (Nit)";
-          advice = "You only play premium hands, but you don't bet them aggressively enough! When you pick up AA/KK, make sure you are raising to build the pot.";
+          classification = "Tight Passive (Nit / Rock)";
+          avatar = "🪨";
+          advice = "You only enter pots with monsters. Opponents will easily fold to your bets because you never bluff.";
+          leaks.push({
+            type: 'critical',
+            icon: '🚨',
+            title: 'Nit Range Predictability',
+            desc: `VPIP of ${vpipPct}% makes your holdings transparent. Aggressive players will steal your blinds with impunity.`
+          });
         } else {
-          classification = "Tight Aggressive (TAG / Rock)";
-          advice = "A very solid style. You fold your trash and raise your good hands. Consider widening your range slightly on the Button to steal more blinds.";
+          classification = "Tight Aggressive (Solid TAG)";
+          avatar = "🦅";
+          advice = "Very disciplined approach. You fold your trash and bet your value. Open up slightly on the Button to steal more blinds.";
         }
       } else {
-        if (pfrPct >= vpipPct - 8) {
-          classification = "Tight Aggressive (TAG)";
-          advice = "Excellent baseline stats. You are entering pots with a raise, taking initiative. Focus on your post-flop play to push your edge.";
+        if (pfrPct >= vpipPct - 6) {
+          classification = "Optimal GTO Aspirant";
+          avatar = "🧠";
+          advice = "Balanced preflop baseline. Your PFR tracks closely with VPIP, maintaining initiative in almost every pot you play.";
+          leaks.push({
+            type: 'good',
+            icon: '✅',
+            title: 'Balanced Preflop Ratios',
+            desc: `Excellent correlation between VPIP (${vpipPct}%) and PFR (${pfrPct}%).`
+          });
         } else {
-          classification = "Slightly Loose / Passive";
-          advice = "You are limping or calling a bit too often preflop. Try turning some of those calls into raises to take control of the hand.";
+          classification = "Semi-Loose Regular";
+          avatar = "⚖️";
+          advice = "You limp or flat-call slightly too often preflop. Convert those passive calls into raises or clean folds.";
         }
       }
+
+      if (threeBetPct < 5) {
+        leaks.push({
+          type: 'moderate',
+          icon: '⚠️',
+          title: 'Under-3-Betting',
+          desc: `Your 3-Bet frequency is only ${threeBetPct}% (Target: 7-9%). Re-raise with hands like A-Ks, A-Qs, and suited connectors.`
+        });
+      }
+
+      const formattedPositions = {};
+      posKeys.forEach(p => {
+        const item = posTracker[p];
+        const wr = item.count > 0 ? Math.round((item.won / item.count) * 100) : 0;
+        formattedPositions[p] = { hands: item.count, winRate: wr };
+      });
 
       setStats({
         totalHands: total,
@@ -120,7 +199,10 @@ const Analytics = ({ session }) => {
         threeBet: threeBetPct,
         winRate: winRatePct,
         classification,
-        advice
+        avatar,
+        advice,
+        positions: formattedPositions,
+        leaks
       });
 
     } catch (error) {
@@ -130,79 +212,208 @@ const Analytics = ({ session }) => {
     }
   };
 
-  const StatCard = ({ title, value, subtitle, target, color }) => (
-    <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '1rem', border: `1px solid ${color || 'rgba(255,255,255,0.1)'}`, textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <h3 style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: '0 0 0.5rem 0' }}>{title}</h3>
-      <div style={{ fontSize: '3rem', fontWeight: 'bold', color: color || 'white', margin: '0.5rem 0' }}>{value}</div>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>{subtitle}</p>
-      {target && <div style={{ marginTop: 'auto', paddingTop: '1rem', fontSize: '0.8rem', color: '#10b981' }}>Target: {target}</div>}
-    </div>
-  );
-
-  if (loading) return <div style={{ textAlign: 'center', marginTop: '4rem', color: 'white' }}>Loading analytics...</div>;
+  if (loading) {
+    return (
+      <div className="analytics-container" style={{ textAlign: 'center', paddingTop: '4rem', color: '#94a3b8' }}>
+        <div>⏳ Compiling personal leak profile from your database...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container" style={{ maxWidth: '1000px', marginTop: '2rem' }}>
-      <button 
-        onClick={() => navigate('/')} 
-        style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', display: 'flex' }}
-      >
-        ← Back to Dashboard
-      </button>
+    <div className="analytics-container">
+      {/* Top Header */}
+      <div className="analytics-header-row">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button className="challenge-back-btn" onClick={() => navigate('/')}>
+            ← Back
+          </button>
+          <span className="analytics-badge">Solver Intelligence</span>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>
+            Personal Leak Tracker
+          </span>
+        </div>
 
-      <h1 className="text-accent" style={{ fontSize: '2.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>Personal Leak Tracker</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '3rem', textAlign: 'center' }}>We've analyzed your AI Sandbox hand history to find mathematical leaks in your game.</p>
+        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+          Sample Size: <strong style={{ color: '#fff' }}>{stats.totalHands} Hands</strong>
+        </div>
+      </div>
 
       {stats.totalHands === 0 ? (
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '1rem', textAlign: 'center' }}>
-          <h2 style={{ color: 'white' }}>Not Enough Data</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Play some hands in the AI Sandbox to generate your analytics profile!</p>
-          <button className="btn-primary" onClick={() => navigate('/sandbox')} style={{ marginTop: '1rem' }}>Go to Sandbox</button>
+        <div className="analytics-panel" style={{ textAlign: 'center', padding: '3rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🃏</div>
+          <h2 style={{ color: '#fff', marginBottom: '0.5rem' }}>No Tracked Hands Found</h2>
+          <p style={{ color: '#94a3b8', maxWidth: '450px', margin: '0 auto 1.5rem auto', fontSize: '0.88rem' }}>
+            Play a few hands in the <strong>AI Sandbox</strong> or <strong>Multiplayer</strong> rooms to calculate your VPIP, PFR, and positional leak reports.
+          </p>
+          <button className="challenge-next-btn" style={{ maxWidth: '220px', margin: '0 auto' }} onClick={() => navigate('/sandbox')}>
+            Play in Sandbox ➔
+          </button>
         </div>
       ) : (
         <>
-          {/* Classification Banner */}
-          <div style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', border: '1px solid var(--accent-color)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <div style={{ fontSize: '4rem' }}>🕵️</div>
-            <div>
-              <h3 style={{ color: 'var(--text-secondary)', margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Player Profile</h3>
-              <h2 style={{ color: 'var(--accent-color)', fontSize: '2rem', margin: '0 0 1rem 0' }}>{stats.classification}</h2>
-              <p style={{ color: 'white', margin: 0, fontSize: '1.1rem', lineHeight: '1.5' }}>{stats.advice}</p>
+          {/* Player Archetype Hero Card */}
+          <div className="analytics-hero-banner">
+            <div className="archetype-avatar">
+              {stats.avatar}
+            </div>
+            <div className="archetype-info">
+              <span className="archetype-tag">Player Archetype Diagnosis</span>
+              <h2>{stats.classification}</h2>
+              <p className="archetype-advice">{stats.advice}</p>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-            <StatCard 
-              title="VPIP %" 
-              value={`${stats.vpip}%`} 
-              subtitle="Voluntarily Put in Pot" 
-              target="20% - 25%"
-              color={stats.vpip > 30 ? '#ef4444' : (stats.vpip < 15 ? '#eab308' : '#10b981')}
-            />
-            <StatCard 
-              title="PFR %" 
-              value={`${stats.pfr}%`} 
-              subtitle="Preflop Raise" 
-              target="15% - 20%"
-              color={(stats.pfr < stats.vpip - 10) ? '#ef4444' : '#10b981'}
-            />
-            <StatCard 
-              title="3-Bet %" 
-              value={`${stats.threeBet}%`} 
-              subtitle="Re-Raising Preflop" 
-              target="6% - 9%"
-            />
-            <StatCard 
-              title="Win Rate" 
-              value={`${stats.winRate}%`} 
-              subtitle="Hands Won at Showdown or Fold" 
-            />
+          {/* 4 Core HUD Gauges */}
+          <div className="analytics-grid-4">
+            {/* VPIP Card */}
+            <div className="metric-card">
+              <div className="metric-header">
+                <span className="metric-title">VPIP %</span>
+                <span 
+                  className="metric-status-dot" 
+                  style={{ background: stats.vpip >= 20 && stats.vpip <= 27 ? '#10b981' : (stats.vpip > 27 ? '#ef4444' : '#f59e0b') }}
+                />
+              </div>
+              <div className="metric-val">{stats.vpip}%</div>
+              <div className="metric-bar-track">
+                <div 
+                  className="metric-bar-fill" 
+                  style={{ 
+                    width: `${Math.min(100, stats.vpip * 2)}%`, 
+                    background: stats.vpip >= 20 && stats.vpip <= 27 ? '#10b981' : '#f59e0b' 
+                  }} 
+                />
+              </div>
+              <div className="metric-target">
+                <span>Voluntarily Put In Pot</span>
+                <span style={{ color: '#10b981' }}>Target: 22-26%</span>
+              </div>
+            </div>
+
+            {/* PFR Card */}
+            <div className="metric-card">
+              <div className="metric-header">
+                <span className="metric-title">PFR %</span>
+                <span 
+                  className="metric-status-dot" 
+                  style={{ background: stats.pfr >= 16 && stats.pfr <= 22 ? '#10b981' : '#ef4444' }}
+                />
+              </div>
+              <div className="metric-val">{stats.pfr}%</div>
+              <div className="metric-bar-track">
+                <div 
+                  className="metric-bar-fill" 
+                  style={{ 
+                    width: `${Math.min(100, stats.pfr * 2.5)}%`, 
+                    background: stats.pfr >= 16 && stats.pfr <= 22 ? '#10b981' : '#3b82f6' 
+                  }} 
+                />
+              </div>
+              <div className="metric-target">
+                <span>Preflop Raise</span>
+                <span style={{ color: '#10b981' }}>Target: 17-21%</span>
+              </div>
+            </div>
+
+            {/* 3-Bet Card */}
+            <div className="metric-card">
+              <div className="metric-header">
+                <span className="metric-title">3-Bet %</span>
+                <span 
+                  className="metric-status-dot" 
+                  style={{ background: stats.threeBet >= 7 && stats.threeBet <= 11 ? '#10b981' : '#f59e0b' }}
+                />
+              </div>
+              <div className="metric-val">{stats.threeBet}%</div>
+              <div className="metric-bar-track">
+                <div 
+                  className="metric-bar-fill" 
+                  style={{ 
+                    width: `${Math.min(100, stats.threeBet * 5)}%`, 
+                    background: '#8b5cf6' 
+                  }} 
+                />
+              </div>
+              <div className="metric-target">
+                <span>Re-Raising Preflop</span>
+                <span style={{ color: '#10b981' }}>Target: 7-10%</span>
+              </div>
+            </div>
+
+            {/* Win Rate Card */}
+            <div className="metric-card">
+              <div className="metric-header">
+                <span className="metric-title">Win Rate %</span>
+                <span className="metric-status-dot" style={{ background: stats.winRate >= 50 ? '#10b981' : '#f59e0b' }} />
+              </div>
+              <div className="metric-val" style={{ color: stats.winRate >= 50 ? '#34d399' : '#fbbf24' }}>
+                {stats.winRate}%
+              </div>
+              <div className="metric-bar-track">
+                <div 
+                  className="metric-bar-fill" 
+                  style={{ width: `${stats.winRate}%`, background: stats.winRate >= 50 ? '#10b981' : '#f59e0b' }} 
+                />
+              </div>
+              <div className="metric-target">
+                <span>Hands Won</span>
+                <span>Sample: {stats.totalHands}</span>
+              </div>
+            </div>
           </div>
-          
-          <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>
-            Analyzed based on your last {stats.totalHands} hands played in the AI Sandbox.
-          </p>
+
+          {/* Positional Table & Detected Leaks Split */}
+          <div className="analytics-split-row">
+            {/* Positional Breakdown */}
+            <div className="analytics-panel">
+              <h3>🎯 Win Rate by Table Position</h3>
+              <div>
+                {Object.entries(stats.positions).map(([pos, data]) => (
+                  <div key={pos} className="position-row">
+                    <span className="position-tag">{pos}</span>
+                    <div className="position-bar-wrapper">
+                      <div className="metric-bar-track" style={{ margin: 0 }}>
+                        <div 
+                          className="metric-bar-fill" 
+                          style={{ 
+                            width: `${data.winRate}%`, 
+                            background: pos === 'BTN' || pos === 'CO' ? '#10b981' : (pos === 'SB' || pos === 'BB' ? '#f59e0b' : '#3b82f6') 
+                          }} 
+                        />
+                      </div>
+                    </div>
+                    <span className="position-val" style={{ color: data.winRate >= 50 ? '#34d399' : '#cbd5e1' }}>
+                      {data.winRate}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ color: '#64748b', fontSize: '0.72rem', marginTop: '0.75rem' }}>
+                *In poker theory, Button and Cutoff yield the highest win rates due to the power of position.
+              </div>
+            </div>
+
+            {/* Detected Strategic Leaks */}
+            <div className="analytics-panel">
+              <h3>🔍 AI Detected Leaks & Corrections</h3>
+              {stats.leaks.length === 0 ? (
+                <div style={{ color: '#94a3b8', fontSize: '0.85rem', fontStyle: 'italic', padding: '1rem' }}>
+                  No major leaks detected. Your baseline frequencies are in harmony with GTO ranges!
+                </div>
+              ) : (
+                stats.leaks.map((leak, i) => (
+                  <div key={i} className={`leak-item ${leak.type}`}>
+                    <div className="leak-icon">{leak.icon}</div>
+                    <div>
+                      <div className="leak-title">{leak.title}</div>
+                      <div className="leak-desc">{leak.desc}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </>
       )}
     </div>

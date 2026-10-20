@@ -112,6 +112,52 @@ const MultiplayerTable = ({ session }) => {
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
+  // Real-time table emoji reactions
+  const [activeReactions, setActiveReactions] = useState([]);
+
+  const triggerReaction = (userId, emoji) => {
+    const id = Date.now() + Math.random();
+    setActiveReactions(prev => [...prev, { id, userId, emoji }]);
+    setTimeout(() => {
+      setActiveReactions(prev => prev.filter(r => r.id !== id));
+    }, 2200);
+  };
+
+  const sendReaction = (emoji) => {
+    triggerSound('click');
+    triggerReaction(session.user.id, emoji);
+    supabase.channel(`chat_${code}`).send({
+      type: 'broadcast',
+      event: 'reaction',
+      payload: { userId: session.user.id, emoji }
+    });
+  };
+
+  const handleRebuy = async () => {
+    triggerSound('win');
+    const rebuyAmount = 1000;
+    await supabase.from('poker_players')
+      .update({ chips: rebuyAmount })
+      .eq('room_id', room.id)
+      .eq('user_id', session.user.id);
+
+    if (room?.game_state?.players) {
+      const updatedPlayers = room.game_state.players.map(p => {
+        if (p.user_id === session.user.id) {
+          return { ...p, chips: rebuyAmount, status: p.status === 'out' ? 'sitting_out' : p.status };
+        }
+        return p;
+      });
+      const newGs = { 
+        ...room.game_state, 
+        players: updatedPlayers,
+        history: (room.game_state.history || '') + `\n>>> ${session.user.email?.split('@')[0]} re-bought for $${rebuyAmount}!`
+      };
+      setRoom(prev => ({ ...prev, game_state: newGs }));
+      await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', room.id);
+    }
+  };
+
   useEffect(() => {
     if (gs.phase !== 'showdown') {
        animationPlayed.current = false;
@@ -209,6 +255,11 @@ const MultiplayerTable = ({ session }) => {
           chatSub = supabase.channel(`chat_${code}`)
             .on('broadcast', { event: 'game_sync' }, () => {
               fetchRoom();
+            })
+            .on('broadcast', { event: 'reaction' }, ({ payload }) => {
+              if (payload?.emoji && payload?.userId) {
+                triggerReaction(payload.userId, payload.emoji);
+              }
             })
             .subscribe((status) => {
               if (status === 'SUBSCRIBED') {
@@ -942,6 +993,10 @@ const MultiplayerTable = ({ session }) => {
                                   {dbPlayers.find(dp => dp.user_id === p.user_id)?.is_host && (
                                     <span className="mp-host-crown" title="Host">👑</span>
                                   )}
+                                  {/* Floating Reaction Bubble */}
+                                  {activeReactions.filter(r => r.userId === p.user_id).map(r => (
+                                    <div key={r.id} className="mp-reaction-bubble">{r.emoji}</div>
+                                  ))}
                                 </div>
 
                                 {/* Meta Info */}
@@ -962,6 +1017,11 @@ const MultiplayerTable = ({ session }) => {
                                     <span className="mp-player-bb-val">
                                       ({Math.round(p.chips / currentBB)} bb)
                                     </span>
+                                    {isMe && p.chips <= 0 && (
+                                      <button className="mp-rebuy-btn" onClick={handleRebuy} title="Top-up stack to $1,000">
+                                        + Rebuy $1k
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
 
@@ -1039,6 +1099,21 @@ const MultiplayerTable = ({ session }) => {
                 BOTTOM ACTION COMMAND CENTER
                 -------------------------------------------------- */}
             <div className="mp-action-center">
+              {/* Quick Reactions Bar */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.4rem' }}>
+                <div className="mp-reaction-bar">
+                  {['🔥', '👏', '💀', '🚀', '🤡', '💰'].map(emoji => (
+                    <button 
+                      key={emoji} 
+                      className="mp-reaction-btn" 
+                      onClick={() => sendReaction(emoji)}
+                      title={`React ${emoji}`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {gs.phase === 'showdown' || gs.phase === 'waiting_for_players' ? (
                 amIHost ? (
                   <button 

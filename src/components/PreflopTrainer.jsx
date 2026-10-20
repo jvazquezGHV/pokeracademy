@@ -4,8 +4,18 @@ import Card from './Card';
 import rangeData from '../data/ranges.json';
 import { createDeck } from '../utils/pokerLogic';
 import { playSound } from '../utils/audio';
+import './PreflopTrainer.css';
 
 const RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+
+const TABLE_POSITIONS = [
+  { id: 'utg', label: 'UTG', className: 'seat-pos-utg' },
+  { id: 'mp',  label: 'MP',  className: 'seat-pos-mp' },
+  { id: 'co',  label: 'CO',  className: 'seat-pos-co' },
+  { id: 'btn', label: 'BTN', className: 'seat-pos-btn', hasButton: true },
+  { id: 'sb',  label: 'SB',  className: 'seat-pos-sb' },
+  { id: 'bb',  label: 'BB',  className: 'seat-pos-bb' }
+];
 
 const getHandString = (c1, c2) => {
   const r1 = c1.rank === '10' ? 'T' : c1.rank;
@@ -13,7 +23,6 @@ const getHandString = (c1, c2) => {
   const idx1 = RANKS.indexOf(r1);
   const idx2 = RANKS.indexOf(r2);
   
-  // Lower index means higher card (A=0, K=1, etc)
   const high = idx1 <= idx2 ? r1 : r2;
   const low = idx1 <= idx2 ? r2 : r1;
   
@@ -30,14 +39,16 @@ const PreflopTrainer = () => {
   const navigate = useNavigate();
   
   const [timerConfig, setTimerConfig] = useState(0); // 0 = off
-  const [trainingFocus, setTrainingFocus] = useState('beginner'); // beginner, intermediate, advanced
+  const [trainingFocus, setTrainingFocus] = useState('intermediate');
   const [timeLeft, setTimeLeft] = useState(null);
   
   const [currentCards, setCurrentCards] = useState([]);
   const [currentPosition, setCurrentPosition] = useState(null);
   
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [feedback, setFeedback] = useState(null); // 'correct', 'incorrect', 'timeout'
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [feedback, setFeedback] = useState(null); // 'correct' | 'incorrect' | 'timeout'
   const [feedbackMessage, setFeedbackMessage] = useState('');
   
   const [isPlaying, setIsPlaying] = useState(false);
@@ -55,25 +66,28 @@ const PreflopTrainer = () => {
         : (isGoodHand ? BORDERLINE_HANDS : TRASH_HANDS);
         
       while(true) {
-         const deck = createDeck();
-         c1 = deck.pop(); c2 = deck.pop();
-         if (targetPool.includes(getHandString(c1, c2))) break;
+        const deck = createDeck();
+        c1 = deck.pop(); 
+        c2 = deck.pop();
+        if (targetPool.includes(getHandString(c1, c2))) break;
       }
     } else {
       const deck = createDeck();
-      c1 = deck.pop(); c2 = deck.pop();
+      c1 = deck.pop(); 
+      c2 = deck.pop();
     }
     
     setCurrentCards([c1, c2]);
     
-    // Pick random position from rangeData
+    // Pick random position from rangeData positions
     const randomPosIndex = Math.floor(Math.random() * rangeData.positions.length);
     setCurrentPosition(rangeData.positions[randomPosIndex]);
     
     if (timerConfig > 0) {
       setTimeLeft(timerConfig);
     }
-  }, [timerConfig]);
+    playSound('deal');
+  }, [timerConfig, trainingFocus]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -81,6 +95,7 @@ const PreflopTrainer = () => {
     }
   }, [isPlaying, dealNextHand]);
 
+  // Timer countdown
   useEffect(() => {
     if (!isPlaying || timerConfig === 0 || feedback !== null) return;
     
@@ -97,17 +112,18 @@ const PreflopTrainer = () => {
   }, [timeLeft, isPlaying, timerConfig, feedback]);
 
   const handleTimeout = () => {
-    playSound('error');
+    playSound('fold');
     setFeedback('timeout');
-    setFeedbackMessage('Too Slow!');
+    setFeedbackMessage('⏱ Too Slow! Quick decisions are vital at the tables.');
     setScore(prev => ({ ...prev, total: prev.total + 1 }));
+    setStreak(0);
     setTimeout(() => {
       dealNextHand();
-    }, 1500);
+    }, 1600);
   };
 
-  const handleAction = (action) => { // action = 'raise' | 'fold'
-    if (feedback !== null) return; // Prevent double clicks
+  const handleAction = (action) => {
+    if (feedback !== null || currentCards.length < 2) return;
     
     const handStr = getHandString(currentCards[0], currentCards[1]);
     const shouldRaise = currentPosition.raise.includes(handStr);
@@ -115,129 +131,191 @@ const PreflopTrainer = () => {
     const isCorrect = (action === 'raise' && shouldRaise) || (action === 'fold' && !shouldRaise);
     
     if (isCorrect) {
-      playSound('deal'); // Using deal sound for success
+      playSound('win');
       setFeedback('correct');
-      setFeedbackMessage('Correct!');
+      const nextStreak = streak + 1;
+      setStreak(nextStreak);
+      if (nextStreak > bestStreak) setBestStreak(nextStreak);
+      setFeedbackMessage(`✅ Correct! ${handStr} is an optimal ${shouldRaise ? 'RAISE' : 'FOLD'} from ${currentPosition.name}.`);
       setScore(prev => ({ correct: prev.correct + 1, total: prev.total + 1 }));
     } else {
-      playSound('fold'); // Using fold sound for error
+      playSound('fold');
       setFeedback('incorrect');
-      setFeedbackMessage(`Incorrect. ${handStr} is a ${shouldRaise ? 'RAISE' : 'FOLD'} from ${currentPosition.name}.`);
+      setStreak(0);
+      setFeedbackMessage(`❌ Mistake. ${handStr} is a ${shouldRaise ? 'RAISE' : 'FOLD'} from ${currentPosition.name}.`);
       setScore(prev => ({ ...prev, total: prev.total + 1 }));
     }
     
     setTimeout(() => {
       dealNextHand();
-    }, 2000);
+    }, 1600);
   };
 
   const getAccuracy = () => {
-    if (score.total === 0) return 0;
+    if (score.total === 0) return 100;
     return Math.round((score.correct / score.total) * 100);
   };
 
   return (
-    <div className="container" style={{ maxWidth: '800px', marginTop: '2rem', textAlign: 'center' }}>
-      <button 
-        onClick={() => navigate('/')} 
-        style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', display: 'flex' }}
-      >
-        ← Back to Dashboard
-      </button>
-
-      <h1 className="text-accent" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Preflop Range Trainer</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Build instant muscle memory for preflop GTO ranges.</p>
+    <div className="preflop-container">
+      {/* Header */}
+      <div className="preflop-header">
+        <div>
+          <h1>⚡ Preflop Range & Action Trainer</h1>
+          <p>Build instant muscle memory for GTO opening ranges across all table positions.</p>
+        </div>
+        <button
+          type="button"
+          className="user-mgmt-btn user-mgmt-btn-secondary user-mgmt-btn-sm"
+          onClick={() => navigate('/')}
+        >
+          ← Dashboard
+        </button>
+      </div>
 
       {!isPlaying ? (
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '3rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <h2 style={{ marginBottom: '1rem' }}>Trainer Settings</h2>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '400px', margin: '0 auto 2rem auto', textAlign: 'left' }}>
-            <div>
-              <label style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', display: 'block' }}>Difficulty Level</label>
-              <select 
+        /* Setup / Configuration Screen */
+        <div className="user-mgmt-card" style={{ maxWidth: '520px', margin: '2rem auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Configure Drill Session</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+            Choose your training difficulty and time pressure constraints.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left', marginBottom: '1.5rem' }}>
+            <div className="user-mgmt-input-group" style={{ margin: 0 }}>
+              <label>Difficulty Focus</label>
+              <select
+                className="user-mgmt-filter-select"
+                style={{ width: '100%', height: '36px' }}
                 value={trainingFocus}
                 onChange={(e) => setTrainingFocus(e.target.value)}
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                <option value="beginner">Beginner (Premium Hands vs Obvious Trash)</option>
+                <option value="beginner">Beginner (Premiums vs Obvious Trash)</option>
                 <option value="intermediate">Intermediate (Borderline Hands vs Trash)</option>
                 <option value="advanced">Advanced (True Random, Any 2 Cards)</option>
               </select>
             </div>
 
-            <div>
-              <label style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem', display: 'block' }}>Timer (Simulate Pressure)</label>
-              <select 
+            <div className="user-mgmt-input-group" style={{ margin: 0 }}>
+              <label>Time Pressure Timer</label>
+              <select
+                className="user-mgmt-filter-select"
+                style={{ width: '100%', height: '36px' }}
                 value={timerConfig}
                 onChange={(e) => setTimerConfig(Number(e.target.value))}
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                <option value={0}>Off (No Pressure)</option>
-                <option value={3}>3 Seconds (Hardcore)</option>
-                <option value={5}>5 Seconds (Standard)</option>
-                <option value={10}>10 Seconds (Beginner)</option>
+                <option value={0}>Off (No Time Limit)</option>
+                <option value={3}>3 Seconds (Speed Blitz)</option>
+                <option value={5}>5 Seconds (Standard Online Pace)</option>
+                <option value={10}>10 Seconds (Relaxed)</option>
               </select>
             </div>
           </div>
 
-          <button className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.2rem' }} onClick={() => setIsPlaying(true)}>
-            Start Training
+          <button
+            type="button"
+            className="user-mgmt-btn user-mgmt-btn-primary"
+            style={{ width: '100%', height: '38px', fontSize: '0.92rem', fontWeight: 600 }}
+            onClick={() => setIsPlaying(true)}
+          >
+            Start Drill Session
           </button>
         </div>
       ) : (
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '2rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.1)', position: 'relative' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-             <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-               Score: <span style={{ color: 'var(--accent-color)' }}>{score.correct} / {score.total}</span> ({getAccuracy()}%)
-             </div>
-             {timerConfig > 0 && (
-               <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: timeLeft <= 2 ? 'var(--danger-color)' : 'white' }}>
-                 ⏱ {timeLeft}s
-               </div>
-             )}
+        /* Active Drill Screen */
+        <div>
+          {/* Score & Streak Stats Banner */}
+          <div className="preflop-score-banner">
+            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+              <div>
+                Score: <strong style={{ color: '#34d399' }}>{score.correct} / {score.total}</strong> ({getAccuracy()}%)
+              </div>
+              <div>
+                Streak: <strong style={{ color: '#fbbf24' }}>🔥 {streak}</strong> (Best: {bestStreak})
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              {timerConfig > 0 && (
+                <div style={{ fontWeight: 700, color: timeLeft <= 2 ? '#f87171' : '#38bdf8' }}>
+                  ⏱ {timeLeft}s
+                </div>
+              )}
+              <button
+                type="button"
+                className="user-mgmt-btn user-mgmt-btn-secondary user-mgmt-btn-sm"
+                onClick={() => setIsPlaying(false)}
+              >
+                End Session
+              </button>
+            </div>
           </div>
 
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-            You are <span style={{ color: 'var(--accent-color)' }}>{currentPosition?.name}</span>
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            {currentPosition?.description}
-          </p>
+          {/* 6-Max Table Visualization */}
+          <div className="preflop-table-wrapper">
+            {TABLE_POSITIONS.map((pos) => {
+              const isHeroSeat = currentPosition?.id === pos.id;
+              return (
+                <div
+                  key={pos.id}
+                  className={`preflop-seat ${pos.className} ${isHeroSeat ? 'active-seat' : ''}`}
+                >
+                  {pos.hasButton && <span className="dealer-button-badge">D</span>}
+                  <span>{pos.label}</span>
+                  {isHeroSeat && <span style={{ fontSize: '0.68rem', opacity: 0.8 }}>(You)</span>}
+                </div>
+              );
+            })}
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', minHeight: '160px', marginBottom: '2rem' }}>
-             {currentCards.map((c, i) => (
-                <div key={i} style={{ transform: 'scale(1.2)' }}>
+            {/* Hand In Center */}
+            <div className="preflop-cards-center">
+              {currentCards.map((c, i) => (
+                <div key={i} style={{ transform: 'scale(1.05)' }}>
                   <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                 </div>
-             ))}
+              ))}
+            </div>
           </div>
 
-          {feedback ? (
-            <div style={{ 
-               backgroundColor: feedback === 'correct' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-               border: `2px solid ${feedback === 'correct' ? '#10b981' : '#ef4444'}`,
-               padding: '1rem',
-               borderRadius: '0.5rem',
-               color: feedback === 'correct' ? '#10b981' : '#ef4444',
-               fontWeight: 'bold',
-               fontSize: '1.2rem',
-               animation: 'floatUp 0.3s ease-out'
-            }}>
+          {/* Action Choice Buttons */}
+          <div className="preflop-action-bar">
+            <button
+              type="button"
+              className="preflop-act-btn btn-act-fold"
+              onClick={() => handleAction('fold')}
+              disabled={feedback !== null}
+            >
+              <span>✕</span> FOLD
+            </button>
+
+            <button
+              type="button"
+              className="preflop-act-btn btn-act-raise"
+              onClick={() => handleAction('raise')}
+              disabled={feedback !== null}
+            >
+              <span>▲</span> RAISE / OPEN
+            </button>
+          </div>
+
+          {/* Real-time Feedback Banner */}
+          {feedback && (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.45rem',
+                backgroundColor: feedback === 'correct' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                border: `1px solid ${feedback === 'correct' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                color: feedback === 'correct' ? '#34d399' : '#f87171',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                animation: 'fadeIn 0.2s ease-in'
+              }}
+            >
               {feedbackMessage}
             </div>
-          ) : (
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button className="btn-primary" style={{ backgroundColor: 'var(--danger-color)', padding: '1rem 3rem', fontSize: '1.2rem' }} onClick={() => handleAction('fold')}>
-                FOLD
-              </button>
-              <button className="btn-primary" style={{ backgroundColor: 'var(--accent-color)', padding: '1rem 3rem', fontSize: '1.2rem' }} onClick={() => handleAction('raise')}>
-                RAISE
-              </button>
-            </div>
           )}
-
         </div>
       )}
     </div>

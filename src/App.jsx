@@ -19,6 +19,8 @@ import Analytics from './components/Analytics';
 import Auth from './components/Auth';
 import ResetPassword from './components/ResetPassword';
 import UserManagement from './components/UserManagement';
+import CommandPalette from './components/CommandPalette';
+import { isAudioMuted, toggleAudioMute } from './utils/audio';
 import './index.css';
 
 const ADMIN_EMAIL = 'jvazquez.sd@outlook.com';
@@ -39,6 +41,8 @@ const ProtectedRoute = ({ children, session, adminOnly = false }) => {
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isMuted, setIsMuted] = useState(isAudioMuted());
+  const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -52,7 +56,24 @@ function App() {
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    const handleAudioChange = (e) => {
+      if (e.detail) setIsMuted(e.detail.muted);
+    };
+    window.addEventListener('poker_audio_change', handleAudioChange);
+
+    const handleGlobalKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCmdOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('poker_audio_change', handleAudioChange);
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
   }, []);
 
   if (loading) {
@@ -89,6 +110,52 @@ function App() {
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <button
+              type="button"
+              onClick={() => setIsCmdOpen(true)}
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#94a3b8',
+                borderRadius: '5px',
+                padding: '0.2rem 0.55rem',
+                fontSize: '0.76rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontWeight: 500
+              }}
+              title="Quick Jump (Ctrl+K)"
+            >
+              <span>🔍</span>
+              <span>Quick Jump</span>
+              <kbd style={{ background: 'rgba(0,0,0,0.4)', padding: '1px 4px', borderRadius: '3px', fontSize: '0.65rem', color: '#cbd5e1' }}>Ctrl K</kbd>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const nextMuted = toggleAudioMute();
+                setIsMuted(nextMuted);
+              }}
+              style={{
+                background: isMuted ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                border: isMuted ? '1px solid rgba(239, 68, 68, 0.25)' : '1px solid rgba(16, 185, 129, 0.25)',
+                color: isMuted ? '#f87171' : '#34d399',
+                borderRadius: '4px',
+                padding: '0.2rem 0.5rem',
+                fontSize: '0.76rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontWeight: 500
+              }}
+              title={isMuted ? 'Audio Muted — Click to unmute' : 'Audio Enabled — Click to mute'}
+            >
+              <span>{isMuted ? '🔇' : '🔊'}</span>
+              <span>{isMuted ? 'Muted' : 'Sound'}</span>
+            </button>
             <span style={{ fontSize: '0.8rem', color: '#64748b', fontFamily: 'monospace' }}>
               {session.user?.email}
             </span>
@@ -233,6 +300,13 @@ function App() {
           } 
         />
       </Routes>
+      {session && (
+        <CommandPalette
+          isOpen={isCmdOpen}
+          onClose={() => setIsCmdOpen(false)}
+          isAdmin={session.user?.email === ADMIN_EMAIL}
+        />
+      )}
     </Router>
   );
 }

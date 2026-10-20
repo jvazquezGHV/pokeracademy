@@ -1,0 +1,512 @@
+/* ChallengeTable Modern Casino Felt Styling */
+.challenge-page-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 49px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.challenge-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.challenge-back-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.challenge-back-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.challenge-title-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.challenge-badge {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.challenge-stars-row {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.challenge-star-icon {
+  font-size: 1.25rem;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.challenge-star-icon.active {
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+  transform: scale(1.1);
+}
+
+.challenge-star-icon.inactive {
+  filter: grayscale(100%) opacity(0.25);
+}
+
+/* Two-column layout on desktop: Table + Action toolbar on left, Coach Grader + Log on right */
+.challenge-body-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 992px) {
+  .challenge-body-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    overflow-y: auto;
+  }
+}
+
+/* Casino Felt Table */
+.challenge-table-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #090e17;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.challenge-felt-oval {
+  position: relative;
+  flex: 1;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 680px;
+  min-height: 280px;
+  border-radius: 120px;
+  background: radial-gradient(ellipse at center, #1b4d3e 0%, #0d2820 65%, #081a14 100%);
+  border: 10px solid #2e1e0f;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+/* Seats */
+.challenge-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+}
+
+.challenge-player-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.challenge-player-badge.active-turn {
+  border-color: #f59e0b;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+}
+
+.challenge-chips-val {
+  color: #fbbf24;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+
+.challenge-bet-chip {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid #f59e0b;
+  color: #fbbf24;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin-top: 0.25rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.challenge-win-tag {
+  position: absolute;
+  top: -10px;
+  right: -55px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.7rem;
+}
+
+/* Center Table Felt Area */
+.challenge-board-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 4;
+}
+
+.challenge-pot-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.challenge-pot-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.challenge-pot-amount {
+  color: #fbbf24;
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Cards Wrapper */
+.challenge-cards-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Action Toolbar */
+.challenge-action-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  flex-shrink: 0;
+}
+
+.challenge-quick-bets {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.challenge-quick-bets button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.challenge-quick-bets button:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+.challenge-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.challenge-slider-row input[type="range"] {
+  flex: 1;
+  accent-color: #8b5cf6;
+  cursor: pointer;
+}
+
+.challenge-buttons-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.challenge-btn {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.challenge-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.challenge-btn.fold {
+  background: #dc2626;
+  color: #fff;
+}
+
+.challenge-btn.fold:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.challenge-btn.check-call {
+  background: #2563eb;
+  color: #fff;
+}
+
+.challenge-btn.check-call:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.challenge-btn.raise {
+  background: #8b5cf6;
+  color: #fff;
+}
+
+.challenge-btn.raise:hover:not(:disabled) {
+  background: #7c3aed;
+}
+
+.challenge-next-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s ease;
+}
+
+.challenge-next-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+/* Right Column: AI Grader & Coach Feedback */
+.challenge-coach-column {
+  display: flex;
+  flex-direction: column;
+  background: #090e17;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  overflow: hidden;
+  gap: 0.75rem;
+}
+
+.coach-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+.coach-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.challenge-desc-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  flex-shrink: 0;
+}
+
+.feedback-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+}
+
+.feedback-card {
+  padding: 0.75rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.feedback-card.pass {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #a7f3d0;
+}
+
+.feedback-card.fail {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+}
+
+.feedback-badge {
+  font-weight: 800;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.feedback-card.pass .feedback-badge {
+  color: #34d399;
+}
+
+.feedback-card.fail .feedback-badge {
+  color: #f87171;
+}
+
+/* Action History Mini Accordion */
+.challenge-history-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.challenge-history-box div {
+  padding: 1px 0;
+}
+
+.challenge-history-box .header-line {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+/* Modal styling */
+.challenge-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.challenge-modal-card {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.challenge-modal-card.win {
+  border: 2px solid #10b981;
+}
+
+.challenge-modal-card.fail {
+  border: 2px solid #ef4444;
+}
+
+.challenge-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.challenge-modal-card h2 {
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 800;
+}
+
+.challenge-modal-card p {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}

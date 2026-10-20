@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import Card from './Card';
+import { playSound } from '../utils/audio';
+import './HandReplayer.css';
 
 const HandReplayer = () => {
   const { id } = useParams();
@@ -13,6 +15,10 @@ const HandReplayer = () => {
   // Replayer state
   const [historyLines, setHistoryLines] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0); // 1.0x, 1.5x, 2.0x
+
+  const activeLineRef = useRef(null);
 
   useEffect(() => {
     fetchHand();
@@ -30,14 +36,12 @@ const HandReplayer = () => {
       if (error) throw error;
       
       setHandData(data);
-      // Parse history string into array of non-empty lines
       const lines = data.history_json.historyStr
         .split('\n')
         .map(l => l.trim())
         .filter(l => l !== '' && !l.startsWith('--- CARDS AT END OF HAND ---') && !l.startsWith('Hero (Player)') && !l.startsWith('Villain') && !l.startsWith('Community'));
         
       setHistoryLines(lines);
-      // Start at end of hand or step 0? Step 0 makes more sense for a replayer
       setCurrentStep(0);
     } catch (error) {
       console.error('Error fetching hand:', error);
@@ -46,105 +50,144 @@ const HandReplayer = () => {
     }
   };
 
+  // Auto-play timer
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    if (currentStep >= historyLines.length - 1) {
+      setIsPlaying(false);
+      return;
+    }
+
+    const intervalMs = Math.round(1500 / playbackSpeed);
+    const timer = setTimeout(() => {
+      setCurrentStep(prev => prev + 1);
+      playSound('click');
+    }, intervalMs);
+
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentStep, historyLines.length, playbackSpeed]);
+
+  // Scroll active line into view
+  useEffect(() => {
+    if (activeLineRef.current) {
+      activeLineRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [currentStep]);
+
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>Loading Replayer...</div>;
+    return (
+      <div className="replayer-container" style={{ textAlign: 'center', paddingTop: '4rem', color: '#94a3b8' }}>
+        <div>⏳ Loading Hand Replay...</div>
+      </div>
+    );
   }
 
   if (!handData) {
-    return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>Hand not found.</div>;
+    return (
+      <div className="replayer-container" style={{ textAlign: 'center', paddingTop: '4rem', color: '#94a3b8' }}>
+        <div>Hand not found.</div>
+        <button className="challenge-back-btn" style={{ marginTop: '1rem' }} onClick={() => navigate('/history')}>
+          Return to History
+        </button>
+      </div>
+    );
   }
 
   const { heroCards, villainCards, board } = handData.history_json;
   
-  // Determine what to show based on the current step's visible history
+  // Determine visible game state based on steps
   const visibleHistory = historyLines.slice(0, currentStep + 1);
   const visibleText = visibleHistory.join(' ');
   
   const showFlop = visibleText.includes('--- FLOP ---');
   const showTurn = visibleText.includes('--- TURN ---');
   const showRiver = visibleText.includes('--- RIVER ---');
-  const showVillain = visibleText.includes('--- SHOWDOWN ---');
+  const showVillain = visibleText.includes('--- SHOWDOWN ---') || currentStep === historyLines.length - 1;
 
-  // Determine board cards to show
+  let currentStreet = 'Preflop';
+  if (showRiver) currentStreet = 'River';
+  else if (showTurn) currentStreet = 'Turn';
+  else if (showFlop) currentStreet = 'Flop';
+
   let visibleBoard = [];
-  if (showFlop) visibleBoard = board.slice(0, 3);
-  if (showTurn) visibleBoard = board.slice(0, 4);
   if (showRiver) visibleBoard = board.slice(0, 5);
+  else if (showTurn) visibleBoard = board.slice(0, 4);
+  else if (showFlop) visibleBoard = board.slice(0, 3);
 
-  const nextStep = () => {
-    if (currentStep < historyLines.length - 1) setCurrentStep(s => s + 1);
+  // Jump to specific street
+  const jumpToStreet = (streetName) => {
+    setIsPlaying(false);
+    if (streetName === 'Preflop') {
+      setCurrentStep(0);
+      return;
+    }
+    const targetTag = `--- ${streetName.toUpperCase()} ---`;
+    const targetIdx = historyLines.findIndex(l => l.includes(targetTag));
+    if (targetIdx !== -1) {
+      setCurrentStep(targetIdx);
+    }
   };
-  const prevStep = () => {
-    if (currentStep > 0) setCurrentStep(s => s - 1);
+
+  const handleNext = () => {
+    if (currentStep < historyLines.length - 1) {
+      setCurrentStep(s => s + 1);
+      playSound('click');
+    }
   };
-  const fastForward = () => setCurrentStep(historyLines.length - 1);
-  const rewind = () => setCurrentStep(0);
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(s => s - 1);
+      playSound('click');
+    }
+  };
 
   return (
-    <div className="container" style={{ maxWidth: '1200px', marginTop: '2rem', display: 'flex', gap: '2rem' }}>
-      
-      {/* Left Col: Controls & Log */}
-      <div style={{ flex: '0 0 350px', display: 'flex', flexDirection: 'column' }}>
-        <button 
-          onClick={() => navigate('/history')} 
-          style={{ alignSelf: 'flex-start', background: 'transparent', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}
-        >
-          ← Back to Logs
-        </button>
-
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1rem', marginBottom: '1rem' }}>
-          <h3 style={{ color: 'var(--accent-color)', margin: '0 0 1rem 0' }}>Replay Controls</h3>
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-            <button className="btn-secondary" onClick={rewind} disabled={currentStep === 0}>⏮️</button>
-            <button className="btn-secondary" onClick={prevStep} disabled={currentStep === 0}>◀ Prev</button>
-            <button className="btn-primary" onClick={nextStep} disabled={currentStep === historyLines.length - 1}>Next ▶</button>
-            <button className="btn-secondary" onClick={fastForward} disabled={currentStep === historyLines.length - 1}>⏭️</button>
-          </div>
-          <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Step {currentStep + 1} of {historyLines.length}
-          </div>
+    <div className="replayer-container">
+      {/* Top Header */}
+      <div className="replayer-header-row">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button className="challenge-back-btn" onClick={() => navigate('/history')}>
+            ← Back to Logs
+          </button>
+          <span className="replayer-badge">Visual Hand Replayer</span>
+          <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>
+            {new Date(handData.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          </span>
         </div>
 
-        <div style={{ backgroundColor: 'var(--surface-color)', padding: '1.5rem', borderRadius: '1rem', flex: 1, overflowY: 'auto' }}>
-          <h4 style={{ color: 'var(--text-primary)', margin: '0 0 1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Action Log</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-            {visibleHistory.map((line, i) => (
-              <div 
-                key={i} 
-                style={{ 
-                  color: line.startsWith('---') ? 'var(--accent-color)' : 'var(--text-secondary)',
-                  fontWeight: line.startsWith('---') ? 'bold' : 'normal',
-                  padding: '4px 0',
-                  opacity: i === currentStep ? 1 : 0.6,
-                  backgroundColor: i === currentStep ? 'rgba(255,255,255,0.05)' : 'transparent',
-                  borderRadius: '4px'
-                }}
-              >
-                {line}
-              </div>
-            ))}
-          </div>
+        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+          Step <strong style={{ color: '#fff' }}>{currentStep + 1}</strong> of <strong style={{ color: '#fff' }}>{historyLines.length}</strong>
         </div>
       </div>
 
-      {/* Right Col: Visual Table */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2rem' }}>
-        <h2 style={{ color: 'var(--text-primary)', marginBottom: '2rem' }}>Hand Replayer</h2>
-        
-        <div style={{ 
-          width: '100%', maxWidth: '700px', 
-          height: '500px'
-        }}>
-          
-          {/* Table Background */}
-          <div className="poker-table-oval">
-            
-            {/* Villain */}
-            <div className="seat-container seat-top">
-              <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginBottom: '10px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
-                Villain {showVillain ? "" : "(Hidden)"}
+      {/* Main Grid: Left Table, Right Action Log */}
+      <div className="replayer-body-grid">
+        {/* Table Column */}
+        <div className="replayer-table-column">
+          {/* Street Jump Tabs */}
+          <div className="replayer-street-tabs">
+            {['Preflop', 'Flop', 'Turn', 'River'].map(st => (
+              <button
+                key={st}
+                className={`replayer-street-tab ${currentStreet === st ? 'active' : ''}`}
+                onClick={() => jumpToStreet(st)}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+
+          {/* Oval Felt Table */}
+          <div className="replayer-felt-oval">
+            {/* Top Seat: Villain */}
+            <div className="challenge-seat">
+              <div className="challenge-player-badge">
+                <span>🤖 Villain</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>{showVillain ? 'Showdown' : 'Cards Concealed'}</span>
               </div>
-              <div style={{ display: 'flex', gap: '5px' }}>
+              <div className="challenge-cards-row" style={{ marginTop: '0.35rem' }}>
                 {villainCards.map((c, i) => (
                   <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
                     <Card suit={c.suit} rank={c.rank} isFaceUp={showVillain} disableFlip={true} />
@@ -153,36 +196,112 @@ const HandReplayer = () => {
               </div>
             </div>
 
-            {/* Board */}
-            <div className="table-center-area">
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {visibleBoard.map((c, i) => (
-                  <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center center' }}>
-                    <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
-                  </div>
-                ))}
+            {/* Board Area */}
+            <div className="challenge-board-center">
+              <div className="challenge-pot-pill">
+                <span className="challenge-pot-label">Street</span>
+                <span className="challenge-pot-amount" style={{ color: '#38bdf8' }}>{currentStreet}</span>
+              </div>
+
+              <div className="challenge-cards-row">
+                {visibleBoard.length === 0 ? (
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', fontStyle: 'italic' }}>
+                    Preflop Action
+                  </span>
+                ) : (
+                  visibleBoard.map((c, i) => (
+                    <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+                      <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Hero */}
-            <div className="seat-container seat-bottom">
-              <div style={{ display: 'flex', gap: '5px' }}>
+            {/* Bottom Seat: Hero */}
+            <div className="challenge-seat">
+              <div className="challenge-cards-row" style={{ marginBottom: '0.35rem' }}>
                 {heroCards.map((c, i) => (
-                  <div key={i} style={{ transform: 'scale(0.8)', transformOrigin: 'bottom center' }}>
+                  <div key={i} style={{ transform: 'scale(0.85)', transformOrigin: 'bottom center' }}>
                     <Card suit={c.suit} rank={c.rank} isFaceUp={true} disableFlip={true} />
                   </div>
                 ))}
               </div>
-              <div style={{ backgroundColor: 'rgba(0,0,0,0.8)', padding: '0.2rem 1rem', borderRadius: '1rem', marginTop: '10px', zIndex: 2, color: 'white', fontWeight: 'bold' }}>
-                Hero
+              <div className="challenge-player-badge">
+                <span>👤 Hero</span>
+                <span style={{ color: handData.won ? '#10b981' : '#ef4444', fontWeight: 700, fontSize: '0.72rem' }}>
+                  {handData.won ? '🏆 Won Hand' : 'Loss / Fold'}
+                </span>
               </div>
             </div>
-
           </div>
 
+          {/* Controls Bar */}
+          <div className="replayer-controls-bar">
+            <div className="replayer-nav-btns">
+              <button onClick={() => setCurrentStep(0)} disabled={currentStep === 0} title="Start of Hand">
+                ⏮
+              </button>
+              <button onClick={handlePrev} disabled={currentStep === 0} title="Previous Action">
+                ◀
+              </button>
+              <button 
+                className="play-btn"
+                onClick={() => setIsPlaying(p => !p)}
+              >
+                {isPlaying ? '⏸ Pause' : '▶ Auto-Play'}
+              </button>
+              <button onClick={handleNext} disabled={currentStep >= historyLines.length - 1} title="Next Action">
+                ▶
+              </button>
+              <button onClick={() => setCurrentStep(historyLines.length - 1)} disabled={currentStep >= historyLines.length - 1} title="End of Hand">
+                ⏭
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Speed:</span>
+              <select 
+                className="replayer-speed-select"
+                value={playbackSpeed}
+                onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+              >
+                <option value={0.75}>0.75x</option>
+                <option value={1.0}>1.0x (Normal)</option>
+                <option value={1.5}>1.5x (Fast)</option>
+                <option value={2.0}>2.0x (Speed)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Step By Step Action Log */}
+        <div className="replayer-log-column">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.4rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>Action Playbook</span>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Click any line</span>
+          </div>
+
+          <div className="replayer-log-list">
+            {historyLines.map((line, idx) => {
+              const isHeader = line.startsWith('---');
+              const isActive = idx === currentStep;
+
+              return (
+                <div
+                  key={idx}
+                  ref={isActive ? activeLineRef : null}
+                  className={`replayer-log-item ${isHeader ? 'street-header' : ''} ${isActive ? 'active' : ''}`}
+                  onClick={() => { setIsPlaying(false); setCurrentStep(idx); }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {line}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-      
     </div>
   );
 };
