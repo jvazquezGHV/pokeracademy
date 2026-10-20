@@ -114,3 +114,35 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.admin_delete_user(uuid) TO authenticated;
+
+-- 5. Function to update a user's nickname / display name
+CREATE OR REPLACE FUNCTION public.admin_update_user_nickname(target_user_id uuid, new_nickname text)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+  -- Verify caller is admin
+  IF auth.jwt() ->> 'email' != 'jvazquez.sd@outlook.com' THEN
+    RAISE EXCEPTION 'Access denied. Only the administrator can edit users.';
+  END IF;
+
+  UPDATE auth.users 
+  SET raw_user_meta_data = jsonb_set(
+    COALESCE(raw_user_meta_data, '{}'::jsonb),
+    '{display_name}',
+    to_jsonb(new_nickname)
+  )
+  WHERE id = target_user_id;
+
+  -- Also update poker_players so poker games show new nickname immediately
+  UPDATE public.poker_players
+  SET display_name = new_nickname
+  WHERE user_id = target_user_id;
+
+  RETURN true;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.admin_update_user_nickname(uuid, text) TO authenticated;
