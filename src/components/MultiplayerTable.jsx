@@ -1488,56 +1488,58 @@ const MultiplayerTable = ({ session }) => {
           {/* --------------------------------------------------
               SLIDE-OVER ACTION LOG DRAWER
               -------------------------------------------------- */}
-          {/* Backdrop overlay: click to collapse drawer and expand table */}
           {isLogOpen && (
-            <div 
-              className="mp-drawer-backdrop" 
-              onClick={() => setIsLogOpen(false)} 
-              title="Click anywhere to collapse window and expand table"
-            />
-          )}
+            <>
+              {/* Backdrop overlay: click to collapse drawer and expand table */}
+              <div 
+                className="mp-drawer-backdrop" 
+                onClick={() => setIsLogOpen(false)} 
+                title="Click anywhere to collapse window and expand table"
+              />
 
-          <aside className={`mp-log-drawer ${isLogOpen ? 'open' : ''}`}>
-            <div className="mp-drawer-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h3>📜 Hand Action History</h3>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <button 
-                  className="mp-btn-drawer-collapse" 
-                  onClick={() => setIsLogOpen(false)} 
-                  title="Collapse window and expand table"
-                >
-                  <span>⇥ Collapse</span>
-                </button>
-                <button 
-                  className="mp-btn-drawer-close" 
-                  onClick={() => setIsLogOpen(false)} 
-                  title="Close Drawer"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            <div className="mp-drawer-body">
-              {gs.history?.split('\n').map((line, i) => {
-                if (!line) return null;
-                const isStreet = line.startsWith('---');
-                const isSystem = line.startsWith('>>>') || line.startsWith('<<<') || line.startsWith('⚠️');
-
-                return (
-                  <div 
-                    key={i} 
-                    className={`mp-log-line ${isStreet ? 'street' : ''} ${isSystem ? 'system' : ''}`}
-                  >
-                    {line}
+              <aside className="mp-log-drawer open">
+                <div className="mp-drawer-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h3>📜 Hand Action History</h3>
                   </div>
-                );
-              })}
-              <div ref={logEndRef} />
-            </div>
-          </aside>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <button 
+                      className="mp-btn-drawer-collapse" 
+                      onClick={() => setIsLogOpen(false)} 
+                      title="Collapse window and expand table"
+                    >
+                      <span>⇥ Collapse</span>
+                    </button>
+                    <button 
+                      className="mp-btn-drawer-close" 
+                      onClick={() => setIsLogOpen(false)} 
+                      title="Close Drawer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mp-drawer-body">
+                  {gs.history?.split('\n').map((line, i) => {
+                    if (!line) return null;
+                    const isStreet = line.startsWith('---');
+                    const isSystem = line.startsWith('>>>') || line.startsWith('<<<') || line.startsWith('⚠️');
+
+                    return (
+                      <div 
+                        key={i} 
+                        className={`mp-log-line ${isStreet ? 'street' : ''} ${isSystem ? 'system' : ''}`}
+                      >
+                        {line}
+                      </div>
+                    );
+                  })}
+                  <div ref={logEndRef} />
+                </div>
+              </aside>
+            </>
+          )}
 
         </div>
       )}
