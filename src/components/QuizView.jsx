@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import curriculum from '../data/curriculum.json';
 import Card from './Card';
+import FormattedProse from './FormattedProse';
 
 const allLessons = [];
 curriculum.tracks.forEach(track => {
@@ -127,9 +128,9 @@ const QuizView = ({ session }) => {
           🧠 Knowledge Checkpoint
         </span>
         <h1 className="text-accent" style={{ fontSize: '1.3rem', marginBottom: '0.4rem', fontWeight: 700 }}>{quiz.title}</h1>
-        <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.55 }}>
-          {quiz.question}
-        </p>
+        <div style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.55 }}>
+          <FormattedProse content={quiz.question} />
+        </div>
       </div>
 
       <div style={{ 

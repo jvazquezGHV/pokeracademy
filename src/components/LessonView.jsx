@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import curriculum from '../data/curriculum.json';
 import Card from './Card';
+import FormattedProse from './FormattedProse';
 import './LessonView.css';
 
 // The Official 10 Poker Hands Hierarchy
@@ -344,7 +345,9 @@ const LessonView = ({ session }) => {
             <div className="lesson-core-concept-title">
               <span>🎯</span> Core Strategic Principle
             </div>
-            <p className="lesson-core-concept-text">{lesson.coreConcept}</p>
+            <div className="lesson-core-concept-text">
+              <FormattedProse content={lesson.coreConcept} />
+            </div>
           </div>
         )}
 
@@ -411,9 +414,7 @@ const LessonView = ({ session }) => {
         )}
 
         {/* Lesson Body Content */}
-        <div className="lesson-body-prose">
-          {lesson.content}
-        </div>
+        <FormattedProse content={lesson.content} className="lesson-body-prose" />
 
         {/* Visual Poker Spot (Felt Table) */}
         {lesson.visualSpot && (
@@ -657,9 +658,9 @@ const LessonView = ({ session }) => {
                 <div className={`decision-feedback-title ${selectedDecision === lesson.decisionChallenge.correctIndex ? 'success' : 'warning'}`}>
                   <span>{selectedDecision === lesson.decisionChallenge.correctIndex ? '✅ Optimal Decision!' : '⚠️ Suboptimal Choice'}</span>
                 </div>
-                <p className="decision-feedback-explanation">
-                  {lesson.decisionChallenge.explanation}
-                </p>
+                <div className="decision-feedback-explanation">
+                  <FormattedProse content={lesson.decisionChallenge.explanation} />
+                </div>
               </div>
             )}
           </div>
@@ -673,7 +674,9 @@ const LessonView = ({ session }) => {
                 <span className="callout-icon">💡</span>
                 <div className="callout-content">
                   <div className="callout-title">Pro Coach Insight</div>
-                  <p className="callout-desc">{lesson.proTip}</p>
+                  <div className="callout-desc">
+                    <FormattedProse content={lesson.proTip} />
+                  </div>
                 </div>
               </div>
             )}
@@ -683,7 +686,9 @@ const LessonView = ({ session }) => {
                 <span className="callout-icon">⚠️</span>
                 <div className="callout-content">
                   <div className="callout-title">Amateur Trap / Common Leak</div>
-                  <p className="callout-desc">{lesson.commonMistake}</p>
+                  <div className="callout-desc">
+                    <FormattedProse content={lesson.commonMistake} />
+                  </div>
                 </div>
               </div>
             )}
@@ -693,7 +698,9 @@ const LessonView = ({ session }) => {
                 <span className="callout-icon">🏆</span>
                 <div className="callout-content">
                   <div className="callout-title">The Golden Rule</div>
-                  <p className="callout-desc">{lesson.goldenRule}</p>
+                  <div className="callout-desc">
+                    <FormattedProse content={lesson.goldenRule} />
+                  </div>
                 </div>
               </div>
             )}

@@ -1006,3 +1006,201 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   FormattedProse Markdown Typography Styles
+   ========================================================================== */
+.formatted-prose-container {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.prose-paragraph {
+  margin-bottom: 0.85rem;
+  line-height: 1.65;
+  color: #cbd5e1;
+}
+
+.prose-bold {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.prose-italic {
+  font-style: italic;
+  color: #e2e8f0;
+}
+
+/* Subheadings created from **Heading:** */
+.prose-subheading {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 1.35rem 0 0.6rem 0;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.prose-subheading::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  background: var(--accent-color);
+  border-radius: 2px;
+}
+
+/* Styled Numbered Lists (e.g. 1. Royal Flush...) */
+.prose-numbered-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.75rem 0 1.25rem 0;
+}
+
+.prose-numbered-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.prose-numbered-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(2px);
+}
+
+.prose-num-badge {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Styled Bulleted Lists (e.g. - Does a flush beat a straight?...) */
+.prose-bullet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.75rem 0 1.25rem 0;
+}
+
+.prose-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.4rem 0.65rem;
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 0.4rem;
+}
+
+.prose-bullet-dot {
+  color: var(--accent-color);
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+.prose-item-content {
+  flex: 1;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #cbd5e1;
+}
+
+.prose-item-title {
+  color: #ffffff;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.prose-item-desc {
+  color: #cbd5e1;
+}
+
+/* Formula or Math Cards */
+.prose-formula-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-left: 3px solid #38bdf8;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.formula-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.formula-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+/* Playing Card and Suit Chips inside text */
+.inline-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  background: #ffffff;
+  padding: 0 4px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  margin: 0 2px;
+  vertical-align: baseline;
+}
+
+.inline-card-chip.card-red {
+  color: #dc2626;
+}
+
+.inline-card-chip.card-black {
+  color: #0f172a;
+}
+
+.chip-rank {
+  font-size: 0.76rem;
+}
+
+.chip-suit {
+  font-size: 0.72rem;
+}
+
+.suit-red {
+  color: #ef4444;
+  font-weight: 700;
+  margin: 0 1px;
+}
+
+.suit-black {
+  color: #cbd5e1;
+  font-weight: 600;
+  margin: 0 1px;
+}

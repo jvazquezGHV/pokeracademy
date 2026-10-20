@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient';
 import curriculum from '../data/curriculum.json';
 import challenges from '../data/challenges.json';
 import UserManagement from './UserManagement';
+import { parseInlineFormatted } from './FormattedProse';
 import './Dashboard.css';
 
 const ADMIN_EMAIL = 'jvazquez.sd@outlook.com';
@@ -110,7 +111,7 @@ const Dashboard = ({ session }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
           <div>
             <h2 className="track-title">{track.volumeTitle || track.title}</h2>
-            <p className="track-desc" style={{ marginBottom: '0.5rem' }}>{track.description}</p>
+            <p className="track-desc" style={{ marginBottom: '0.5rem' }}>{parseInlineFormatted(track.description)}</p>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.85rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Volume Progress: <strong style={{ color: '#34d399' }}>{completedTrackLessons}/{totalTrackLessons}</strong> Chapters ({trackOverallProgress}%)
@@ -130,7 +131,7 @@ const Dashboard = ({ session }) => {
                 <div key={mod.id} className="module-card">
                   <h3 className="module-title">{mod.title}</h3>
                   {mod.description && (
-                    <p className="module-card-desc">{mod.description}</p>
+                    <p className="module-card-desc">{parseInlineFormatted(mod.description)}</p>
                   )}
                   
                   <div className="progress-container">
@@ -356,8 +357,8 @@ const Dashboard = ({ session }) => {
                         </h3>
                         {isCompleted && <span style={{ color: '#10b981', fontSize: '1.2rem' }}>⭐⭐⭐</span>}
                       </div>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem', flex: 1 }}>
-                        {challenge.description}
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem', flex: 1, lineHeight: 1.5 }}>
+                        {parseInlineFormatted(challenge.description)}
                       </p>
                       
                       {!isUnlocked && (
