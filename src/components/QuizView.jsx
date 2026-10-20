@@ -126,8 +126,8 @@ const QuizView = ({ session }) => {
         }}>
           🧠 Knowledge Checkpoint
         </span>
-        <h1 className="text-accent" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{quiz.title}</h1>
-        <p style={{ fontSize: '1.15rem', color: 'var(--text-primary)', maxWidth: '650px', margin: '0 auto' }}>
+        <h1 className="text-accent" style={{ fontSize: '1.3rem', marginBottom: '0.4rem', fontWeight: 700 }}>{quiz.title}</h1>
+        <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.55 }}>
           {quiz.question}
         </p>
       </div>
@@ -216,14 +216,14 @@ const QuizView = ({ session }) => {
                     key={i}
                     onClick={() => !hasSubmitted && setSelectedAnswer(opt)}
                     style={{
-                      padding: '0.9rem 1.25rem',
-                      borderRadius: '0.65rem',
+                      padding: '0.65rem 1rem',
+                      borderRadius: '0.5rem',
                       backgroundColor: bgColor,
                       color: textColor,
                       border: `1px solid ${borderColor}`,
                       cursor: hasSubmitted ? 'default' : 'pointer',
                       fontWeight: '600',
-                      fontSize: '0.95rem',
+                      fontSize: '0.85rem',
                       textAlign: 'left',
                       transition: 'all 0.2s ease',
                       display: 'flex',

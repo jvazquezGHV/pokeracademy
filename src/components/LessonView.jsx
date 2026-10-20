@@ -5,6 +5,150 @@ import curriculum from '../data/curriculum.json';
 import Card from './Card';
 import './LessonView.css';
 
+// The Official 10 Poker Hands Hierarchy
+const POKER_HANDS_HIERARCHY = [
+  {
+    rank: 1,
+    name: 'Royal Flush',
+    odds: '1 in 649,740 (0.00015%)',
+    cards: [
+      { suit: 'hearts', rank: 'A' },
+      { suit: 'hearts', rank: 'K' },
+      { suit: 'hearts', rank: 'Q' },
+      { suit: 'hearts', rank: 'J' },
+      { suit: 'hearts', rank: '10' }
+    ],
+    rule: 'Ace, King, Queen, Jack, and Ten of the exact same suit.',
+    tiebreaker: 'The absolute peak of Texas Hold\'em. Unbeatable under any rules.'
+  },
+  {
+    rank: 2,
+    name: 'Straight Flush',
+    odds: '1 in 72,193 (0.00139%)',
+    cards: [
+      { suit: 'clubs', rank: '9' },
+      { suit: 'clubs', rank: '8' },
+      { suit: 'clubs', rank: '7' },
+      { suit: 'clubs', rank: '6' },
+      { suit: 'clubs', rank: '5' }
+    ],
+    rule: 'Any five consecutive cards of the exact same suit.',
+    tiebreaker: 'If two players have a straight flush, the hand with the highest top card wins (e.g. 9-high beats 7-high).'
+  },
+  {
+    rank: 3,
+    name: 'Four of a Kind (Quads)',
+    odds: '1 in 4,165 (0.024%)',
+    cards: [
+      { suit: 'spades', rank: 'Q' },
+      { suit: 'hearts', rank: 'Q' },
+      { suit: 'diamonds', rank: 'Q' },
+      { suit: 'clubs', rank: 'Q' },
+      { suit: 'spades', rank: '4' }
+    ],
+    rule: 'All four cards of the same numerical rank.',
+    tiebreaker: 'Higher quadruplet rank wins (e.g. 8-8-8-8 beats 5-5-5-5). If quads are on the board, the 5th card kicker breaks ties.'
+  },
+  {
+    rank: 4,
+    name: 'Full House (Boat)',
+    odds: '1 in 694 (0.144%)',
+    cards: [
+      { suit: 'spades', rank: 'K' },
+      { suit: 'hearts', rank: 'K' },
+      { suit: 'diamonds', rank: 'K' },
+      { suit: 'clubs', rank: '8' },
+      { suit: 'diamonds', rank: '8' }
+    ],
+    rule: 'Three cards of one rank and two cards of another rank (Kings full of Eights).',
+    tiebreaker: 'The three-of-a-kind rank decides the winner first (e.g. 10-10-10-2-2 beats 9-9-9-A-A). If trips tie, higher pair wins.'
+  },
+  {
+    rank: 5,
+    name: 'Flush',
+    odds: '1 in 508 (0.196%)',
+    cards: [
+      { suit: 'diamonds', rank: 'A' },
+      { suit: 'diamonds', rank: 'J' },
+      { suit: 'diamonds', rank: '9' },
+      { suit: 'diamonds', rank: '6' },
+      { suit: 'diamonds', rank: '3' }
+    ],
+    rule: 'Any five cards of the same suit, not in numerical sequence.',
+    tiebreaker: 'Always beats a Straight! The player holding the highest single card in the flush wins (Nut Flush = Ace-high).'
+  },
+  {
+    rank: 6,
+    name: 'Straight',
+    odds: '1 in 254 (0.392%)',
+    cards: [
+      { suit: 'spades', rank: '10' },
+      { suit: 'hearts', rank: '9' },
+      { suit: 'diamonds', rank: '8' },
+      { suit: 'clubs', rank: '7' },
+      { suit: 'spades', rank: '6' }
+    ],
+    rule: 'Five consecutive cards of mixed suits. Ace can count as high (A-K-Q-J-10) or low (5-4-3-2-A).',
+    tiebreaker: 'Highest top card of the sequence wins. Broadway (A-high) beats a 10-high straight. The Wheel (A-2-3-4-5) is 5-high.'
+  },
+  {
+    rank: 7,
+    name: 'Three of a Kind (Trips / Set)',
+    odds: '1 in 47 (2.11%)',
+    cards: [
+      { suit: 'spades', rank: '7' },
+      { suit: 'hearts', rank: '7' },
+      { suit: 'diamonds', rank: '7' },
+      { suit: 'clubs', rank: 'A' },
+      { suit: 'spades', rank: '5' }
+    ],
+    rule: 'Three cards of the same rank plus two non-paired kickers.',
+    tiebreaker: 'Always beats Two Pair! Higher triplet wins (e.g. 8-8-8 beats 7-7-7). If identical, highest kicker decides.'
+  },
+  {
+    rank: 8,
+    name: 'Two Pair (Double Pair)',
+    odds: '1 in 21 (4.75%)',
+    cards: [
+      { suit: 'spades', rank: 'J' },
+      { suit: 'diamonds', rank: 'J' },
+      { suit: 'hearts', rank: '4' },
+      { suit: 'clubs', rank: '4' },
+      { suit: 'spades', rank: 'A' }
+    ],
+    rule: 'Two distinct pairs plus one fifth card kicker (Jacks and Fours with an Ace kicker).',
+    tiebreaker: 'The highest single pair decides the winner! Aces and Deuces beats Kings and Queens. Second pair breaks ties only if top pairs match.'
+  },
+  {
+    rank: 9,
+    name: 'One Pair',
+    odds: '1 in 2.37 (42.26%)',
+    cards: [
+      { suit: 'spades', rank: 'A' },
+      { suit: 'diamonds', rank: 'A' },
+      { suit: 'hearts', rank: 'K' },
+      { suit: 'clubs', rank: '9' },
+      { suit: 'diamonds', rank: '3' }
+    ],
+    rule: 'Two cards of identical rank plus three kickers.',
+    tiebreaker: 'Higher pair wins (e.g. Pair of Kings beats Pair of Tens). If both have the same pair, the highest kicker card decides.'
+  },
+  {
+    rank: 10,
+    name: 'High Card',
+    odds: '1 in 1.99 (50.12%)',
+    cards: [
+      { suit: 'spades', rank: 'A' },
+      { suit: 'diamonds', rank: 'Q' },
+      { suit: 'hearts', rank: '9' },
+      { suit: 'clubs', rank: '6' },
+      { suit: 'diamonds', rank: '2' }
+    ],
+    rule: 'No pairs, no straight, and no flush. The highest single card in your 5-card holding plays.',
+    tiebreaker: 'Highest card wins. Ace-high beats King-high. If highest cards tie, subsequent cards (2nd, 3rd, 4th, 5th) break the tie.'
+  }
+];
+
 // Flatten the curriculum into an array of lessons for sequential navigation
 const allLessons = [];
 const lessonIndexMap = {};
@@ -38,6 +182,8 @@ const LessonView = ({ session }) => {
   // User state & progress
   const [completedLessons, setCompletedLessons] = useState([]);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [showCheatSheet, setShowCheatSheet] = useState(false);
+  const [selectedHandRank, setSelectedHandRank] = useState(8); // Default to Two Pair for immediate recognition
 
   // Interactive decision challenge state (resets per lesson)
   const [selectedDecision, setSelectedDecision] = useState(null);
@@ -138,6 +284,8 @@ const LessonView = ({ session }) => {
   const potOddsRatio = totalPotAfterCall > 0 ? (betSize / totalPotAfterCall) * 100 : 0;
   const directOddsRatioText = betSize > 0 ? `${((potSize + betSize) / betSize).toFixed(1)}:1` : '0:1';
 
+  const activeHand = POKER_HANDS_HIERARCHY.find(h => h.rank === selectedHandRank) || POKER_HANDS_HIERARCHY[7];
+
   return (
     <div className="lesson-page-container">
       {/* Top Header / Navigation */}
@@ -149,12 +297,23 @@ const LessonView = ({ session }) => {
           <button className="lesson-toc-btn" onClick={() => setIsTocOpen(true)}>
             📑 Table of Contents
           </button>
+          <button 
+            className="lesson-toc-btn" 
+            onClick={() => setShowCheatSheet(!showCheatSheet)}
+            style={{ 
+              backgroundColor: showCheatSheet ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+              borderColor: showCheatSheet ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)',
+              color: showCheatSheet ? '#93c5fd' : 'var(--text-secondary)'
+            }}
+          >
+            🃏 Hand Rankings Reference
+          </button>
         </div>
 
         <div className="lesson-meta-badge">
           <span className="lesson-volume-pill">Vol {lesson.volume}</span>
           <span className="lesson-read-time-pill">
-            ⏱️ {lesson.estimatedMinutes || 3} min read
+            ⏱️ {lesson.estimatedMinutes || 4} min read
           </span>
         </div>
       </div>
@@ -186,6 +345,68 @@ const LessonView = ({ session }) => {
               <span>🎯</span> Core Strategic Principle
             </div>
             <p className="lesson-core-concept-text">{lesson.coreConcept}</p>
+          </div>
+        )}
+
+        {/* Interactive Hands Hierarchy Explorer (All 10 Hands from Royal Flush to High Card) */}
+        {(lesson.hasHandsExplorer || showCheatSheet) && (
+          <div className="hands-explorer-card">
+            <div className="hands-explorer-top">
+              <h3 className="hands-explorer-title">
+                <span>🃏</span> The Official 10 Poker Hands (Highest to Lowest)
+              </h3>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                Click any hand below to view card combinations & tiebreakers:
+              </span>
+            </div>
+
+            {/* Hand Pills Selector */}
+            <div className="hands-selector-bar">
+              {POKER_HANDS_HIERARCHY.map((h) => {
+                const isActive = activeHand.rank === h.rank;
+                return (
+                  <button
+                    key={`hand-tab-${h.rank}`}
+                    className={`hand-pill-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => setSelectedHandRank(h.rank)}
+                  >
+                    <span className="hand-rank-tag">#{h.rank}</span>
+                    <span>{h.name.split(' (')[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Hand Showcase */}
+            <div className="hands-showcase-box">
+              <div className="hand-showcase-meta">
+                <div className="hand-showcase-name">
+                  #{activeHand.rank}: {activeHand.name}
+                </div>
+                <div className="hand-showcase-odds">
+                  Odds: {activeHand.odds}
+                </div>
+              </div>
+
+              <div className="hand-showcase-cards">
+                {activeHand.cards.map((c, i) => (
+                  <Card
+                    key={`hand-showcase-${activeHand.rank}-${i}`}
+                    suit={c.suit}
+                    rank={c.rank}
+                    isFaceUp={true}
+                    disableFlip={true}
+                  />
+                ))}
+              </div>
+
+              <div className="hand-showcase-rule">
+                <strong>Definition:</strong> {activeHand.rule}
+              </div>
+              <div className="hand-showcase-tiebreaker">
+                <strong>⚖️ Tiebreaker Rule:</strong> {activeHand.tiebreaker}
+              </div>
+            </div>
           </div>
         )}
 
@@ -274,37 +495,6 @@ const LessonView = ({ session }) => {
                 {lesson.visualSpot.handDescription}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Legacy Hand Fallbacks for Royal & Straight Flush if without visualSpot */}
-        {!lesson.visualSpot && lesson.id === 'l-royal-flush' && (
-          <div className="lesson-spot-container" style={{ textAlign: 'center' }}>
-            <span className="lesson-spot-tag" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-              The Nut Royal Flush Example
-            </span>
-            <div className="lesson-spot-cards-row">
-              <Card suit="hearts" rank="A" isFaceUp={true} disableFlip={true} />
-              <Card suit="hearts" rank="K" isFaceUp={true} disableFlip={true} />
-              <Card suit="hearts" rank="Q" isFaceUp={true} disableFlip={true} />
-              <Card suit="hearts" rank="J" isFaceUp={true} disableFlip={true} />
-              <Card suit="hearts" rank="10" isFaceUp={true} disableFlip={true} />
-            </div>
-          </div>
-        )}
-
-        {!lesson.visualSpot && lesson.id === 'l-straight-flush' && (
-          <div className="lesson-spot-container" style={{ textAlign: 'center' }}>
-            <span className="lesson-spot-tag" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-              9-High Straight Flush Example
-            </span>
-            <div className="lesson-spot-cards-row">
-              <Card suit="clubs" rank="9" isFaceUp={true} disableFlip={true} />
-              <Card suit="clubs" rank="8" isFaceUp={true} disableFlip={true} />
-              <Card suit="clubs" rank="7" isFaceUp={true} disableFlip={true} />
-              <Card suit="clubs" rank="6" isFaceUp={true} disableFlip={true} />
-              <Card suit="clubs" rank="5" isFaceUp={true} disableFlip={true} />
-            </div>
           </div>
         )}
 
@@ -443,15 +633,16 @@ const LessonView = ({ session }) => {
                     onClick={() => setSelectedDecision(optIdx)}
                   >
                     <span style={{ 
-                      width: '24px', 
-                      height: '24px', 
+                      width: '20px', 
+                      height: '20px', 
                       borderRadius: '50%', 
                       background: 'rgba(255,255,255,0.08)', 
                       display: 'inline-flex', 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      fontSize: '0.8rem',
-                      fontWeight: '700'
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      flexShrink: 0
                     }}>
                       {String.fromCharCode(65 + optIdx)}
                     </span>

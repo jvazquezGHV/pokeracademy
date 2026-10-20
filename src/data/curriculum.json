@@ -10,52 +10,81 @@
       "modules": [
         {
           "id": "b-m1",
-          "title": "Hand Rankings & Board Textures",
-          "description": "Understand the official hierarchy of poker hands and how board cards change hand strength.",
+          "title": "The Complete Hand Hierarchy & Board Textures",
+          "description": "Master all 10 poker hands in exact order—from High Card and Two Pair to the Royal Flush—and understand board textures.",
           "lessons": [
             {
-              "id": "l-royal-flush",
-              "title": "The Royal Flush & Straight Flushes",
-              "estimatedMinutes": 3,
-              "coreConcept": "A Royal Flush is the mathematically unbeatable peak of Texas Hold'em (Ace through Ten of the same suit).",
-              "content": "Welcome to the absolute pinnacle of poker: The Royal Flush.\n\nThis is the highest possible hand in Texas Hold'em, and hitting it is incredibly rare. Statistically, you have a 1 in 30,939 chance of flopping a Royal Flush when holding two suited Broadway cards, and an overall 1 in 649,739 chance of making it by the river.\n\nIt consists of an Ace, King, Queen, Jack, and 10 of the exact same suit. Because it is the highest straight flush possible, it is mathematically unbeatable. When you hold a Royal Flush, your only objective is extracting maximum chips without scaring your opponents into folding.\n\nJust below it sits the Straight Flush: any five consecutive cards of identical suit (e.g., 5-6-7-8-9 of clubs). If two players both make a straight flush, the player with the higher top card takes the pot.",
-              "proTip": "Never slow-play a Royal Flush to the point of checking the river. Make a reasonable value bet to give opponents holding flushes or full houses an excuse to pay you off.",
-              "commonMistake": "Panicking and shoving all-in instantly when hitting the nuts on the flop, causing everyone else to fold immediately.",
-              "goldenRule": "The Royal Flush cannot be beaten—focus 100% of your energy on building the pot.",
+              "id": "l-all-hands-hierarchy",
+              "title": "The Complete Hand Hierarchy: All 10 Poker Hands",
+              "estimatedMinutes": 4,
+              "hasHandsExplorer": true,
+              "coreConcept": "Every showdown in Texas Hold'em is decided by this 10-rank hierarchy. A higher category always beats every hand in a lower category, regardless of card ranks.",
+              "content": "In Texas Hold'em, every player constructs the best possible 5-card hand using any combination of their two private hole cards and the five community board cards.\n\nHere is the official, unbreakable ranking of all 10 poker hands from highest (unbeatable) to lowest:\n\n1. **Royal Flush**: A-K-Q-J-10 of the exact same suit. The mathematical pinnacle.\n2. **Straight Flush**: Any five consecutive cards of the same suit (e.g., 9♠ 8♠ 7♠ 6♠ 5♠).\n3. **Four of a Kind (Quads)**: Four cards of the same numerical rank (e.g., Q-Q-Q-Q-4).\n4. **Full House (Boat)**: Three of a kind plus a pair (e.g., K-K-K-8-8, read as 'Kings full of Eights').\n5. **Flush**: Any five cards of the same suit, not in sequence (e.g., A♦ J♦ 9♦ 6♦ 3♦).\n6. **Straight**: Five consecutive cards of mixed suits (e.g., 10♠ 9♥ 8♦ 7♣ 6♠).\n7. **Three of a Kind (Trips / Set)**: Three cards of the same rank plus two kickers (e.g., 7-7-7-A-5).\n8. **Two Pair (Double Pair)**: Two distinct pairs plus one fifth card kicker (e.g., J-J and 4-4 with an Ace kicker).\n9. **One Pair**: Two cards of identical rank plus three kickers (e.g., A-A-K-9-3).\n10. **High Card**: No pair, no straight, no flush. The highest single card plays (e.g., Ace-high: A♠ Q♦ 9♥ 6♣ 2♦).\n\n**Common Beginner Confusions Resolved:**\n- *Does a Flush beat a Straight?* **YES.** A Flush (5 matching suits) beats a Straight (5 in sequence).\n- *Does Three of a Kind beat Two Pair?* **YES.** Three of a kind is mathematically rarer and always beats Two Pair.\n- *How do ties work?* If two players have the exact same category (e.g., both hold One Pair), the higher pair wins. If pairs tie, the highest non-paired card ('kicker') wins the pot.",
+              "proTip": "Memorize the critical boundary: Three of a Kind beats Two Pair, and Flush beats Straight. These two boundaries cause the most frequent costly mistakes among beginners.",
+              "commonMistake": "Thinking that having two high pairs (like Kings and Queens) beats Three of a Kind. Three 2s (2-2-2) beats Kings and Queens (K-K-Q-Q) every single time.",
+              "goldenRule": "Category always beats card rank: the lowest Three of a Kind crushes the highest Two Pair."
+            },
+            {
+              "id": "l-pairs-two-pair",
+              "title": "One Pair, Two Pair (Double Pair) & Three of a Kind",
+              "estimatedMinutes": 4,
+              "coreConcept": "One Pair and Two Pair decide over 60% of contested Hold'em showdowns. Understanding kicker dominance and high-pair precedence is critical.",
+              "content": "The vast majority of poker hands do not make flushes or full houses. The real battleground of poker is fought with Pairs, Two Pair (Double Pair), and Three of a Kind.\n\n**1. High Card & One Pair**\nWhen you miss the board, your highest card plays (e.g., holding A-K on a 2-5-9 board is 'Ace-High'). One Pair occurs when you match two cards of the same rank (e.g., pair of Aces: A-A-K-10-4). When two players share the same pair, the second highest card ('kicker') decides the winner.\n\n**2. Two Pair (Double Pair)**\nTwo Pair consists of two matching ranks and one kicker (e.g., Kings and Tens: K-K-10-10-7). In Texas Hold'em, the **highest single pair decides the winner**:\n- Player A holds A♠ A♦ 2♣ 2♥ (Aces and Deuces).\n- Player B holds K♠ K♦ Q♣ Q♥ (Kings and Queens).\n- **Player A wins!** Even though Kings and Queens look much prettier, Player A's pair of Aces beats Player B's pair of Kings. Only if the high pairs tie do we look at the second pair.\n\n**Counterfeited Two Pair Trap:**\nIf you hold 5-5 on a K-9-5-K-9 board, your two pair (Kings and Nines with a 5 kicker) is counterfeited by any player holding an Ace (they play Kings and Nines with an Ace kicker)!\n\n**3. Three of a Kind: 'Sets' vs. 'Trips'**\n- **A Set:** You hold a pocket pair (e.g., 7-7) and the flop has one 7 (K-7-2). This is heavily disguised and one of the most profitable holdings in poker.\n- **Trips:** The board contains a pair (e.g., 9-9-4) and you hold a 9. Trips are obvious to opponents, making it harder to extract maximum value.",
+              "proTip": "When holding Two Pair, identify your top pair rank immediately. Aces and Threes dominates Kings and Queens. But beware of counterfeited boards when the community cards double-pair.",
+              "commonMistake": "Overvaluing bottom two pair (e.g., holding 4-2 on an A-K-4-2 board) against heavy turn and river aggression where higher two pairs, sets, or straights frequently appear.",
+              "goldenRule": "In Two Pair showdowns, the highest pair rules: Aces and Deuces beats Kings and Queens.",
               "visualSpot": {
-                "heroCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "hearts", "rank": "K" }],
-                "boardCards": [{ "suit": "hearts", "rank": "Q" }, { "suit": "hearts", "rank": "J" }, { "suit": "hearts", "rank": "10" }, { "suit": "clubs", "rank": "2" }, { "suit": "diamonds", "rank": "7" }],
-                "pot": 180,
+                "heroCards": [{ "suit": "spades", "rank": "A" }, { "suit": "clubs", "rank": "10" }],
+                "villainCards": [{ "suit": "hearts", "rank": "K" }, { "suit": "diamonds", "rank": "Q" }],
+                "boardCards": [{ "suit": "diamonds", "rank": "A" }, { "suit": "hearts", "rank": "K" }, { "suit": "clubs", "rank": "10" }, { "suit": "spades", "rank": "Q" }, { "suit": "clubs", "rank": "2" }],
+                "pot": 160,
                 "heroPosition": "BTN",
-                "handDescription": "Nut Royal Flush (Unbeatable)"
+                "handDescription": "Two Pair (Aces & 10s) beats Opponent's Two Pair (Kings & Queens) because Aces top Kings"
               },
               "decisionChallenge": {
-                "question": "You flop a Royal Flush in position on a Qh-Jh-10h flop. The opponent bets $20 into a $40 pot. What is the optimal play?",
+                "question": "Showdown: Hero holds A♠ 3♠ on a board of A♦ K♦ Q♣ 3♥ 8♠ (Two Pair, Aces and Threes). Villain holds K♠ Q♠ (Two Pair, Kings and Queens). Who wins the pot?",
                 "options": [
-                  "Shove all-in immediately to protect your hand",
-                  "Call smoothly to keep the opponent's bluffs and lower flushes in the pot",
-                  "Fold because the board is too wet"
+                  "Hero wins because Aces are higher than Kings",
+                  "Villain wins because Kings and Queens are both high face cards",
+                  "It is a chop pot (tie) because both have Two Pair"
                 ],
-                "correctIndex": 1,
-                "explanation": "Calling smoothly conceals your monster strength and allows your opponent to keep betting their bluffs, straight draws, or smaller flushes on the turn and river."
+                "correctIndex": 0,
+                "explanation": "Hero wins! In Two Pair comparisons, the highest pair takes precedence. Hero's Pair of Aces beats Villain's Pair of Kings; the second pair is only checked if the high pair ties."
               }
             },
             {
-              "id": "l-four-kind",
-              "title": "Quads, Full Houses & The Kicker Problem",
+              "id": "l-straights-flushes",
+              "title": "Straights, Flushes & The Wheel",
               "estimatedMinutes": 4,
-              "coreConcept": "Four of a Kind (Quads) and Full Houses (Boats) win the vast majority of showdowns, but kicker rank breaks ties.",
-              "content": "Four of a Kind (Quads) occurs when you hold all four cards of the same rank (e.g., four Queens). If the board contains four of a kind, the player with the highest fifth card ('kicker') wins.\n\nA Full House consists of three cards of one rank and two of another (e.g., Kings full of 8s: K-K-K-8-8). When two players have a Full House, the higher three-of-a-kind always wins. For example, 9-9-9-2-2 beats 8-8-8-A-A.\n\nThe 'Kicker Problem': In Hold'em, every final hand uses exactly 5 cards. When you and your opponent both make one pair (such as a Pair of Aces), the player whose second card is higher wins the entire pot. Holding A-K is vastly more profitable than holding A-4 because your King kicker dominates weaker Aces.",
-              "proTip": "Be wary when holding weak Aces like A-2 or A-5. Even when you hit an Ace on the flop, you are frequently 'dominated' by opponents with better kickers.",
-              "commonMistake": "Overvaluing a low full house when the board is paired high (e.g., holding 2-2 on a K-K-K-8-2 board—almost any higher pocket pair beats you).",
-              "goldenRule": "Kickers decide close pots: play cards with high kickers to avoid being dominated.",
+              "coreConcept": "A Flush requires 5 cards of the same suit and always beats a Straight (5 sequential ranks). The Ace can act as the highest or lowest card in a Straight.",
+              "content": "Straights and Flushes are powerful five-card holdings that beat Three of a Kind and Two Pair.\n\n**The Straight (5 Consecutive Cards, Mixed Suits)**\nA straight consists of five ranks in numerical sequence (e.g., 6-7-8-9-10). Suit does not matter.\n- **Broadway Straight:** 10-J-Q-K-A is the highest possible straight.\n- **The Wheel (Baby Straight):** A-2-3-4-5 is the lowest possible straight, where the Ace counts as a 1.\n- Note: Straights cannot wrap around! A hand like Q-K-A-2-3 is NOT a valid straight.\n\n**The Flush (5 Cards of Identical Suit)**\nA flush consists of any five cards belonging to the same suit (Hearts, Diamonds, Clubs, or Spades), regardless of their numerical order.\n- If two players make a flush in the same hand, the player holding the highest single card in the flush wins (the 'Nut Flush' is a flush led by the Ace).\n- If the board contains four cards of a suit (e.g., 4 Spades), any player holding a higher single spade takes the pot.",
+              "proTip": "Beware of 'idiot ends' of straights. If the board is 6-7-8-9 and you hold a 5 (5-high straight), an opponent holding a 10 makes a 10-high straight and takes your entire stack.",
+              "commonMistake": "Assuming that a Straight beats a Flush. Statistically, Flushes are rarer (1 in 508 vs 1 in 254 for a straight) and always rank higher.",
+              "goldenRule": "Flushes beat Straights; the Nut Flush (Ace-high) is the undisputed king of suit battles.",
               "visualSpot": {
-                "heroCards": [{ "suit": "spades", "rank": "A" }, { "suit": "clubs", "rank": "K" }],
-                "villainCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "diamonds", "rank": "8" }],
-                "boardCards": [{ "suit": "diamonds", "rank": "A" }, { "suit": "clubs", "rank": "J" }, { "suit": "hearts", "rank": "4" }, { "suit": "spades", "rank": "2" }, { "suit": "clubs", "rank": "9" }],
-                "pot": 120,
+                "heroCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "hearts", "rank": "9" }],
+                "villainCards": [{ "suit": "hearts", "rank": "K" }, { "suit": "hearts", "rank": "Q" }],
+                "boardCards": [{ "suit": "hearts", "rank": "J" }, { "suit": "hearts", "rank": "6" }, { "suit": "hearts", "rank": "2" }, { "suit": "clubs", "rank": "8" }, { "suit": "diamonds", "rank": "4" }],
+                "pot": 220,
                 "heroPosition": "CO",
-                "handDescription": "Pair of Aces with King Kicker beats Pair of Aces with 8 Kicker"
+                "handDescription": "Nut Flush (Ace of Hearts) beats Second Nut Flush (King of Hearts)"
+              }
+            },
+            {
+              "id": "l-royal-flush",
+              "title": "Quads, Full Houses & The Royal Flush",
+              "estimatedMinutes": 4,
+              "coreConcept": "Full Houses (Boats), Four of a Kind (Quads), and Straight Flushes are monster holdings that win massive showdown pots.",
+              "content": "At the top of the pyramid sit the monster combinations:\n\n**Full House (Boat):**\nThree of one rank and two of another (e.g., 9-9-9-K-K). When two players have Full Houses, the higher three-of-a-kind always wins. For example, 10-10-10-2-2 beats 9-9-9-A-A.\n\n**Four of a Kind (Quads):**\nHolding all four cards of a single rank (e.g., 8-8-8-8-K). Nearly invincible.\n\n**Straight Flush & Royal Flush:**\nFive consecutive cards of the same suit. The Royal Flush (A-K-Q-J-10 of the same suit) is the absolute highest hand in poker and cannot be beaten under any circumstance.",
+              "proTip": "With monster holdings, focus on bet sizing that targets the second-best hands your opponents could realistically hold (like lower full houses or flushes).",
+              "commonMistake": "Overvaluing an under-boat when the board pairs high (e.g., holding 3-3 on a J-J-J-8 board, where any pocket pair higher than 3s beats you).",
+              "goldenRule": "Monsters demand patience: build pots systematically to extract maximum value from second-best hands.",
+              "visualSpot": {
+                "heroCards": [{ "suit": "hearts", "rank": "A" }, { "suit": "hearts", "rank": "K" }],
+                "boardCards": [{ "suit": "hearts", "rank": "Q" }, { "suit": "hearts", "rank": "J" }, { "suit": "hearts", "rank": "10" }, { "suit": "clubs", "rank": "2" }, { "suit": "diamonds", "rank": "7" }],
+                "pot": 240,
+                "heroPosition": "BTN",
+                "handDescription": "The Invincible Royal Flush (Ace through Ten of Hearts)"
               }
             },
             {
@@ -71,8 +100,8 @@
             {
               "id": "q-hand-rankings-1",
               "type": "quiz",
-              "title": "Quiz: Hand Hierarchy & Board Texture",
-              "question": "What hand is face down on the table? Click the cards to flip them and test your knowledge!",
+              "title": "Quiz: Hand Hierarchy & Showdowns",
+              "question": "Which of the following hands is mathematically superior and wins at showdown?",
               "cards": [
                 { "suit": "spades", "rank": "10" },
                 { "suit": "spades", "rank": "J" },
@@ -81,12 +110,12 @@
                 { "suit": "spades", "rank": "A" }
               ],
               "options": [
-                "Full House",
-                "Flush",
-                "Straight Flush",
-                "Royal Flush"
+                "Three of a Kind beats Two Pair",
+                "Two Pair beats Three of a Kind",
+                "Straight beats a Flush",
+                "One Pair beats Three of a Kind"
               ],
-              "correctAnswer": "Royal Flush"
+              "correctAnswer": "Three of a Kind beats Two Pair"
             }
           ]
         },
