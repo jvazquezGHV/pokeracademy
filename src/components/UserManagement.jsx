@@ -565,63 +565,63 @@ const UserManagement = ({ session }) => {
                   return (
                     <tr key={user.id}>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <strong style={{ color: 'var(--text-primary)' }}>{user.email}</strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <span style={{ fontWeight: 500, color: '#f8fafc', fontSize: '0.86rem' }}>{user.email}</span>
                           {isAdmin && <span className="admin-tag">Admin</span>}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: '#64748b', fontFamily: 'monospace', marginTop: '0.2rem' }}>
-                          ID: {user.id.substring(0, 10)}...
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace', marginTop: '0.15rem' }}>
+                          ID: {user.id.substring(0, 12)}...
                         </div>
                       </td>
 
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <span style={{ fontWeight: 600, color: '#38bdf8' }}>
-                            {currentNickname}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditModalUser(user);
-                              setEditNickname(user.display_name || '');
-                            }}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              color: 'var(--text-secondary)',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
-                              padding: '0.1rem 0.25rem'
-                            }}
-                            title="Edit Nickname"
-                          >
-                            ✏️
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditModalUser(user);
+                            setEditNickname(user.display_name || '');
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            cursor: 'pointer',
+                            color: '#38bdf8',
+                            fontWeight: 500,
+                            fontSize: '0.84rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem'
+                          }}
+                          title="Click to edit nickname"
+                        >
+                          <span>{currentNickname}</span>
+                          <span style={{ opacity: 0.6, fontSize: '0.75rem' }}>✏️</span>
+                        </button>
                       </td>
 
                       <td>
                         {isActive ? (
                           <span className="status-badge status-badge-active">
-                            🟢 Active
+                            ● Active
                           </span>
                         ) : (
                           <span className="status-badge status-badge-inactive">
-                            🔴 Inactive
+                            ● Inactive
                           </span>
                         )}
                       </td>
 
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <td style={{ fontSize: '0.78rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                       </td>
 
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <td style={{ fontSize: '0.78rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
                         {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : 'Never'}
                       </td>
 
                       <td>
-                        <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        <div className="user-actions-row">
                           {/* 1. Edit Nickname */}
                           <button
                             type="button"
@@ -630,7 +630,7 @@ const UserManagement = ({ session }) => {
                               setEditModalUser(user);
                               setEditNickname(user.display_name || '');
                             }}
-                            title="Edit Nickname / Display Name"
+                            title="Edit Nickname"
                           >
                             ✏️ Edit
                           </button>
@@ -643,9 +643,9 @@ const UserManagement = ({ session }) => {
                               setResetModalUser(user);
                               setDirectNewPassword('');
                             }}
-                            title="Reset Password directly"
+                            title="Reset Password"
                           >
-                            🔑 Reset Pass
+                            🔑 Reset
                           </button>
 
                           {/* 3. Activate / Inactivate */}
@@ -655,9 +655,9 @@ const UserManagement = ({ session }) => {
                               className={`user-mgmt-btn user-mgmt-btn-sm ${isActive ? 'user-mgmt-btn-warning' : 'user-mgmt-btn-success'}`}
                               onClick={() => handleToggleStatus(user)}
                               disabled={loading}
-                              title={isActive ? 'Inactivate (Suspend) User' : 'Activate User'}
+                              title={isActive ? 'Suspend User' : 'Activate User'}
                             >
-                              {isActive ? '🔒 Inactivate' : '🔓 Activate'}
+                              {isActive ? '🔒 Suspend' : '🔓 Activate'}
                             </button>
                           )}
 
@@ -669,8 +669,9 @@ const UserManagement = ({ session }) => {
                               onClick={() => setDeleteModalUser(user)}
                               disabled={loading}
                               title="Delete User Permanently"
+                              style={{ padding: '0.25rem 0.5rem' }}
                             >
-                              🗑️ Delete
+                              🗑️
                             </button>
                           )}
                         </div>

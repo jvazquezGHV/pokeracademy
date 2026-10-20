@@ -62,25 +62,25 @@ function App() {
   return (
     <Router>
       {session && (
-        <nav style={{ padding: '0.85rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface-color)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <Link to="/" style={{ textDecoration: 'none', fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span>♠️</span> Poker Academy
+        <nav style={{ padding: '0 1.5rem', height: '48px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#0b1120' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link to="/" style={{ textDecoration: 'none', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '0.35rem', letterSpacing: '-0.01em' }}>
+              <span style={{ color: 'var(--accent-color)' }}>♠️</span> Poker Academy
             </Link>
             {session.user?.email === ADMIN_EMAIL && (
               <Link 
                 to="/admin/users" 
                 style={{
-                  fontSize: '0.85rem',
+                  fontSize: '0.78rem',
                   color: '#60a5fa',
                   textDecoration: 'none',
-                  padding: '0.35rem 0.75rem',
-                  borderRadius: '0.4rem',
-                  backgroundColor: 'rgba(59, 130, 246, 0.12)',
-                  border: '1px solid rgba(59, 130, 246, 0.28)',
+                  padding: '0.2rem 0.55rem',
+                  borderRadius: '4px',
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  border: '1px solid rgba(59, 130, 246, 0.22)',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
+                  gap: '0.3rem',
                   fontWeight: 500
                 }}
               >
@@ -88,13 +88,13 @@ function App() {
               </Link>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', fontFamily: 'monospace' }}>
               {session.user?.email}
             </span>
             <button 
               onClick={() => supabase.auth.signOut()}
-              style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}
+              style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 500, padding: '0.2rem 0.4rem' }}
             >
               Sign Out
             </button>
