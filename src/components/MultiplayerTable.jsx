@@ -6,6 +6,7 @@ import ChipStack from './ChipStack';
 import { createDeck, getNextActivePlayer, checkRoundComplete } from '../utils/multiplayerLogic';
 import { Hand } from 'pokersolver';
 import { preloadAudio, playSound } from '../utils/audio';
+import { BOT_TEMPLATES, BOT_LEVELS, calculateBotAction } from '../utils/botAi';
 import './Multiplayer.css';
 
 const AVATARS = ['😎', '🤠', '👽', '🤖', '🦊', '🐷', '🦄', '🦁', '🐻', '🐼'];
@@ -156,6 +157,97 @@ const MultiplayerTable = ({ session }) => {
       setRoom(prev => ({ ...prev, game_state: newGs }));
       await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', room.id);
     }
+  };
+
+  // Bot Management Controls (Host Only)
+  const handleAddBot = async () => {
+    if (!amIHost) return;
+    const currentBots = gs.bots || [];
+    const totalCount = dbPlayers.length + currentBots.length;
+    if (totalCount >= 6) {
+      alert("Table is full (Maximum 6 seats).");
+      return;
+    }
+
+    const usedIds = (gs.players || []).map(p => p.user_id);
+    const template = BOT_TEMPLATES.find(t => !usedIds.includes(t.id)) || {
+      id: `bot_${Date.now()}`,
+      name: `Bot ${Math.floor(Math.random() * 900) + 100}`,
+      avatar: '🤖',
+      defaultLevel: gs.botLevel || 'regular'
+    };
+
+    const newBot = {
+      user_id: template.id,
+      name: template.name,
+      display_name: template.name,
+      avatar: template.avatar,
+      chips: gs.startingChips || 1000,
+      is_bot: true,
+      bot_level: gs.botLevel || template.defaultLevel || 'regular'
+    };
+
+    const updatedBots = [...currentBots, newBot];
+    let updatedPlayers = gs.players ? [...gs.players] : [];
+    if (!updatedPlayers.some(p => p.user_id === newBot.user_id)) {
+      updatedPlayers.push({
+        ...newBot,
+        cards: [],
+        bet: 0,
+        status: 'sitting_out',
+        acted: false
+      });
+    }
+
+    const newGs = {
+      ...gs,
+      bots: updatedBots,
+      players: updatedPlayers,
+      history: (gs.history || '') + `\n>>> ${newBot.name} joined the table!`
+    };
+
+    setRoom(prev => ({ ...prev, game_state: newGs }));
+    await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', room.id);
+  };
+
+  const handleRemoveBot = async (botId) => {
+    if (!amIHost) return;
+    const currentBots = gs.bots || [];
+    const targetBot = botId 
+      ? currentBots.find(b => b.user_id === botId) 
+      : currentBots[currentBots.length - 1];
+
+    if (!targetBot) return;
+
+    const updatedBots = currentBots.filter(b => b.user_id !== targetBot.user_id);
+    const updatedPlayers = (gs.players || []).filter(p => p.user_id !== targetBot.user_id);
+
+    const newGs = {
+      ...gs,
+      bots: updatedBots,
+      players: updatedPlayers,
+      history: (gs.history || '') + `\n<<< ${targetBot.name || targetBot.display_name} left the table.`
+    };
+
+    setRoom(prev => ({ ...prev, game_state: newGs }));
+    await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', room.id);
+  };
+
+  const handleChangeBotLevel = async (newLevel) => {
+    if (!amIHost) return;
+    const updatedBots = (gs.bots || []).map(b => ({ ...b, bot_level: newLevel }));
+    const updatedPlayers = (gs.players || []).map(p => p.is_bot ? { ...p, bot_level: newLevel } : p);
+
+    const newGs = {
+      ...gs,
+      botLevel: newLevel,
+      bots: updatedBots,
+      players: updatedPlayers,
+      history: (gs.history || '') + `\n⚙️ AI Bot Level changed to: ${newLevel.toUpperCase()}`
+    };
+
+    setRoom(prev => ({ ...prev, game_state: newGs }));
+    await supabase.from('poker_rooms').update({ game_state: newGs }).eq('id', room.id);
   };
 
   useEffect(() => {
@@ -313,7 +405,7 @@ const MultiplayerTable = ({ session }) => {
     // Remove players who left
     for (let i = newState.players.length - 1; i >= 0; i--) {
        const p = newState.players[i];
-       if (dbPlayers.length > 0 && !dbPlayers.find(dp => dp.user_id === p.user_id)) {
+       if (!p.is_bot && dbPlayers.length > 0 && !dbPlayers.find(dp => dp.user_id === p.user_id)) {
            newState.players.splice(i, 1);
            newState.history += `\n<<< ${p.display_name} left the table.`;
            stateChanged = true;
@@ -484,10 +576,14 @@ const MultiplayerTable = ({ session }) => {
       if (!amIHost) return;
 
       const deck = createDeck();
-      
-      const gamePlayers = dbPlayers.map(p => {
+
+      // Human players from database
+      const humanPlayers = dbPlayers.map(p => {
         const existing = gs.players?.find(ep => ep.user_id === p.user_id);
-        const chips = existing?.chips !== undefined ? existing.chips : p.chips;
+        let chips = existing?.chips !== undefined ? existing.chips : p.chips;
+        if (chips <= 0 && gs.mode !== 'tournament') {
+          chips = gs.startingChips || 1000;
+        }
         const isEliminated = gs.mode === 'tournament' && existing && chips <= 0;
         
         return {
@@ -498,9 +594,33 @@ const MultiplayerTable = ({ session }) => {
           cards: [],
           bet: 0,
           status: isEliminated ? 'eliminated' : 'active',
-          acted: false
+          acted: false,
+          is_bot: false
         };
       });
+
+      // AI Bots from gs.bots
+      const botPlayers = (gs.bots || []).map(b => {
+        const existing = gs.players?.find(ep => ep.user_id === b.user_id);
+        const chips = existing?.chips !== undefined ? existing.chips : (b.chips || gs.startingChips || 1000);
+        const isEliminated = gs.mode === 'tournament' && existing && chips <= 0;
+        const effectiveChips = chips <= 0 && gs.mode !== 'tournament' ? (gs.startingChips || 1000) : chips;
+
+        return {
+          user_id: b.user_id,
+          display_name: b.name || b.display_name,
+          avatar: b.avatar || '🤖',
+          chips: effectiveChips,
+          cards: [],
+          bet: 0,
+          status: isEliminated ? 'eliminated' : 'active',
+          acted: false,
+          is_bot: true,
+          bot_level: b.bot_level || gs.botLevel || 'regular'
+        };
+      });
+
+      const gamePlayers = [...humanPlayers, ...botPlayers];
 
       const activePlayers = gamePlayers.filter(p => p.status === 'active');
 
@@ -519,6 +639,8 @@ const MultiplayerTable = ({ session }) => {
 
         const initialState = {
           mode: gs.mode, startingChips: gs.startingChips, blindInterval: gs.blindInterval,
+          botLevel: gs.botLevel || 'regular',
+          bots: gs.bots || [],
           phase: 'waiting_for_players',
           pot: 0, board: [], deck: [], players: gamePlayers, turnIndex: 0, 
           timerLength: gs.timerLength || timerConfig, turnStartTime: Date.now(),
@@ -594,6 +716,8 @@ const MultiplayerTable = ({ session }) => {
         mode: gs.mode, 
         startingChips: gs.startingChips, 
         blindInterval: gs.blindInterval,
+        botLevel: gs.botLevel || 'regular',
+        bots: gs.bots || [],
         tournamentStartTime: newTourneyStart, 
         blindsLevel: newBlindsLevel,
         phase: 'preflop',
@@ -665,6 +789,29 @@ const MultiplayerTable = ({ session }) => {
       console.error("Action handler error:", err);
     }
   };
+
+  // Host Automated AI Bot Turn Execution
+  useEffect(() => {
+    if (!amIHost || !isPlaying || gs.phase === 'showdown' || gs.phase === 'waiting_for_players') return;
+
+    const currentPlayer = gs.players?.[gs.turnIndex];
+    if (!currentPlayer || !currentPlayer.is_bot || currentPlayer.status !== 'active') return;
+
+    const botTimer = setTimeout(async () => {
+      try {
+        const botDecision = calculateBotAction(
+          currentPlayer,
+          gs,
+          currentPlayer.bot_level || gs.botLevel || 'regular'
+        );
+        await handleAction(botDecision.action, botDecision.amount || 0);
+      } catch (err) {
+        console.error("AI Bot action error:", err);
+      }
+    }, 1100);
+
+    return () => clearTimeout(botTimer);
+  }, [gs.turnIndex, gs.phase, amIHost, isPlaying, gs.players]);
 
   const handleLeaveTable = async () => {
     if (window.confirm("Are you sure you want to leave the table?")) {
@@ -788,8 +935,45 @@ const MultiplayerTable = ({ session }) => {
 
         {/* Right Tools & Drawer Toggle */}
         <div className="mp-topbar-right">
+          {/* Host AI Bot Controls */}
+          {amIHost && (
+            <div className="mp-bot-controls-bar">
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8' }}>AI BOTS:</span>
+              <button 
+                className="mp-bot-btn-sm" 
+                onClick={handleAddBot}
+                disabled={(dbPlayers.length + (gs.bots?.length || 0)) >= 6}
+                title="Add AI Bot opponent"
+                type="button"
+              >
+                + Bot
+              </button>
+              {(gs.bots?.length || 0) > 0 && (
+                <button 
+                  className="mp-bot-btn-sm" 
+                  onClick={() => handleRemoveBot(gs.bots[gs.bots.length - 1].user_id)}
+                  title="Remove last bot"
+                  type="button"
+                >
+                  - Bot
+                </button>
+              )}
+              <select 
+                value={gs.botLevel || 'regular'} 
+                onChange={(e) => handleChangeBotLevel(e.target.value)}
+                className="mp-bot-level-select"
+                title="Change AI Difficulty Level"
+              >
+                <option value="rookie">🟢 Rookie</option>
+                <option value="regular">🔵 Regular</option>
+                <option value="shark">🟣 Shark</option>
+                <option value="pro">🟡 GTO Pro</option>
+              </select>
+            </div>
+          )}
+
           <div className="mp-players-count-badge">
-            👥 {dbPlayers.length}/6 Players
+            👥 {dbPlayers.length + (gs.bots?.length || 0)}/6 Seats
           </div>
 
           <button 
@@ -820,7 +1004,7 @@ const MultiplayerTable = ({ session }) => {
           <div className="mp-lounge-card">
             <div className="mp-lounge-header">
               <h2>Private Table Lounge</h2>
-              <p>Waiting for players to take their seats. Minimum 2 players required to deal.</p>
+              <p>Waiting for players or AI bots to take seats. Minimum 2 seats required to deal.</p>
             </div>
 
             {/* Room Code Share Banner */}
@@ -848,6 +1032,27 @@ const MultiplayerTable = ({ session }) => {
                   </div>
                 );
               })}
+
+              {/* AI Bots in Lounge */}
+              {(gs.bots || []).map((b, i) => (
+                <div key={`bot-${b.user_id || i}`} className="mp-lounge-player-card">
+                  <div className="mp-lounge-avatar">{b.avatar || '🤖'}</div>
+                  <div className="mp-lounge-name">{b.name || b.display_name}</div>
+                  <div className="mp-lounge-role bot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+                    <span>🤖 AI ({b.bot_level || gs.botLevel || 'regular'})</span>
+                    {amIHost && (
+                      <button 
+                        onClick={() => handleRemoveBot(b.user_id)} 
+                        style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.85rem', lineHeight: 1, padding: '0 2px' }}
+                        title="Remove bot"
+                        type="button"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Host Controls */}
@@ -867,12 +1072,37 @@ const MultiplayerTable = ({ session }) => {
                   </select>
                 </div>
 
+                {/* AI Bot Quick Add & Level in Lounge */}
+                <div className="mp-timer-select-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                  <label>AI Opponents ({gs.bots?.length || 0}):</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <button 
+                      className="mp-bot-btn-sm" 
+                      onClick={handleAddBot}
+                      disabled={(dbPlayers.length + (gs.bots?.length || 0)) >= 6}
+                      type="button"
+                    >
+                      + Add AI Bot
+                    </button>
+                    <select 
+                      value={gs.botLevel || 'regular'} 
+                      onChange={(e) => handleChangeBotLevel(e.target.value)}
+                      className="mp-bot-level-select"
+                    >
+                      <option value="rookie">🟢 Level 1: Rookie</option>
+                      <option value="regular">🔵 Level 2: Regular</option>
+                      <option value="shark">🟣 Level 3: Shark</option>
+                      <option value="pro">🟡 Level 4: GTO Master</option>
+                    </select>
+                  </div>
+                </div>
+
                 <button 
                   className="mp-btn-start-table" 
                   onClick={startGame}
-                  disabled={dbPlayers.length < 2}
+                  disabled={(dbPlayers.length + (gs.bots?.length || 0)) < 2}
                 >
-                  {dbPlayers.length < 2 ? 'Need 2+ Players to Deal' : 'Open Table & Deal Hand'}
+                  {(dbPlayers.length + (gs.bots?.length || 0)) < 2 ? 'Need 2+ Players or Bots to Deal' : 'Open Table & Deal Hand'}
                 </button>
               </div>
             ) : (
@@ -1004,6 +1234,11 @@ const MultiplayerTable = ({ session }) => {
                                   <div className="mp-player-name-row">
                                     <span className="mp-player-name">
                                       {isMe ? 'Hero (You)' : p.display_name}
+                                      {p.is_bot && (
+                                        <span className={`mp-bot-level-badge ${p.bot_level || gs.botLevel || 'regular'}`}>
+                                          {p.bot_level || gs.botLevel || 'regular'}
+                                        </span>
+                                      )}
                                     </span>
                                     
                                     {/* Position Badges */}
@@ -1119,7 +1354,7 @@ const MultiplayerTable = ({ session }) => {
                   <button 
                     className="mp-btn-next-hand" 
                     onClick={startGame} 
-                    disabled={dbPlayers.length < 2 || Boolean(winnerAnimation)}
+                    disabled={(dbPlayers.length + (gs.bots?.length || 0)) < 2 || Boolean(winnerAnimation)}
                     title="Shortcut: Press [Space] or [Enter]"
                   >
                     <span>{gs.phase === 'waiting_for_players' ? 'Start Hand' : 'Deal Next Hand'}</span>
